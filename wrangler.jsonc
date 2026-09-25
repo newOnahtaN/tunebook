@@ -18,9 +18,10 @@
       "database_id": "69e4b5da-7aa7-499a-807e-5f53f32e5bed"
     }
   ],
+  // Routes (not custom domains) so the existing proxied DNS records for @ and www can stay as they are.
   "routes": [
-    { "pattern": "nategrimwood.com", "custom_domain": true },
-    { "pattern": "www.nategrimwood.com", "custom_domain": true }
+    { "pattern": "nategrimwood.com/*", "zone_name": "nategrimwood.com" },
+    { "pattern": "www.nategrimwood.com/*", "zone_name": "nategrimwood.com" }
   ],
   "workers_dev": false,
   "preview_urls": false,
