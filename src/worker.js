@@ -1,15 +1,18 @@
 // Tune book: static page + small JSON API backed by D1.
-// Visitors read; the editor signs in with a passphrase (Worker secret EDIT_PASSPHRASE).
+// Visitors read. The editor signs in with Google (accounts listed in EDITOR_EMAILS) or with a passkey
+// they added after a Google sign-in. Sessions are signed with a random key kept in the database.
 import seed from './seed.json';
+import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, SUPPORTED_ALGS } from './auth.js';
 
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
 const API = '/fiddle/api/';
 const COOKIE = 'tb_session';
+const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
-const MAX_FAILS = 5, LOCK_MINUTES = 15;
-const SCHEMA_VERSION = '1';
+const CHALLENGE_MINUTES = 5;
+const SCHEMA_VERSION = '2';
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
                       origin: 'text', status: 'int0_2', source: 'text', notes: 'text' };
@@ -23,8 +26,10 @@ const GENRE_ORDER = ['Old-time', 'Contra', 'English', 'Irish', 'Québécois', 'G
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    // www -> apex, keeping the path
-    if (url.hostname === 'www.' + APEX) {
+    const ours = url.hostname === APEX || url.hostname === 'www.' + APEX;
+    // http -> https, and www -> apex, keeping the path
+    if (ours && (url.protocol === 'http:' || url.hostname !== APEX)) {
+      url.protocol = 'https:';
       url.hostname = APEX;
       return Response.redirect(url.toString(), 301);
     }
@@ -33,14 +38,15 @@ export default {
     }
     if (url.pathname.startsWith(API)) {
       try {
-        return await api(request, env, url);
+        return secure(await api(request, env, url));
       } catch (e) {
-        if (e instanceof HttpError) return json({ error: e.message }, e.status);
+        if (e instanceof HttpError) return secure(json({ error: e.message }, e.status));
+        if (e instanceof AuthError) return secure(json({ error: e.message }, 401));
         console.error(e);
-        return json({ error: 'Something went wrong on the server.' }, 500);
+        return secure(json({ error: 'Something went wrong on the server.' }, 500));
       }
     }
-    return env.ASSETS.fetch(request);
+    return secure(await env.ASSETS.fetch(request));
   },
 };
 
@@ -48,11 +54,18 @@ class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
 
-function json(data, status = 200, headers = {}) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers },
-  });
+function json(data, status = 200, { headers = {}, cookies = [] } = {}) {
+  const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers });
+  for (const c of cookies) h.append('set-cookie', c);
+  return new Response(JSON.stringify(data), { status, headers: h });
+}
+
+function secure(res) {
+  const r = new Response(res.body, res);
+  r.headers.set('strict-transport-security', 'max-age=31536000');
+  r.headers.set('x-content-type-options', 'nosniff');
+  r.headers.set('referrer-policy', 'strict-origin-when-cross-origin');
+  return r;
 }
 
 // ---------------------------------------------------------------- database
@@ -78,7 +91,11 @@ async function initDb(env) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, action TEXT NOT NULL, tbl TEXT NOT NULL,
       row_id INTEGER, label TEXT NOT NULL DEFAULT '', field TEXT, old TEXT, new TEXT, undone INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)`),
-    db.prepare(`CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT PRIMARY KEY, fails INTEGER NOT NULL, until_ms INTEGER NOT NULL)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS passkeys (
+      id TEXT PRIMARY KEY, email TEXT NOT NULL, user_handle TEXT NOT NULL, public_key TEXT NOT NULL,
+      alg INTEGER NOT NULL, sign_count INTEGER NOT NULL DEFAULT 0, transports TEXT NOT NULL DEFAULT '[]',
+      label TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL, last_used_at TEXT)`),
+    db.prepare(`DROP TABLE IF EXISTS login_attempts`),   // left over from passphrase sign-in
   ]);
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
@@ -94,79 +111,197 @@ async function initDb(env) {
         .bind(o.title, o.source, o.notes || '', now, now));
     }
     stmts.push(db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('working_notes', ?)`).bind(seed.working_notes || ''));
-    stmts.push(db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION));
     stmts.push(db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('seeded', ?)`).bind(now));
     await db.batch(stmts);  // one transaction: all or nothing
   }
+  await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
 
 // ---------------------------------------------------------------- auth
 
-const enc = new TextEncoder();
-const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+const editorEmails = env => String(env.EDITOR_EMAILS || '').split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+const isEditor = (env, email) => !!email && editorEmails(env).includes(String(email).toLowerCase());
+const randomId = (n = 32) => b64u(crypto.getRandomValues(new Uint8Array(n)));
 
-async function hmacKey(env) {
-  return crypto.subtle.importKey('raw', enc.encode('tunebook-session:' + env.EDIT_PASSPHRASE),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+// Get (or create once) a random value stored in meta.
+async function metaSecret(env, k, bytes = 32) {
+  let v = await env.DB.prepare(`SELECT v FROM meta WHERE k = ?`).bind(k).first('v');
+  if (!v) {
+    await env.DB.prepare(`INSERT OR IGNORE INTO meta (k,v) VALUES (?,?)`).bind(k, randomId(bytes)).run();
+    v = await env.DB.prepare(`SELECT v FROM meta WHERE k = ?`).bind(k).first('v');
+  }
+  return v;
 }
 
-async function makeSession(env) {
-  const exp = Date.now() + SESSION_DAYS * 864e5;
-  const payload = b64u(enc.encode(JSON.stringify({ exp })));
-  const sig = b64u(await crypto.subtle.sign('HMAC', await hmacKey(env), enc.encode(payload)));
-  return { value: payload + '.' + sig, exp };
+// One HMAC key per request (read from D1 only when a request actually needs it).
+function hmacKey(ctx) {
+  ctx.key ??= metaSecret(ctx.env, 'session_key').then(v =>
+    crypto.subtle.importKey('raw', unb64u(v), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']));
+  return ctx.key;
 }
 
-function sessionCookie(value, maxAgeSec) {
-  return `${COOKIE}=${value}; Path=${HOME}; Max-Age=${maxAgeSec}; HttpOnly; Secure; SameSite=Lax`;
+async function signToken(ctx, kind, obj) {
+  const payload = b64u(enc.encode(JSON.stringify(obj)));
+  const sig = b64u(await crypto.subtle.sign('HMAC', await hmacKey(ctx), enc.encode(kind + '.' + payload)));
+  return payload + '.' + sig;
 }
 
-async function readSession(request, env) {
-  if (!env.EDIT_PASSPHRASE) return null;
-  const m = (request.headers.get('cookie') || '').match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`));
-  if (!m) return null;
-  const [payload, sig] = m[1].split('.');
-  if (!payload || !sig) return null;
-  let ok = false;
+async function readToken(ctx, kind, token) {
+  const [payload, sig, extra] = String(token || '').split('.');
+  if (!payload || !sig || extra !== undefined) return null;
   try {
-    ok = await crypto.subtle.verify('HMAC', await hmacKey(env), unb64u(sig), enc.encode(payload));
+    if (!(await crypto.subtle.verify('HMAC', await hmacKey(ctx), unb64u(sig), enc.encode(kind + '.' + payload)))) return null;
+    const obj = JSON.parse(new TextDecoder().decode(unb64u(payload)));
+    return obj && obj.exp > Date.now() ? obj : null;
   } catch { return null; }
-  if (!ok) return null;
-  const { exp } = JSON.parse(new TextDecoder().decode(unb64u(payload)));
-  return exp > Date.now() ? { exp } : null;
 }
 
-async function timingSafeEqual(a, b) {
-  // Compare HMACs of both strings so the comparison time doesn't depend on the secret.
-  const k = await crypto.subtle.importKey('raw', crypto.getRandomValues(new Uint8Array(32)),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const [x, y] = await Promise.all([crypto.subtle.sign('HMAC', k, enc.encode(a)), crypto.subtle.sign('HMAC', k, enc.encode(b))]);
-  const xa = new Uint8Array(x), ya = new Uint8Array(y);
-  let diff = 0;
-  for (let i = 0; i < xa.length; i++) diff |= xa[i] ^ ya[i];
-  return diff === 0;
+function getCookie(request, name) {
+  const m = (request.headers.get('cookie') || '').match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return m ? m[1] : null;
 }
 
-async function login(request, env) {
-  if (!env.EDIT_PASSPHRASE) throw new HttpError(503, "Editing isn't set up yet: the EDIT_PASSPHRASE secret is missing.");
-  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-  const now = Date.now();
-  const row = await env.DB.prepare(`SELECT fails, until_ms FROM login_attempts WHERE ip = ?`).bind(ip).first();
-  if (row && row.until_ms > now) {
-    throw new HttpError(429, `Too many wrong tries. Wait ${Math.ceil((row.until_ms - now) / 60000)} minutes and try again.`);
+function setCookie(name, value, maxAgeSec, { path = HOME, sameSite = 'Lax' } = {}) {
+  return `${name}=${value}; Path=${path}; Max-Age=${maxAgeSec}; HttpOnly; Secure; SameSite=${sameSite}`;
+}
+
+async function readSession(ctx) {
+  const raw = getCookie(ctx.request, COOKIE);
+  if (!raw) return null;                       // visitors never touch the database for auth
+  const s = await readToken(ctx, 'session', raw);
+  return s && isEditor(ctx.env, s.email) ? s : null;
+}
+
+async function sessionCookie(ctx, email) {
+  const exp = Date.now() + SESSION_DAYS * 864e5;
+  return setCookie(COOKIE, await signToken(ctx, 'session', { exp, email }), SESSION_DAYS * 86400);
+}
+
+const clearCookie = (name, path = HOME) => setCookie(name, '', 0, { path });
+
+// Passkey challenges live in a short-lived signed cookie, so starting a sign-in never writes to the database.
+async function issueChallenge(ctx, purpose) {
+  const challenge = randomId(32);
+  const token = await signToken(ctx, 'challenge', { exp: Date.now() + CHALLENGE_MINUTES * 60000, c: challenge, p: purpose });
+  return { challenge, cookie: setCookie(CHALLENGE_COOKIE, token, CHALLENGE_MINUTES * 60, { path: API + 'auth/', sameSite: 'Strict' }) };
+}
+
+async function takeChallenge(ctx, purpose) {
+  const t = await readToken(ctx, 'challenge', getCookie(ctx.request, CHALLENGE_COOKIE));
+  if (!t || t.p !== purpose) throw new HttpError(400, 'That took too long or was started in another tab. Try again.');
+  return t.c;
+}
+
+async function signedIn(ctx, email) {
+  return json({ ok: true, email }, 200, { cookies: [await sessionCookie(ctx, email), clearCookie(CHALLENGE_COOKIE, API + 'auth/')] });
+}
+
+function deviceLabel(ua = '') {
+  const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android'
+    : /CrOS/.test(ua) ? 'Chromebook' : /Macintosh|Mac OS X/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows'
+    : /Linux/.test(ua) ? 'Linux' : 'this device';
+  const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\/|FxiOS/.test(ua) ? 'Firefox'
+    : /Chrome\/|CriOS/.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Browser';
+  return `${br} on ${os}`;
+}
+
+const publicPasskey = p => ({ id: p.id, label: p.label, created_at: p.created_at, last_used_at: p.last_used_at });
+
+async function listPasskeys(env, email) {
+  const r = await env.DB.prepare(`SELECT * FROM passkeys WHERE email = ? ORDER BY created_at`).bind(email).all();
+  return r.results;
+}
+
+// Routes under /fiddle/api/auth/.
+async function authRoute(ctx, path, method, session) {
+  const { env, request, url } = ctx;
+  if (method !== 'GET') checkSameOrigin(request, url);
+  const rp = { origin: url.origin, rpId: url.hostname };
+
+  if (path === 'auth/google' && method === 'POST') {
+    const body = await readJson(request);
+    const who = await verifyGoogleIdToken(body.credential, { clientId: env.GOOGLE_CLIENT_ID, certsUrl: env.GOOGLE_CERTS_URL || undefined });
+    if (!isEditor(env, who.email)) throw new HttpError(403, `${who.email} isn't allowed to edit this tune book.`);
+    return signedIn(ctx, who.email);
   }
-  const body = await readJson(request);
-  const guess = String(body.passphrase || '');
-  if (!(await timingSafeEqual(guess, env.EDIT_PASSPHRASE))) {
-    const fails = (row && row.until_ms <= now && row.fails >= MAX_FAILS) ? 1 : ((row?.fails || 0) + 1);
-    const until = fails >= MAX_FAILS ? now + LOCK_MINUTES * 60000 : 0;
-    await env.DB.prepare(`INSERT OR REPLACE INTO login_attempts (ip, fails, until_ms) VALUES (?,?,?)`).bind(ip, fails, until).run();
-    throw new HttpError(401, "That passphrase didn't match.");
+
+  if (path === 'auth/passkey/options' && method === 'POST') {
+    const { challenge, cookie } = await issueChallenge(ctx, 'login');
+    return json({ challenge, rpId: rp.rpId, timeout: CHALLENGE_MINUTES * 60000, userVerification: 'required' }, 200, { cookies: [cookie] });
   }
-  await env.DB.prepare(`DELETE FROM login_attempts WHERE ip = ?`).bind(ip).run();
-  const s = await makeSession(env);
-  return json({ ok: true }, 200, { 'set-cookie': sessionCookie(s.value, SESSION_DAYS * 86400) });
+
+  if (path === 'auth/passkey/login' && method === 'POST') {
+    const body = await readJson(request);
+    const challenge = await takeChallenge(ctx, 'login');
+    const id = b64u(unb64u(body.rawId));
+    const row = await env.DB.prepare(`SELECT * FROM passkeys WHERE id = ?`).bind(id).first();
+    if (!row) throw new HttpError(404, "That passkey isn't registered here (it may have been removed). Sign in with Google instead.");
+    if (!isEditor(env, row.email)) throw new HttpError(403, `${row.email} isn't allowed to edit this tune book any more.`);
+    if (body.userHandle && body.userHandle !== row.user_handle) throw new HttpError(401, "That passkey doesn't match its account.");
+    const r = await verifyAssertion(body, { publicKey: row.public_key, alg: row.alg, signCount: row.sign_count },
+      { challenge, origin: rp.origin, rpId: rp.rpId });
+    await env.DB.prepare(`UPDATE passkeys SET sign_count = ?, last_used_at = ? WHERE id = ?`)
+      .bind(r.signCount, new Date().toISOString(), row.id).run();
+    return signedIn(ctx, row.email);
+  }
+
+  // Everything below needs a signed-in editor.
+  if (!session) throw new HttpError(401, 'Sign in first.');
+  const email = session.email;
+
+  if (path === 'auth/passkey/register/options' && method === 'POST') {
+    const handle = await metaSecret(env, 'user_handle:' + email, 16);
+    const existing = await listPasskeys(env, email);
+    const { challenge, cookie } = await issueChallenge(ctx, 'register');
+    return json({
+      challenge,
+      rp: { id: rp.rpId, name: 'Tune book' },
+      user: { id: handle, name: email, displayName: email },
+      pubKeyCredParams: SUPPORTED_ALGS.map(alg => ({ type: 'public-key', alg })),
+      authenticatorSelection: { residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
+      attestation: 'none',
+      timeout: CHALLENGE_MINUTES * 60000,
+      excludeCredentials: existing.map(p => ({ type: 'public-key', id: p.id, transports: JSON.parse(p.transports || '[]') })),
+    }, 200, { cookies: [cookie] });
+  }
+
+  if (path === 'auth/passkey/register' && method === 'POST') {
+    const body = await readJson(request);
+    const challenge = await takeChallenge(ctx, 'register');
+    const v = await verifyRegistration(body, { challenge, origin: rp.origin, rpId: rp.rpId });
+    const handle = await metaSecret(env, 'user_handle:' + email, 16);
+    const count = (await listPasskeys(env, email)).length;
+    if (count >= 20) throw new HttpError(400, 'That is a lot of passkeys. Remove some old ones first.');
+    const label = deviceLabel(request.headers.get('user-agent') || '') + (v.synced ? ' (synced)' : '');
+    const now = new Date().toISOString();
+    const res = await env.DB.prepare(`INSERT OR IGNORE INTO passkeys (id,email,user_handle,public_key,alg,sign_count,transports,label,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?)`).bind(v.id, email, handle, v.publicKey, v.alg, v.signCount, JSON.stringify(v.transports), label, now).run();
+    if (!res.meta.changes) throw new HttpError(409, 'That passkey is already registered.');
+    return json({ ok: true, passkey: publicPasskey({ id: v.id, label, created_at: now, last_used_at: null }) }, 201,
+      { cookies: [clearCookie(CHALLENGE_COOKIE, API + 'auth/')] });
+  }
+
+  if (path === 'auth/passkeys' && method === 'GET') {
+    const list = await listPasskeys(env, email);
+    const handle = await metaSecret(env, 'user_handle:' + email, 16);
+    return json({ email, userHandle: handle, rpId: rp.rpId, passkeys: list.map(publicPasskey) });
+  }
+
+  let m;
+  if ((m = path.match(/^auth\/passkeys\/([A-Za-z0-9_-]{1,1400})$/)) && method === 'DELETE') {
+    const res = await env.DB.prepare(`DELETE FROM passkeys WHERE id = ? AND email = ?`).bind(m[1], email).run();
+    if (!res.meta.changes) throw new HttpError(404, 'That passkey was already removed.');
+    return json({ ok: true });
+  }
+
+  // Invalidate every session by rotating the signing key, then sign this device back in.
+  if (path === 'auth/signout-others' && method === 'POST') {
+    await env.DB.prepare(`UPDATE meta SET v = ? WHERE k = 'session_key'`).bind(randomId(32)).run();
+    ctx.key = null;
+    return json({ ok: true }, 200, { cookies: [await sessionCookie(ctx, email)] });
+  }
+
+  throw new HttpError(404, 'No such API route.');
 }
 
 // ---------------------------------------------------------------- helpers
@@ -219,7 +354,8 @@ async function api(request, env, url) {
   await ensureDb(env);
   const path = url.pathname.slice(API.length).replace(/\/+$/, '');
   const method = request.method;
-  const session = await readSession(request, env);
+  const ctx = { env, request, url, key: null };
+  const session = await readSession(ctx);
   const editor = !!session;
 
   if (path === 'data' && method === 'GET') {
@@ -228,21 +364,21 @@ async function api(request, env, url) {
       env.DB.prepare(`SELECT * FROM open_titles ORDER BY id`).all(),
       editor ? env.DB.prepare(`SELECT v FROM meta WHERE k = 'working_notes'`).first('v') : null,
     ]);
-    const headers = {};
-    if (editor && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) {
-      const s = await makeSession(env);
-      headers['set-cookie'] = sessionCookie(s.value, SESSION_DAYS * 86400);
-    }
+    const cookies = [];
+    if (editor && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
+    const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(editor
-      ? { editor: true, tunes: tunes.results, open: open.results, working_notes: notes || '' }
-      : { editor: false, editingEnabled: !!env.EDIT_PASSPHRASE, tunes: tunes.results.map(publicTune),
-          open: open.results.map(({ title, source, id }) => ({ id, title, source })) }, 200, headers);
+      ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '' }
+      : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
+          open: open.results.map(({ title, source, id }) => ({ id, title, source })) }, 200, { cookies });
   }
 
-  if (path === 'login' && method === 'POST') { checkSameOrigin(request, url); return login(request, env); }
   if (path === 'logout' && method === 'POST') {
-    return json({ ok: true }, 200, { 'set-cookie': sessionCookie('', 0) });
+    checkSameOrigin(request, url);
+    return json({ ok: true }, 200, { cookies: [clearCookie(COOKIE)] });
   }
+
+  if (path.startsWith('auth/')) return authRoute(ctx, path, method, session);
 
   // Everything below is editor-only.
   if (!editor) throw new HttpError(401, 'Sign in to edit.');
