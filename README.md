@@ -10,4 +10,6 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
 
 Pushing to `main` redeploys automatically through Cloudflare Workers Builds.
 
+The Worker runs on zone routes for `nategrimwood.com/*` and `www.nategrimwood.com/*`, so the zone needs proxied (orange-cloud) DNS records for `@` and `www`. What they point at doesn't matter, because the Worker answers every request.
+
 Local development: `npm install`, put `EDIT_PASSPHRASE="something"` in `.dev.vars`, then `npx wrangler dev`.
