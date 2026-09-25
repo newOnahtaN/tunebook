@@ -29,7 +29,9 @@
     // Google accounts allowed to edit, comma-separated. Everyone else gets read-only.
     "EDITOR_EMAILS": "nate.cole.owen@gmail.com",
     // Google Drive "Fiddle" folder. Recordings are read through the service account in the GOOGLE_SERVICE_ACCOUNT secret.
-    "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd"
+    "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd",
+    // Only this repo's nightly workflow (.github/workflows/video-audio.yml) may use the /job/ endpoints.
+    "GITHUB_REPO": "newOnahtaN/tunebook"
   },
   // Rescan Drive once a day (11:17 UTC, early morning in Seattle).
   "triggers": { "crons": ["17 11 * * *"] },
