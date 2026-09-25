@@ -1,0 +1,62 @@
+# Nightly: make an audio-only copy of each new class video.
+# The site hands out the videos and saves the audio into Drive ("Fiddle > Audio from videos").
+# No secrets needed: the job proves it's this repo's workflow with a GitHub OIDC token.
+name: Audio from videos
+on:
+  schedule:
+    - cron: "45 11 * * *"   # half an hour after the site's daily Drive scan
+  workflow_dispatch: {}      # "Run workflow" button in the Actions tab
+permissions:
+  id-token: write
+  contents: read
+concurrency:
+  group: video-audio
+  cancel-in-progress: false
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SITE: https://nategrimwood.com/fiddle/api
+    steps:
+      - name: Make audio copies
+        shell: bash
+        run: |
+          set -uo pipefail
+          token() {
+            curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=tunebook-video-audio" | jq -r .value
+          }
+          api() { local method=$1 path=$2; shift 2; curl -fsS -X "$method" -H "Authorization: Bearer $(token)" "$@" "$SITE/$path"; }
+
+          api GET job/pending > pending.json || { echo "Couldn't reach the tune book"; exit 1; }
+          if [ "$(jq -r .connected pending.json)" != "true" ]; then
+            echo "Saving to Drive isn't turned on yet (Drive recordings > Allow saving to Drive). Nothing to do."; exit 0
+          fi
+          count=$(jq '.videos | length' pending.json)
+          echo "$count video(s) need an audio copy"
+          [ "$count" -eq 0 ] && exit 0
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null; fi
+
+          failed=0
+          while read -r v <&3; do
+            id=$(jq -r .id <<<"$v"); name=$(jq -r .name <<<"$v"); url=$(jq -r .url <<<"$v")
+            echo "::group::$name"
+            rm -f video audio.m4a
+            if ! curl -fsS -L --retry 3 -o video "$url"; then echo "download failed"; failed=1; echo "::endgroup::"; continue; fi
+            codec=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 video || true)
+            if [ -z "$codec" ]; then
+              echo "no audio track; marking it so it isn't retried"; api POST "job/skip/$id" >/dev/null || failed=1
+              echo "::endgroup::"; continue
+            fi
+            if [ "$codec" = "aac" ]; then
+              ffmpeg -nostdin -v error -y -i video -map 0:a:0 -vn -c:a copy -movflags +faststart audio.m4a
+            else
+              ffmpeg -nostdin -v error -y -i video -map 0:a:0 -vn -c:a aac -b:a 160k -movflags +faststart audio.m4a
+            fi
+            if [ $? -ne 0 ] || [ ! -s audio.m4a ]; then echo "ffmpeg failed"; failed=1; echo "::endgroup::"; continue; fi
+            echo "audio: $(du -h audio.m4a | cut -f1) ($codec)"
+            api POST "job/audio/$id" -H "content-type: audio/mp4" --data-binary @audio.m4a || { echo "upload failed"; failed=1; }
+            echo "::endgroup::"
+          done 3< <(jq -c '.videos[]' pending.json)
+          exit $failed
