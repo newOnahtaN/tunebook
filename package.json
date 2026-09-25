@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Nate's fiddle tune book at nategrimwood.com/fiddle",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "wrangler dev --local-upstream localhost:8787",
+    "deploy": "wrangler deploy",
+    "test": "node --test"
   },
   "devDependencies": {
     "wrangler": "4.139.0"
   },
-  "private": true
+  "private": true,
+  "type": "module"
 }

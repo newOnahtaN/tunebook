@@ -23,6 +23,12 @@
     { "pattern": "nategrimwood.com/*", "zone_name": "nategrimwood.com" },
     { "pattern": "www.nategrimwood.com/*", "zone_name": "nategrimwood.com" }
   ],
+  "vars": {
+    // Public OAuth client ID for "Sign in with Google" (Google Cloud project "Tune Book"). Not a secret.
+    "GOOGLE_CLIENT_ID": "108966496545-2n8acck4q1hi0bqb0mvqq6hldllj3ce5.apps.googleusercontent.com",
+    // Google accounts allowed to edit, comma-separated. Everyone else gets read-only.
+    "EDITOR_EMAILS": "nate.cole.owen@gmail.com"
+  },
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": true }
