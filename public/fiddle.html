@@ -655,7 +655,6 @@ $("histList").addEventListener("click", async e => {
 
 // ------------------------------------------------------------ Drive recordings
 
-const isAndroid = /Android/i.test(navigator.userAgent);
 const expanded = new Set();          // tune ids whose file panel is open
 let mediaById = new Map(), mediaByTune = new Map();
 
@@ -684,8 +683,9 @@ function indexMedia(){
 
 const mediaUrl = (m, dl) => `${API}media/${m.id}/${state.mediaToken}/${encodeURIComponent(m.name)}${dl ? "?dl=1" : ""}`;
 // Android: ask the system which app should open the file (Music Speed Changer, a player, Files...).
-const intentUrl = m => `intent://${location.host}${mediaUrl(m)}#Intent;scheme=https;action=android.intent.action.VIEW;type=${m.type};S.browser_fallback_url=${encodeURIComponent(location.origin + mediaUrl(m))};end`;
-const canShareFiles = (() => { try { return !!(navigator.canShare && navigator.canShare({ files:[new File([""], "x.mp3", { type:"audio/mpeg" })] })); } catch (e) { return false; } })();
+// Sharing hands the actual file to another app (Music Speed Changer only opens real files, not web links).
+const canShareFile = m => { try { return !!(navigator.canShare && navigator.canShare({ files:[new File([""], m.name, { type:m.type })] })); } catch (e) { return false; } };
+const fmtSize = b => b >= 1e6 ? `${Math.round(b / 1e6)} MB` : `${Math.max(1, Math.round(b / 1e3))} KB`;
 
 function mediaSummary(tid){
   const list = mediaByTune.get(tid);
@@ -702,12 +702,12 @@ function mediaPanel(t){
   const item = m => {
     const where = m.path ? `<small>${esc(m.path)}</small>` : "";
     const unlink = `<button type="button" class="link" data-unlink="${esc(m.ids.join(","))}" data-tune="${t.id}">Unlink</button>`;
-    const open = isAndroid ? `<a class="btn" href="${esc(intentUrl(m))}">Open in app</a>` : "";
+    const share = canShareFile(m) ? `<button type="button" data-share="${esc(m.id)}">${m.kind === "video" ? `Share (${fmtSize(m.size)})` : "Share"}</button>` : "";
     const dl = `<a class="btn" href="${esc(mediaUrl(m, true))}">Download</a>`;
     if (m.kind === "pdf") return `<li class="mitem"><div class="mname"><a href="${esc(mediaUrl(m))}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div></li>`;
-    if (m.kind === "video") return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${open}${dl}${unlink}</div></li>`;
+    if (m.kind === "video") return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${share}${dl}${unlink}</div></li>`;
     return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">
-      <button type="button" data-play="${esc(m.id)}">Play</button>${open}${canShareFiles ? `<button type="button" data-share="${esc(m.id)}">Share</button>` : ""}${dl}${unlink}</div></li>`;
+      <button type="button" data-play="${esc(m.id)}">Play</button>${share}${dl}${unlink}</div></li>`;
   };
   const sections = [["audio", "Recordings"], ["pdf", "Sheet music"], ["video", "Videos"]].map(([k, label]) => {
     const l = list.filter(m => m.kind === k);
@@ -719,11 +719,36 @@ function mediaPanel(t){
     <div class="mlink"><input list="mediaList" data-linkfor="${t.id}" placeholder="Link a Drive file…" aria-label="Link a Drive file to ${esc(t.name)}"></div></div>`;
 }
 
+// Downloads a file into memory for sharing, reporting progress. Cached so a second tap shares instantly.
 const shareCache = new Map();
-function prefetch(m){
-  if (!shareCache.has(m.id)) shareCache.set(m.id, fetch(mediaUrl(m)).then(r => { if (!r.ok) throw new Error("couldn't fetch the recording"); return r.blob(); })
-    .catch(e => { shareCache.delete(m.id); throw e; }));
-  return shareCache.get(m.id);
+function prefetch(m, onProgress){
+  let entry = shareCache.get(m.id);
+  if (!entry){
+    entry = { blob:null, listeners:new Set(), promise:null };
+    entry.promise = (async () => {
+      const r = await fetch(mediaUrl(m));
+      if (!r.ok) throw new Error("couldn't fetch the file");
+      const total = Number(r.headers.get("content-length")) || m.size || 0;
+      if (!r.body || !total){ entry.blob = await r.blob(); return entry.blob; }
+      const reader = r.body.getReader(), chunks = [];
+      let got = 0;
+      for (;;){
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value); got += value.length;
+        entry.listeners.forEach(f => f(got / total));
+      }
+      entry.blob = new Blob(chunks, { type:m.type });
+      return entry.blob;
+    })().catch(e => { shareCache.delete(m.id); throw e; });
+    shareCache.set(m.id, entry);
+  }
+  if (onProgress) entry.listeners.add(onProgress);
+  return entry;
+}
+
+async function shareNow(m, blob){
+  await navigator.share({ files:[new File([blob], m.name, { type:m.type })], title:m.name });
 }
 
 async function setLink(mediaIds, tuneId, linked){
@@ -741,7 +766,8 @@ rowsEl.addEventListener("click", async e => {
     const id = +tog.dataset.media;
     if (expanded.has(id)) expanded.delete(id); else {
       expanded.add(id);
-      if (isAndroid && canShareFiles) (mediaByTune.get(id) || []).filter(m => m.kind === "audio").forEach(m => prefetch(m).catch(() => {}));
+      // Audio files are small, so fetch them now and Share opens instantly.
+      (mediaByTune.get(id) || []).filter(m => m.kind === "audio" && canShareFile(m)).forEach(m => prefetch(m).promise.catch(() => {}));
     }
     render();
     return;
@@ -762,10 +788,20 @@ rowsEl.addEventListener("click", async e => {
   const share = e.target.closest("[data-share]");
   if (share){
     const m = mediaById.get(share.dataset.share);
+    const entry = prefetch(m, f => { if (share.isConnected && !entry.blob) share.textContent = `Preparing ${Math.floor(f * 100)}%`; });
     try {
-      const blob = await prefetch(m);
-      await navigator.share({ files:[new File([blob], m.name, { type:m.type })], title:m.name });
-    } catch (err) { if (err.name !== "AbortError") toast("Couldn't share it: " + err.message + ". Try Download instead."); }
+      if (entry.blob){ await shareNow(m, entry.blob); return; }
+      // Not downloaded yet: browsers only allow sharing right after a tap, so ask for a second tap once it's ready.
+      share.disabled = true;
+      const blob = await entry.promise;
+      share.disabled = false;
+      share.textContent = "Tap to share";
+      share.classList.add("primary");
+      try { await shareNow(m, blob); share.textContent = "Share"; share.classList.remove("primary"); } catch (err) { if (err.name !== "NotAllowedError") throw err; }
+    } catch (err) {
+      share.disabled = false;
+      if (err.name !== "AbortError") toast("Couldn't share it: " + err.message + ". Try Download instead.");
+    }
     return;
   }
   const un = e.target.closest("[data-unlink]");
