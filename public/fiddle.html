@@ -155,6 +155,9 @@ button.wide{width:100%;padding:9px 12px;font-size:14px}
 a.btn{display:inline-block;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);text-decoration:none}
 a.btn:hover{border-color:var(--muted)}
 .mitem audio{flex-basis:100%;width:100%;height:36px}
+.vsub{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;padding-left:12px;border-left:2px solid var(--line)}
+.vsub .lbl{font-size:12px;color:var(--muted);min-width:78px}
+.vsub audio{flex-basis:100%}
 .maka,.mlink{margin-top:8px;font-size:12.5px;color:var(--muted)}
 .maka [contenteditable]{color:var(--ink)}
 .mlink input,.drive input{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:5px 8px;width:100%;max-width:420px}
@@ -658,12 +661,16 @@ $("histList").addEventListener("click", async e => {
 const expanded = new Set();          // tune ids whose file panel is open
 let mediaById = new Map(), mediaByTune = new Map();
 
+let audioOfVideo = new Map();       // video id -> its audio-only copy
 function indexMedia(){
   mediaById = new Map((state.media || []).map(m => [m.id, m]));
+  audioOfVideo = new Map();
+  for (const m of state.media || []) if (m.kind === "video" && m.audio_id && mediaById.has(m.audio_id)) audioOfVideo.set(m.id, mediaById.get(m.audio_id));
+  const derived = new Set([...audioOfVideo.values()].map(a => a.id));
   const raw = new Map();
   for (const [mid, tid] of state.links || []){
     const m = mediaById.get(mid);
-    if (!m || m.ignored) continue;
+    if (!m || m.ignored || derived.has(m.id)) continue;
     if (!raw.has(tid)) raw.set(tid, []);
     raw.get(tid).push(m);
   }
@@ -705,7 +712,14 @@ function mediaPanel(t){
     const share = canShareFile(m) ? `<button type="button" data-share="${esc(m.id)}">${m.kind === "video" ? `Share (${fmtSize(m.size)})` : "Share"}</button>` : "";
     const dl = `<a class="btn" href="${esc(mediaUrl(m, true))}">Download</a>`;
     if (m.kind === "pdf") return `<li class="mitem"><div class="mname"><a href="${esc(mediaUrl(m))}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div></li>`;
-    if (m.kind === "video") return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${share}${dl}${unlink}</div></li>`;
+    if (m.kind === "video"){
+      const a = audioOfVideo.get(m.id);
+      const aShare = a && canShareFile(a) ? `<button type="button" data-share="${esc(a.id)}">Share</button>` : "";
+      const audioRow = a ? `<div class="vsub" data-item="${esc(a.id)}"><span class="lbl">Audio only</span><div class="macts"><button type="button" data-play="${esc(a.id)}">Play</button>${aShare}<a class="btn" href="${esc(mediaUrl(a, true))}">Download</a></div></div>`
+        : (m.audio_id === "none" ? "" : (state.drive && state.drive.writer && state.drive.writer.connected ? `<div class="vsub"><span class="lbl">Audio only: made overnight</span></div>` : ""));
+      return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div>
+        <div class="vsub"><span class="lbl">Full video</span><div class="macts">${share}${dl}</div></div>${audioRow}</li>`;
+    }
     return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">
       <button type="button" data-play="${esc(m.id)}">Play</button>${share}${dl}${unlink}</div></li>`;
   };
@@ -767,16 +781,17 @@ rowsEl.addEventListener("click", async e => {
     if (expanded.has(id)) expanded.delete(id); else {
       expanded.add(id);
       // Audio files are small, so fetch them now and Share opens instantly.
-      (mediaByTune.get(id) || []).filter(m => m.kind === "audio" && canShareFile(m)).forEach(m => prefetch(m).promise.catch(() => {}));
+      (mediaByTune.get(id) || []).flatMap(m => m.kind === "video" ? [audioOfVideo.get(m.id)].filter(Boolean) : [m])
+        .filter(m => m.kind === "audio" && canShareFile(m)).forEach(m => prefetch(m).promise.catch(() => {}));
     }
     render();
     return;
   }
   const play = e.target.closest("[data-play]");
   if (play){
-    const li = play.closest(".mitem"), m = mediaById.get(play.dataset.play);
+    const li = play.closest(".vsub") || play.closest(".mitem"), m = mediaById.get(play.dataset.play);
     const existing = li.querySelector("audio");
-    document.querySelectorAll(".mitem audio").forEach(a => { if (a !== existing){ a.pause(); a.remove(); } });
+    document.querySelectorAll(".mpanel audio").forEach(a => { if (a !== existing){ a.pause(); a.remove(); } });
     document.querySelectorAll("[data-play]").forEach(b => { if (b !== play) b.textContent = "Play"; });
     if (existing){ existing.pause(); existing.remove(); play.textContent = "Play"; return; }
     const a = document.createElement("audio");
@@ -851,7 +866,22 @@ function renderDrive(){
   const row = (m, ign) => `<li class="mitem"><div class="mname">${m.kind === "audio" ? esc(m.name) : `<a href="${esc(m.kind === "pdf" ? mediaUrl(m) : m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>`}${m.path ? `<small>${esc(m.path)}</small>` : ""}</div>
     <div class="macts">${ign ? "" : `<input list="tuneList" data-linkmedia="${esc(m.id)}" placeholder="Link to tune…" aria-label="Link ${esc(m.name)} to a tune">`}
       <button type="button" class="link" data-ignore="${esc(m.id)}" data-value="${ign ? 0 : 1}">${ign ? "Unignore" : "Ignore"}</button></div></li>`;
+  const w = d.writer || {};
+  const videos = all.filter(m => m.kind === "video" && !m.ignored);
+  const waiting = videos.filter(m => !m.audio_id).length;
+  const job = d.job ? new Date(d.job.at).toLocaleString([], { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }) : "";
+  const writerHtml = !w.canConnect
+    ? `<p><b>Audio from videos:</b> to save audio-only copies of your videos into Drive, finish this one-time setup:</p>
+      <ol>
+        <li><a href="https://console.cloud.google.com/auth/audience?project=tune-book-509721" target="_blank" rel="noopener">Audience</a>: click <b>Publish app</b> (otherwise Google cancels the permission every 7 days).</li>
+        <li><a href="https://console.cloud.google.com/auth/clients?project=tune-book-509721" target="_blank" rel="noopener">Clients</a> \u2192 your web client: under Authorized redirect URIs add <code>https://nategrimwood.com/fiddle/api/drive/callback</code>, save, then <b>Add secret</b> and copy it.</li>
+        <li>In <a href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tunebook/production/settings" target="_blank" rel="noopener">Cloudflare</a> add a <b>Secret</b> named <code>GOOGLE_CLIENT_SECRET</code> with that value.</li>
+      </ol>`
+    : !w.connected
+    ? `<p><b>Audio from videos:</b> <a class="btn" href="${API}drive/connect">Allow saving to Drive</a> Google will warn that it hasn\u2019t verified \u201cTune Book\u201d; that\u2019s expected for your own app (Advanced \u2192 Go to Tune Book).</p>`
+    : `<p><b>Audio from videos:</b> saving to Drive as <code>${esc(w.email)}</code> into \u201c${esc(d.audioFolder)}\u201d. ${videos.length - waiting} of ${videos.length} videos have an audio copy${waiting ? `; ${waiting} will be made in the nightly run` : ""}.${job ? ` Last run checked in ${esc(job)}.` : ""} <button type="button" class="link" id="driveDisconnect">Stop saving</button></p>`;
   body.innerHTML = `<p>${status} The robot account <code>${esc(d.robot || "")}</code> reads your Fiddle folder.</p>
+    ${writerHtml}
     <div class="toolbar"><button type="button" id="rescan">Rescan Drive now</button></div>
     <h4>Not linked to a tune (${unlinked.length})</h4>
     <ul>${unlinked.map(m => row(m, false)).join("") || "<li class='mitem'>Everything is linked or ignored.</li>"}</ul>
@@ -859,6 +889,10 @@ function renderDrive(){
 }
 
 $("driveBody").addEventListener("click", async e => {
+  if (e.target.id === "driveDisconnect"){
+    try { await call("POST", "drive/disconnect", {}); toast("Stopped saving to Drive."); await reload(); } catch (err) { toast(err.message); }
+    return;
+  }
   if (e.target.id === "rescan"){
     const b = e.target; b.disabled = true; b.textContent = "Scanning…";
     try {
@@ -1069,6 +1103,12 @@ function toast(msg, actionLabel, action){
 
 (async function init(){
   loadPending();
+  const dq = new URLSearchParams(location.search).get("drive");
+  if (dq){
+    history.replaceState(null, "", location.pathname + location.hash);
+    setTimeout(() => toast(dq === "connected" ? "Saving to Drive is on. Audio copies of your videos will appear after tonight\u2019s run." : "Drive: " + dq), 600);
+    setTimeout(() => { const b = $("driveBox"); if (b){ b.open = true; b.scrollIntoView({ block:"start" }); } }, 900);
+  }
   try { await reload(); }
   catch (e) { rowsEl.innerHTML = `<p class="empty">Couldn't load the tune book: ${esc(e.message)}</p>`; return; }
   if (state.editor && pending.size) flush();
