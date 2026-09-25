@@ -3,6 +3,8 @@
 // they added after a Google sign-in. Sessions are signed with a random key kept in the database.
 import seed from './seed.json';
 import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, SUPPORTED_ALGS } from './auth.js';
+import { kindOf, serveType, buildIndex, matchFile } from './media.js';
+import { serviceAccount, listTree, fetchMedia } from './drive.js';
 
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
@@ -12,10 +14,18 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '2';
+const SCHEMA_VERSION = '3';
+const MEDIA_TOKEN_HOURS = 24;
+// Alternate spellings used in Drive file names, added once when the "aka" column arrives (editable on the page).
+const SEED_AKA = {
+  'Angeline the Baker': 'Angelina Baker', 'Fly Around My Pretty Little Miss': 'Fly Away My Pretty Little Miss',
+  'Me and My Fiddle': 'Me an My Fiddle', 'Reel St-Antoine': 'Saint Antoine', 'La Bastringue': 'La Bastrangue',
+  "Mrs. Oliver Morris' Reel": "Miss Oliver Morris' Reel", "Earl of Dalhousie's Happy Return": 'Earl of Dilhousen Happy Return',
+  "Sleep Soond Ida Mornin'": 'Sleep Soon Ida Mornin', "Roland White's": 'Roland White',
+};
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
-                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text' };
+                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text' };
 const OPEN_FIELDS = { title: 'text', source: 'text', notes: 'text' };
 const TABLES = { tunes: TUNE_FIELDS, open: OPEN_FIELDS };
 const TABLE_NAME = { tunes: 'tunes', open: 'open_titles' };
@@ -47,6 +57,11 @@ export default {
       }
     }
     return secure(await env.ASSETS.fetch(request));
+  },
+
+  // Daily Drive rescan (see "triggers" in wrangler.jsonc), so new recordings show up without pressing anything.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(ensureDb(env).then(() => serviceAccount(env) ? scanDrive(env) : null).catch(e => console.error('scan', e)));
   },
 };
 
@@ -96,7 +111,22 @@ async function initDb(env) {
       alg INTEGER NOT NULL, sign_count INTEGER NOT NULL DEFAULT 0, transports TEXT NOT NULL DEFAULT '[]',
       label TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL, last_used_at TEXT)`),
     db.prepare(`DROP TABLE IF EXISTS login_attempts`),   // left over from passphrase sign-in
+    db.prepare(`CREATE TABLE IF NOT EXISTS media (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, mime TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, size INTEGER NOT NULL DEFAULT 0,
+      folder TEXT NOT NULL DEFAULT '', path TEXT NOT NULL DEFAULT '', modified TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
+      ignored INTEGER NOT NULL DEFAULT 0, gone INTEGER NOT NULL DEFAULT 0, first_seen TEXT NOT NULL DEFAULT '')`),
+    // state 1 = linked, 0 = unlinked by hand (remembered so a rescan doesn't link it again)
+    db.prepare(`CREATE TABLE IF NOT EXISTS media_links (
+      media_id TEXT NOT NULL, tune_id INTEGER NOT NULL, state INTEGER NOT NULL DEFAULT 1, source TEXT NOT NULL DEFAULT 'auto',
+      created_at TEXT NOT NULL DEFAULT '', PRIMARY KEY (media_id, tune_id))`),
   ]);
+  const version = Number(await db.prepare(`SELECT v FROM meta WHERE k = 'schema_version'`).first('v') || 0);
+  if (version < 3) {
+    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
+    if (!cols.includes('aka')) await db.prepare(`ALTER TABLE tunes ADD COLUMN aka TEXT NOT NULL DEFAULT ''`).run();
+    await db.batch(Object.entries(SEED_AKA).map(([name, aka]) =>
+      db.prepare(`UPDATE tunes SET aka = ? WHERE name = ? AND aka = ''`).bind(aka, name)));
+  }
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
     const now = new Date().toISOString();
@@ -344,7 +374,7 @@ async function getRow(env, tbl, id) {
 }
 
 function publicTune(t) {
-  const { notes, created_at, updated_at, ...rest } = t;
+  const { notes, created_at, updated_at, aka, ...rest } = t;
   return rest;
 }
 
@@ -368,7 +398,8 @@ async function api(request, env, url) {
     if (editor && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
     const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(editor
-      ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '' }
+      ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
+          ...(await mediaForEditor(ctx)) }
       : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
           open: open.results.map(({ title, source, id }) => ({ id, title, source })) }, 200, { cookies });
   }
@@ -379,6 +410,12 @@ async function api(request, env, url) {
   }
 
   if (path.startsWith('auth/')) return authRoute(ctx, path, method, session);
+
+  // GET /media/:id/:token/:filename  -- the signed link works without a session so other apps can open it
+  let mm;
+  if ((mm = path.match(/^media\/([A-Za-z0-9_-]{10,100})\/([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\/[^/]+$/)) && (method === 'GET' || method === 'HEAD')) {
+    return streamMedia(ctx, mm[1], mm[2]);
+  }
 
   // Everything below is editor-only.
   if (!editor) throw new HttpError(401, 'Sign in to edit.');
@@ -454,6 +491,30 @@ async function api(request, env, url) {
     const value = String(body.value ?? '').replace(/\r\n?/g, '\n');
     if (value.length > 100000) throw new HttpError(400, 'Notes are too long.');
     await env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('working_notes', ?)`).bind(value).run();
+    return json({ ok: true });
+  }
+
+  if (path === 'drive/rescan' && method === 'POST') {
+    if (!serviceAccount(env)) throw new HttpError(503, "Drive isn't connected yet. See the setup steps in the Drive recordings section.");
+    return json(await scanDrive(env));
+  }
+
+  // PUT /links  body: { media_id, tune_id, linked }
+  if (path === 'links' && method === 'PUT') {
+    const body = await readJson(request);
+    const mediaId = String(body.media_id || ''), tuneId = Number(body.tune_id);
+    if (!(await env.DB.prepare(`SELECT id FROM media WHERE id = ?`).bind(mediaId).first())) throw new HttpError(404, 'That Drive file is no longer known. Rescan Drive.');
+    await getRow(env, 'tunes', tuneId);
+    await env.DB.prepare(`INSERT INTO media_links (media_id, tune_id, state, source, created_at) VALUES (?,?,?,?,?)
+      ON CONFLICT (media_id, tune_id) DO UPDATE SET state = excluded.state, source = 'manual'`)
+      .bind(mediaId, tuneId, body.linked === false ? 0 : 1, 'manual', new Date().toISOString()).run();
+    return json({ ok: true });
+  }
+
+  // PUT /media/:id/ignored  body: { value }
+  if ((m = path.match(/^media\/([A-Za-z0-9_-]{10,100})\/ignored$/)) && method === 'PUT') {
+    const body = await readJson(request);
+    await env.DB.prepare(`UPDATE media SET ignored = ? WHERE id = ?`).bind(body.value ? 1 : 0, m[1]).run();
     return json({ ok: true });
   }
 
@@ -541,7 +602,10 @@ async function exportData(env) {
     env.DB.prepare(`SELECT * FROM open_titles ORDER BY id`).all(),
     env.DB.prepare(`SELECT v FROM meta WHERE k = 'working_notes'`).first('v'),
   ]);
-  return { exported_at: new Date().toISOString(), tunes: tunes.results, open: open.results, working_notes: notes || '' };
+  const media = await env.DB.prepare(`SELECT m.id, m.name, m.path, m.kind, m.url, group_concat(l.tune_id) AS tunes FROM media m
+    JOIN media_links l ON l.media_id = m.id AND l.state = 1 WHERE m.gone = 0 GROUP BY m.id ORDER BY m.path, m.name`).all();
+  return { exported_at: new Date().toISOString(), tunes: tunes.results, open: open.results, working_notes: notes || '',
+    media: media.results.map(x => ({ ...x, tunes: String(x.tunes || '').split(',').map(Number) })) };
 }
 
 function toMarkdown(d) {
@@ -578,4 +642,99 @@ function toMarkdown(d) {
   out.push('');
   if (d.working_notes) out.push(d.working_notes.trim(), '');
   return out.join('\n');
+}
+
+// ---------------------------------------------------------------- Drive recordings
+
+async function mediaForEditor(ctx) {
+  const { env } = ctx;
+  const [media, links, last] = await Promise.all([
+    env.DB.prepare(`SELECT id, name, mime, kind, size, folder, path, modified, url, ignored FROM media WHERE gone = 0 ORDER BY path, name`).all(),
+    env.DB.prepare(`SELECT media_id, tune_id FROM media_links WHERE state = 1`).all(),
+    env.DB.prepare(`SELECT v FROM meta WHERE k = 'drive_last_scan'`).first('v'),
+  ]);
+  const sa = serviceAccount(env);
+  return {
+    media: media.results.map(x => ({ ...x, type: serveType(x.name, x.mime) })),
+    links: links.results.map(l => [l.media_id, l.tune_id]),
+    mediaToken: await signToken(ctx, 'media', { exp: Date.now() + MEDIA_TOKEN_HOURS * 36e5 }),
+    drive: { configured: !!sa, robot: sa ? sa.client_email : null, folderId: env.DRIVE_FOLDER_ID || null,
+             lastScan: last ? JSON.parse(last) : null },
+  };
+}
+
+async function streamMedia(ctx, id, token) {
+  const { env, request, url } = ctx;
+  if (!(await readToken(ctx, 'media', token))) throw new HttpError(403, 'This recording link has expired. Reload the tune book and try again.');
+  const row = await env.DB.prepare(`SELECT * FROM media WHERE id = ? AND gone = 0`).bind(id).first();
+  if (!row) throw new HttpError(404, 'That recording is no longer in Drive.');
+  const sa = serviceAccount(env);
+  if (!sa) throw new HttpError(503, "Drive isn't connected.");
+  const upstream = await fetchMedia(sa, id, request.headers.get('range'));
+  if (!upstream.ok && upstream.status !== 206) {
+    if (upstream.status === 416) return new Response(null, { status: 416, headers: { 'content-range': upstream.headers.get('content-range') || '' } });
+    throw new HttpError(502, `Drive wouldn't send that file (HTTP ${upstream.status}).`);
+  }
+  const h = new Headers();
+  for (const k of ['content-length', 'content-range', 'etag', 'last-modified']) if (upstream.headers.get(k)) h.set(k, upstream.headers.get(k));
+  h.set('content-type', serveType(row.name, row.mime));
+  h.set('accept-ranges', 'bytes');
+  h.set('cache-control', 'private, max-age=3600');
+  const fname = encodeURIComponent(row.name).replace(/['()]/g, escape);
+  h.set('content-disposition', `${url.searchParams.has('dl') ? 'attachment' : 'inline'}; filename*=UTF-8''${fname}`);
+  return new Response(ctx.request.method === 'HEAD' ? null : upstream.body, { status: upstream.status, headers: h });
+}
+
+// List the Fiddle folder, record new/changed/removed files, and link new files to tunes when the match is clear.
+async function scanDrive(env) {
+  const db = env.DB;
+  const started = new Date().toISOString();
+  const summary = { at: started, files: 0, added: 0, removed: 0, linked: 0, unmatched: 0, error: null };
+  try {
+    if (!env.DRIVE_FOLDER_ID) throw new Error('DRIVE_FOLDER_ID is not set in wrangler.jsonc.');
+    const found = (await listTree(serviceAccount(env), env.DRIVE_FOLDER_ID))
+      .map(f => ({ ...f, kind: kindOf(f.name, f.mime) })).filter(f => f.kind);
+    summary.files = found.length;
+    const [known, linked, tunes] = await Promise.all([
+      db.prepare(`SELECT id, name, size, modified, path, url, gone FROM media`).all(),
+      db.prepare(`SELECT DISTINCT media_id FROM media_links`).all(),
+      db.prepare(`SELECT id, name, aka FROM tunes`).all(),
+    ]);
+    const byId = new Map(known.results.map(r => [r.id, r]));
+    const hasLinks = new Set(linked.results.map(r => r.media_id));
+    const seen = new Set();
+    const stmts = [];
+    for (const f of found) {
+      seen.add(f.id);
+      const k = byId.get(f.id);
+      if (!k) {
+        summary.added++;
+        stmts.push(db.prepare(`INSERT INTO media (id,name,mime,kind,size,folder,path,modified,url,first_seen) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+          .bind(f.id, f.name, f.mime, f.kind, f.size, f.folder, f.path, f.modified, f.url, started));
+      } else if (k.gone || k.name !== f.name || k.size !== f.size || k.modified !== f.modified || k.path !== f.path || k.url !== f.url) {
+        stmts.push(db.prepare(`UPDATE media SET name=?, mime=?, kind=?, size=?, folder=?, path=?, modified=?, url=?, gone=0 WHERE id=?`)
+          .bind(f.name, f.mime, f.kind, f.size, f.folder, f.path, f.modified, f.url, f.id));
+      }
+    }
+    for (const k of known.results) {
+      if (!k.gone && !seen.has(k.id)) { summary.removed++; stmts.push(db.prepare(`UPDATE media SET gone = 1 WHERE id = ?`).bind(k.id)); }
+    }
+    // Only files nobody has linked or unlinked yet get matched, so manual choices always stand.
+    const index = buildIndex(tunes.results);
+    for (const f of found) {
+      if (hasLinks.has(f.id)) continue;
+      const ids = matchFile(f.name, f.folder, index);
+      if (!ids.length) { summary.unmatched++; continue; }
+      for (const t of ids) {
+        summary.linked++;
+        stmts.push(db.prepare(`INSERT OR IGNORE INTO media_links (media_id, tune_id, state, source, created_at) VALUES (?,?,1,'auto',?)`)
+          .bind(f.id, t, started));
+      }
+    }
+    for (let i = 0; i < stmts.length; i += 100) await db.batch(stmts.slice(i, i + 100));
+  } catch (e) {
+    summary.error = e.message || String(e);
+  }
+  await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('drive_last_scan', ?)`).bind(JSON.stringify(summary)).run();
+  return summary;
 }
