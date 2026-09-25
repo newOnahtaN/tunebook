@@ -9,6 +9,7 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   - Google: the page shows a "Sign in with Google" button using the public client ID in `wrangler.jsonc` (`GOOGLE_CLIENT_ID`, Google Cloud project "Tune Book"). The Worker checks Google's signature and only accepts the accounts in `EDITOR_EMAILS`. No client secret is involved.
   - Passkeys: once signed in, "Sign-in and passkeys" (bottom of the page) adds a passkey for this device. Passkeys are stored in the `passkeys` table and checked in `src/auth.js` with WebCrypto (no dependencies).
   - Sessions last 400 days and renew themselves. They're signed with a random key in `meta.session_key`; "Sign out on all other devices" replaces that key.
+- Drive recordings: the Worker reads the Drive "Fiddle" folder (`DRIVE_FOLDER_ID`) read-only through a Google service account whose JSON key is the Worker secret `GOOGLE_SERVICE_ACCOUNT` (the folder is shared with that account as Viewer). A scan (daily cron, or "Rescan Drive now") records audio, PDF and video files in the `media` table and links new files to tunes by name (`src/media.js`; tunes' "Also known as" names count too). Links live in `media_links`; unlinking by hand is remembered, so rescans never undo manual choices. Files are streamed through `/fiddle/api/media/<id>/<signed token>/<name>`, which is what lets Android hand them to another app (Open in app / Share).
 - Backups: when signed in, the page footer has "Download markdown" and "Download JSON".
 
 Pushing to `main` redeploys automatically through Cloudflare Workers Builds.

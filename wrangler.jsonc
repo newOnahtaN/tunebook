@@ -27,8 +27,12 @@
     // Public OAuth client ID for "Sign in with Google" (Google Cloud project "Tune Book"). Not a secret.
     "GOOGLE_CLIENT_ID": "108966496545-2n8acck4q1hi0bqb0mvqq6hldllj3ce5.apps.googleusercontent.com",
     // Google accounts allowed to edit, comma-separated. Everyone else gets read-only.
-    "EDITOR_EMAILS": "nate.cole.owen@gmail.com"
+    "EDITOR_EMAILS": "nate.cole.owen@gmail.com",
+    // Google Drive "Fiddle" folder. Recordings are read through the service account in the GOOGLE_SERVICE_ACCOUNT secret.
+    "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd"
   },
+  // Rescan Drive once a day (11:17 UTC, early morning in Seattle).
+  "triggers": { "crons": ["17 11 * * *"] },
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": true }
