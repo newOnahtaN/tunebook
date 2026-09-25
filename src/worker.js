@@ -2,9 +2,9 @@
 // Visitors read. The editor signs in with Google (accounts listed in EDITOR_EMAILS) or with a passkey
 // they added after a Google sign-in. Sessions are signed with a random key kept in the database.
 import seed from './seed.json';
-import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, SUPPORTED_ALGS } from './auth.js';
+import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, verifyRs256Jwt, SUPPORTED_ALGS } from './auth.js';
 import { kindOf, serveType, buildIndex, matchFile } from './media.js';
-import { serviceAccount, listTree, fetchMedia } from './drive.js';
+import { serviceAccount, listTree, fetchMedia, oauthConfig, exchangeCode, writerToken, whoAmI, ensureFolder, uploadFile, WRITE_SCOPE } from './drive.js';
 
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
@@ -14,7 +14,9 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '3';
+const SCHEMA_VERSION = '4';
+const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
+const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
 // Alternate spellings used in Drive file names, added once when the "aka" column arrives (editable on the page).
 const SEED_AKA = {
@@ -120,13 +122,6 @@ async function initDb(env) {
       media_id TEXT NOT NULL, tune_id INTEGER NOT NULL, state INTEGER NOT NULL DEFAULT 1, source TEXT NOT NULL DEFAULT 'auto',
       created_at TEXT NOT NULL DEFAULT '', PRIMARY KEY (media_id, tune_id))`),
   ]);
-  const version = Number(await db.prepare(`SELECT v FROM meta WHERE k = 'schema_version'`).first('v') || 0);
-  if (version < 3) {
-    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
-    if (!cols.includes('aka')) await db.prepare(`ALTER TABLE tunes ADD COLUMN aka TEXT NOT NULL DEFAULT ''`).run();
-    await db.batch(Object.entries(SEED_AKA).map(([name, aka]) =>
-      db.prepare(`UPDATE tunes SET aka = ? WHERE name = ? AND aka = ''`).bind(aka, name)));
-  }
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
     const now = new Date().toISOString();
@@ -143,6 +138,19 @@ async function initDb(env) {
     stmts.push(db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('working_notes', ?)`).bind(seed.working_notes || ''));
     stmts.push(db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('seeded', ?)`).bind(now));
     await db.batch(stmts);  // one transaction: all or nothing
+  }
+  // Migrations run after seeding so they also apply to freshly loaded tunes.
+  const version = Number(await db.prepare(`SELECT v FROM meta WHERE k = 'schema_version'`).first('v') || 0);
+  if (version < 3) {
+    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
+    if (!cols.includes('aka')) await db.prepare(`ALTER TABLE tunes ADD COLUMN aka TEXT NOT NULL DEFAULT ''`).run();
+    await db.batch(Object.entries(SEED_AKA).map(([name, aka]) =>
+      db.prepare(`UPDATE tunes SET aka = ? WHERE name = ? AND aka = ''`).bind(aka, name)));
+  }
+  if (version < 4) {
+    const cols = (await db.prepare(`PRAGMA table_info(media)`).all()).results.map(c => c.name);
+    // audio_id on a video row: the Drive id of its audio-only copy, or 'none' when it has no audio track
+    if (!cols.includes('audio_id')) await db.prepare(`ALTER TABLE media ADD COLUMN audio_id TEXT`).run();
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
@@ -410,6 +418,8 @@ async function api(request, env, url) {
   }
 
   if (path.startsWith('auth/')) return authRoute(ctx, path, method, session);
+  if (path.startsWith('job/')) return jobRoute(ctx, path, method);
+  if (path === 'drive/callback' && method === 'GET') return driveCallback(ctx, session);
 
   // GET /media/:id/:token/:filename  -- the signed link works without a session so other apps can open it
   let mm;
@@ -491,6 +501,12 @@ async function api(request, env, url) {
     const value = String(body.value ?? '').replace(/\r\n?/g, '\n');
     if (value.length > 100000) throw new HttpError(400, 'Notes are too long.');
     await env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('working_notes', ?)`).bind(value).run();
+    return json({ ok: true });
+  }
+
+  if (path === 'drive/connect' && method === 'GET') return driveConnect(ctx, session);
+  if (path === 'drive/disconnect' && method === 'POST') {
+    await env.DB.prepare(`DELETE FROM meta WHERE k = 'drive_writer'`).run();
     return json({ ok: true });
   }
 
@@ -648,18 +664,23 @@ function toMarkdown(d) {
 
 async function mediaForEditor(ctx) {
   const { env } = ctx;
-  const [media, links, last] = await Promise.all([
-    env.DB.prepare(`SELECT id, name, mime, kind, size, folder, path, modified, url, ignored FROM media WHERE gone = 0 ORDER BY path, name`).all(),
+  const [media, links, last, writer, jobLast] = await Promise.all([
+    env.DB.prepare(`SELECT id, name, mime, kind, size, folder, path, modified, url, ignored, audio_id FROM media WHERE gone = 0 ORDER BY path, name`).all(),
     env.DB.prepare(`SELECT media_id, tune_id FROM media_links WHERE state = 1`).all(),
     env.DB.prepare(`SELECT v FROM meta WHERE k = 'drive_last_scan'`).first('v'),
+    env.DB.prepare(`SELECT v FROM meta WHERE k = 'drive_writer'`).first('v'),
+    env.DB.prepare(`SELECT v FROM meta WHERE k = 'job_last'`).first('v'),
   ]);
   const sa = serviceAccount(env);
+  const w = writer ? JSON.parse(writer) : null;
   return {
     media: media.results.map(x => ({ ...x, type: serveType(x.name, x.mime) })),
     links: links.results.map(l => [l.media_id, l.tune_id]),
     mediaToken: await signToken(ctx, 'media', { exp: Date.now() + MEDIA_TOKEN_HOURS * 36e5 }),
     drive: { configured: !!sa, robot: sa ? sa.client_email : null, folderId: env.DRIVE_FOLDER_ID || null,
-             lastScan: last ? JSON.parse(last) : null },
+             lastScan: last ? JSON.parse(last) : null,
+             writer: { canConnect: !!oauthConfig(env), connected: !!w, email: w ? w.email : null, since: w ? w.at : null },
+             job: jobLast ? JSON.parse(jobLast) : null, audioFolder: AUDIO_FOLDER },
   };
 }
 
@@ -716,8 +737,24 @@ async function scanDrive(env) {
           .bind(f.name, f.mime, f.kind, f.size, f.folder, f.path, f.modified, f.url, f.id));
       }
     }
+    const goneIds = [];
     for (const k of known.results) {
-      if (!k.gone && !seen.has(k.id)) { summary.removed++; stmts.push(db.prepare(`UPDATE media SET gone = 1 WHERE id = ?`).bind(k.id)); }
+      if (!k.gone && !seen.has(k.id)) { summary.removed++; goneIds.push(k.id); stmts.push(db.prepare(`UPDATE media SET gone = 1 WHERE id = ?`).bind(k.id)); }
+    }
+    // An audio copy deleted from Drive frees its video to be converted again.
+    for (const id of goneIds) stmts.push(db.prepare(`UPDATE media SET audio_id = NULL WHERE audio_id = ?`).bind(id));
+    // Pair audio copies in the "Audio from videos" folder with their videos (by name) and give them the video's tunes.
+    const videosByStem = new Map(found.filter(f => f.kind === 'video').map(f => [stem(f.name).toLowerCase(), f]));
+    for (const f of found) {
+      if (f.kind !== 'audio' || f.folder !== AUDIO_FOLDER || f.path !== AUDIO_FOLDER) continue;
+      const v = videosByStem.get(stem(f.name).replace(/\s*\(audio\)$/i, '').toLowerCase());
+      if (!v) continue;
+      stmts.push(db.prepare(`UPDATE media SET audio_id = ? WHERE id = ? AND (audio_id IS NULL OR audio_id = 'none')`).bind(f.id, v.id));
+      if (!hasLinks.has(f.id)) {
+        hasLinks.add(f.id);
+        stmts.push(db.prepare(`INSERT OR IGNORE INTO media_links (media_id, tune_id, state, source, created_at)
+          SELECT ?, tune_id, 1, 'video', ? FROM media_links WHERE media_id = ? AND state = 1`).bind(f.id, started, v.id));
+      }
     }
     // Only files nobody has linked or unlinked yet get matched, so manual choices always stand.
     const index = buildIndex(tunes.results);
@@ -737,4 +774,118 @@ async function scanDrive(env) {
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('drive_last_scan', ?)`).bind(JSON.stringify(summary)).run();
   return summary;
+}
+
+const stem = name => String(name).replace(/\.[A-Za-z0-9]{1,5}$/, '');
+
+// ---------------------------------------------------------------- saving to Drive (Nate's permission)
+
+async function driveConnect(ctx, session) {
+  const cfg = oauthConfig(ctx.env);
+  if (!cfg) throw new HttpError(503, 'Add the GOOGLE_CLIENT_SECRET secret in Cloudflare first (see the steps in Drive recordings).');
+  const state = await signToken(ctx, 'drive-connect', { exp: Date.now() + 10 * 60000, email: session.email });
+  const u = new URL(cfg.authUrl);
+  u.search = new URLSearchParams({ client_id: cfg.clientId, redirect_uri: ctx.url.origin + API + 'drive/callback', response_type: 'code',
+    scope: WRITE_SCOPE, access_type: 'offline', prompt: 'consent', include_granted_scopes: 'true', login_hint: session.email, state }).toString();
+  return Response.redirect(u.toString(), 302);
+}
+
+async function driveCallback(ctx, session) {
+  const { env, url } = ctx;
+  const back = msg => Response.redirect(`${url.origin}${HOME}?drive=${encodeURIComponent(msg)}#driveBox`, 302);
+  if (!session) return back('Sign in to the tune book first, then try again.');
+  if (url.searchParams.get('error')) return back(`Google said: ${url.searchParams.get('error')}`);
+  const st = await readToken(ctx, 'drive-connect', url.searchParams.get('state'));
+  if (!st || st.email !== session.email) return back('That took too long. Try again.');
+  const cfg = oauthConfig(env);
+  if (!cfg) return back('GOOGLE_CLIENT_SECRET is missing in Cloudflare.');
+  try {
+    const t = await exchangeCode(cfg, url.searchParams.get('code') || '', url.origin + API + 'drive/callback');
+    if (!t.refresh_token) return back("Google didn't grant lasting access. Try again.");
+    if (!String(t.scope || '').split(' ').includes(WRITE_SCOPE)) return back('Tick the box that lets Tune Book see and edit your Drive files, then try again.');
+    const email = await whoAmI(cfg, t.access_token);
+    if (!isEditor(env, email)) return back(`${email} isn't the tune book's owner.`);
+    await env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('drive_writer', ?)`)
+      .bind(JSON.stringify({ refresh_token: t.refresh_token, email, at: new Date().toISOString() })).run();
+    return back('connected');
+  } catch (e) {
+    return back(e.message || String(e));
+  }
+}
+
+async function writer(env) {
+  const cfg = oauthConfig(env);
+  const raw = await env.DB.prepare(`SELECT v FROM meta WHERE k = 'drive_writer'`).first('v');
+  if (!cfg || !raw) return null;
+  const w = JSON.parse(raw);
+  try { return { cfg, token: await writerToken(cfg, w.refresh_token) }; }
+  catch (e) { throw new HttpError(502, `Saving to Drive stopped working (${e.message}). Click "Allow saving to Drive" again.`); }
+}
+
+// ---------------------------------------------------------------- nightly job (GitHub Actions)
+// The job proves who it is with a GitHub OIDC token, so no secret has to be copied into GitHub.
+
+async function jobAuth(ctx) {
+  const { env, request } = ctx;
+  const m = /^Bearer\s+(.+)$/.exec(request.headers.get('authorization') || '');
+  if (!m) throw new HttpError(401, 'Job token missing.');
+  const claims = await verifyRs256Jwt(m[1], {
+    certsUrl: env.GITHUB_JWKS_URL || 'https://token.actions.githubusercontent.com/.well-known/jwks',
+    issuers: [env.GITHUB_OIDC_ISSUER || 'https://token.actions.githubusercontent.com'],
+    audience: JOB_AUDIENCE, maxAgeSec: 3600, label: 'job',
+  });
+  if (claims.repository !== env.GITHUB_REPO || claims.ref !== 'refs/heads/main') throw new HttpError(403, 'That job is not allowed here.');
+  return claims;
+}
+
+async function jobRoute(ctx, path, method) {
+  const { env, request, url } = ctx;
+  await jobAuth(ctx);
+  let m;
+  if (path === 'job/pending' && method === 'GET') {
+    const connected = !!(await env.DB.prepare(`SELECT v FROM meta WHERE k = 'drive_writer'`).first('v')) && !!oauthConfig(env);
+    const rows = connected ? (await env.DB.prepare(`SELECT id, name, size, mime FROM media
+      WHERE kind = 'video' AND gone = 0 AND ignored = 0 AND audio_id IS NULL ORDER BY first_seen DESC LIMIT 25`).all()).results : [];
+    const token = await signToken(ctx, 'media', { exp: Date.now() + 6 * 36e5 });
+    await env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('job_last', ?)`)
+      .bind(JSON.stringify({ at: new Date().toISOString(), pending: rows.length, connected })).run();
+    return json({ connected, videos: rows.map(r => ({ id: r.id, name: r.name, size: r.size,
+      url: `${url.origin}${API}media/${r.id}/${token}/${encodeURIComponent(r.name)}` })) });
+  }
+  if ((m = path.match(/^job\/audio\/([A-Za-z0-9_-]{10,100})$/)) && method === 'POST') {
+    const video = await env.DB.prepare(`SELECT * FROM media WHERE id = ? AND kind = 'video'`).bind(m[1]).first();
+    if (!video) throw new HttpError(404, 'Unknown video.');
+    const len = Number(request.headers.get('content-length') || 0);
+    if (len > 90e6) throw new HttpError(413, 'Audio file is too big.');
+    const bytes = await request.arrayBuffer();
+    if (!bytes.byteLength) throw new HttpError(400, 'Empty audio file.');
+    const w = await writer(env);
+    if (!w) throw new HttpError(409, 'Saving to Drive is not connected.');
+    let folderId = await env.DB.prepare(`SELECT v FROM meta WHERE k = 'audio_folder_id'`).first('v');
+    if (!folderId) {
+      folderId = await ensureFolder(w.cfg, w.token, env.DRIVE_FOLDER_ID, AUDIO_FOLDER);
+      await env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('audio_folder_id', ?)`).bind(folderId).run();
+    }
+    let f;
+    try { f = await uploadFile(w.cfg, w.token, folderId, `${stem(video.name)} (audio).m4a`, 'audio/mp4', bytes); }
+    catch (e) {
+      // the folder may have been deleted by hand; forget it and let the next run recreate it
+      await env.DB.prepare(`DELETE FROM meta WHERE k = 'audio_folder_id'`).run();
+      throw new HttpError(502, e.message);
+    }
+    const now = new Date().toISOString();
+    await env.DB.batch([
+      env.DB.prepare(`INSERT OR REPLACE INTO media (id,name,mime,kind,size,folder,path,modified,url,first_seen) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+        .bind(f.id, f.name, f.mimeType || 'audio/mp4', 'audio', Number(f.size || bytes.byteLength), AUDIO_FOLDER, AUDIO_FOLDER, f.modifiedTime || now, f.webViewLink || '', now),
+      env.DB.prepare(`UPDATE media SET audio_id = ? WHERE id = ?`).bind(f.id, video.id),
+      env.DB.prepare(`INSERT OR IGNORE INTO media_links (media_id, tune_id, state, source, created_at)
+        SELECT ?, tune_id, 1, 'video', ? FROM media_links WHERE media_id = ? AND state = 1`).bind(f.id, now, video.id),
+    ]);
+    return json({ ok: true, id: f.id, name: f.name });
+  }
+  if ((m = path.match(/^job\/skip\/([A-Za-z0-9_-]{10,100})$/)) && method === 'POST') {
+    await env.DB.prepare(`UPDATE media SET audio_id = 'none' WHERE id = ? AND kind = 'video'`).bind(m[1]).run();
+    return json({ ok: true });
+  }
+  throw new HttpError(404, 'No such job route.');
 }
