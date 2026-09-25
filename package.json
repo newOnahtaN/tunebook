@@ -1,0 +1,13 @@
+{
+  "name": "tunebook",
+  "version": "1.0.0",
+  "description": "Nate's fiddle tune book at nategrimwood.com/fiddle",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.139.0"
+  },
+  "private": true
+}
