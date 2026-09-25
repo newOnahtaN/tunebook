@@ -91,3 +91,71 @@ export async function fetchMedia(sa, id, range) {
   if (range) headers.range = range;
   return fetch(`${sa.api}/drive/v3/files/${encodeURIComponent(id)}?alt=media&supportsAllDrives=true`, { headers });
 }
+
+// ---------------------------------------------------------------- writing (as Nate)
+// The robot account has no Drive storage of its own, so audio copies are saved with Nate's own permission:
+// he clicks "Allow saving to Drive" once, and the refresh token is kept in the database.
+
+export const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+export const WRITE_SCOPE = 'https://www.googleapis.com/auth/drive';
+let writerCache = { token: null, exp: 0, rt: null };
+
+export function oauthConfig(env) {
+  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) return null;
+  return { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET, tokenUrl: env.GOOGLE_TOKEN_URL || TOKEN_URL,
+    authUrl: env.GOOGLE_AUTH_URL || AUTH_URL, api: env.DRIVE_API_BASE || 'https://www.googleapis.com' };
+}
+
+async function tokenRequest(cfg, params) {
+  const send = () => fetch(cfg.tokenUrl, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: cfg.clientId, client_secret: cfg.clientSecret, ...params }) });
+  let res;
+  try { res = await send(); } catch { res = await send(); }   // one retry if the connection drops
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(`Google refused: ${j.error_description || j.error || res.status}`);
+  return j;
+}
+
+export const exchangeCode = (cfg, code, redirectUri) =>
+  tokenRequest(cfg, { grant_type: 'authorization_code', code, redirect_uri: redirectUri });
+
+export async function writerToken(cfg, refreshToken) {
+  if (writerCache.token && writerCache.rt === refreshToken && writerCache.exp > Date.now() + 60000) return writerCache.token;
+  const j = await tokenRequest(cfg, { grant_type: 'refresh_token', refresh_token: refreshToken });
+  writerCache = { token: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000, rt: refreshToken };
+  return j.access_token;
+}
+
+async function driveJson(cfg, token, path, init = {}) {
+  const r = await fetch(cfg.api + path, { ...init, headers: { authorization: 'Bearer ' + token, ...(init.headers || {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`Drive said: ${j.error?.message || r.status}`);
+  return j;
+}
+
+export async function whoAmI(cfg, token) {
+  return (await driveJson(cfg, token, '/drive/v3/about?fields=user(emailAddress)')).user?.emailAddress?.toLowerCase() || '';
+}
+
+// Find (or create) a folder by name directly inside parentId.
+export async function ensureFolder(cfg, token, parentId, name) {
+  const q = `'${parentId}' in parents and name = '${name.replace(/'/g, "\\'")}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
+  const found = await driveJson(cfg, token, `/drive/v3/files?supportsAllDrives=true&includeItemsFromAllDrives=true&fields=files(id)&q=${encodeURIComponent(q)}`);
+  if (found.files?.length) return found.files[0].id;
+  const made = await driveJson(cfg, token, '/drive/v3/files?supportsAllDrives=true&fields=id', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name, parents: [parentId], mimeType: 'application/vnd.google-apps.folder' }) });
+  return made.id;
+}
+
+// Upload bytes as a new file. Returns { id, name, size, modifiedTime, webViewLink }.
+export async function uploadFile(cfg, token, folderId, name, mime, bytes) {
+  const boundary = 'tunebook' + crypto.randomUUID().replace(/-/g, '');
+  const meta = JSON.stringify({ name, parents: [folderId], mimeType: mime });
+  const head = new TextEncoder().encode(`--${boundary}\r\ncontent-type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${boundary}\r\ncontent-type: ${mime}\r\n\r\n`);
+  const tail = new TextEncoder().encode(`\r\n--${boundary}--`);
+  const body = new Uint8Array(head.length + bytes.byteLength + tail.length);
+  body.set(head, 0); body.set(new Uint8Array(bytes), head.length); body.set(tail, head.length + bytes.byteLength);
+  return driveJson(cfg, token, '/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name,size,modifiedTime,webViewLink,mimeType', {
+    method: 'POST', headers: { 'content-type': `multipart/related; boundary=${boundary}` }, body });
+}
