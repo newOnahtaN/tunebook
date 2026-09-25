@@ -29,45 +29,65 @@ const sha256 = async bytes => new Uint8Array(await crypto.subtle.digest('SHA-256
 
 const GOOGLE_CERTS = 'https://www.googleapis.com/oauth2/v3/certs';
 const GOOGLE_ISSUERS = ['accounts.google.com', 'https://accounts.google.com'];
-let certCache = { url: '', keys: null, until: 0 };
+const certCache = new Map();   // url -> { keys, until }
 
-async function googleKeys(url, force) {
-  if (!force && certCache.url === url && certCache.keys && certCache.until > Date.now()) return certCache.keys;
+async function jwks(url, force) {
+  const c = certCache.get(url);
+  if (!force && c && c.until > Date.now()) return c.keys;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Couldn't fetch Google's signing keys (HTTP ${res.status}).`);
+  if (!res.ok) throw new Error(`Couldn't fetch signing keys from ${url} (HTTP ${res.status}).`);
   const { keys } = await res.json();
   const maxAge = Number(/max-age=(\d+)/.exec(res.headers.get('cache-control') || '')?.[1] || 3600);
-  certCache = { url, keys, until: Date.now() + Math.min(maxAge, 86400) * 1000 };
+  certCache.set(url, { keys, until: Date.now() + Math.min(maxAge, 86400) * 1000 });
   return keys;
+}
+
+// Verifies an RS256 JWT against a JWKS URL and the usual time claims. Returns the claims.
+export async function verifyRs256Jwt(token, { certsUrl, issuers, audience, now = Date.now(), maxAgeSec = 600, label = 'sign-in' }) {
+  const parts = String(token || '').split('.');
+  if (parts.length !== 3) throw new AuthError(`Malformed ${label} token.`);
+  let header, claims;
+  try {
+    header = JSON.parse(dec.decode(unb64u(parts[0])));
+    claims = JSON.parse(dec.decode(unb64u(parts[1])));
+  } catch { throw new AuthError(`Malformed ${label} token.`); }
+  if (header.alg !== 'RS256' || !header.kid) throw new AuthError(`Unexpected ${label} token type.`);
+  let keys = await jwks(certsUrl, false);
+  let jwk = keys.find(k => k.kid === header.kid);
+  if (!jwk) { keys = await jwks(certsUrl, true); jwk = keys.find(k => k.kid === header.kid); }
+  if (!jwk) throw new AuthError(`The ${label} token was signed with an unknown key.`);
+  const key = await crypto.subtle.importKey('jwk', { kty: 'RSA', n: jwk.n, e: jwk.e, alg: 'RS256', ext: true },
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, unb64u(parts[2]), enc.encode(parts[0] + '.' + parts[1]));
+  if (!ok) throw new AuthError(`The ${label} token signature is invalid.`);
+  const t = now / 1000, skew = 60;
+  if (!issuers.includes(claims.iss)) throw new AuthError(`The ${label} token has the wrong issuer.`);
+  const auds = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+  if (!auds.includes(audience)) throw new AuthError(`The ${label} token was issued for a different site.`);
+  if (!(claims.exp > t - skew)) throw new AuthError(`The ${label} token expired. Try again.`);
+  if (!(claims.iat < t + skew) || claims.iat < t - maxAgeSec) throw new AuthError(`The ${label} token is too old. Try again.`);
+  return claims;
 }
 
 // Verifies a "Sign in with Google" ID token and returns the verified email.
 // maxAgeSec: the token must have been issued recently, so a leaked old token can't start a session.
 export async function verifyGoogleIdToken(token, { clientId, certsUrl = GOOGLE_CERTS, now = Date.now(), maxAgeSec = 600 }) {
   if (!clientId) throw new AuthError("Google sign-in isn't set up.");
-  const parts = String(token || '').split('.');
-  if (parts.length !== 3) throw new AuthError('Malformed Google sign-in token.');
-  let header, claims;
+  let claims;
   try {
-    header = JSON.parse(dec.decode(unb64u(parts[0])));
-    claims = JSON.parse(dec.decode(unb64u(parts[1])));
-  } catch { throw new AuthError('Malformed Google sign-in token.'); }
-  if (header.alg !== 'RS256' || !header.kid) throw new AuthError('Unexpected Google token type.');
-
-  let keys = await googleKeys(certsUrl, false);
-  let jwk = keys.find(k => k.kid === header.kid);
-  if (!jwk) { keys = await googleKeys(certsUrl, true); jwk = keys.find(k => k.kid === header.kid); }
-  if (!jwk) throw new AuthError("Google token was signed with a key Google doesn't list.");
-  const key = await crypto.subtle.importKey('jwk', { kty: 'RSA', n: jwk.n, e: jwk.e, alg: 'RS256', ext: true },
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, unb64u(parts[2]), enc.encode(parts[0] + '.' + parts[1]));
-  if (!ok) throw new AuthError('Google token signature is invalid.');
-
-  const t = now / 1000, skew = 60;
-  if (!GOOGLE_ISSUERS.includes(claims.iss)) throw new AuthError('Google token has the wrong issuer.');
-  if (claims.aud !== clientId) throw new AuthError('Google token was issued for a different site.');
-  if (!(claims.exp > t - skew)) throw new AuthError('Google sign-in expired. Try again.');
-  if (!(claims.iat < t + skew) || claims.iat < t - maxAgeSec) throw new AuthError('Google sign-in is too old. Try again.');
+    claims = await verifyRs256Jwt(token, { certsUrl, issuers: GOOGLE_ISSUERS, audience: clientId, now, maxAgeSec, label: 'Google' });
+  } catch (e) {
+    if (!(e instanceof AuthError)) throw e;
+    // keep the messages the page and tests already use
+    const m = e.message;
+    throw new AuthError(m.includes('different site') ? 'Google token was issued for a different site.'
+      : m.includes('expired') ? 'Google sign-in expired. Try again.'
+      : m.includes('too old') ? 'Google sign-in is too old. Try again.'
+      : m.includes('issuer') ? 'Google token has the wrong issuer.'
+      : m.includes('unknown key') ? "Google token was signed with a key Google doesn't list."
+      : m.includes('signature') ? 'Google token signature is invalid.'
+      : m.includes('Unexpected') ? 'Unexpected Google token type.' : 'Malformed Google sign-in token.');
+  }
   if (claims.email_verified !== true && claims.email_verified !== 'true') throw new AuthError("That Google account's email isn't verified.");
   if (!claims.email) throw new AuthError('Google didn\'t share an email address.');
   return { email: String(claims.email).toLowerCase(), sub: claims.sub };
