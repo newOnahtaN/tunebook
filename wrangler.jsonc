@@ -1,0 +1,28 @@
+{
+  // Cloudflare Worker for nategrimwood.com/fiddle
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tunebook",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-20",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tunebook",
+      "database_id": "69e4b5da-7aa7-499a-807e-5f53f32e5bed"
+    }
+  ],
+  "routes": [
+    { "pattern": "nategrimwood.com", "custom_domain": true },
+    { "pattern": "www.nategrimwood.com", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}
