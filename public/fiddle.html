@@ -128,6 +128,16 @@ dialog h3{margin:0 0 10px;font-family:Fraunces,Georgia,serif;font-size:20px}
 dialog input{width:100%;margin:6px 0 4px}
 dialog .err{color:var(--warn);font-size:13px;min-height:18px}
 dialog .row2{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+dialog p{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+.gbtn{display:flex;justify-content:center;min-height:44px;margin:4px 0}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12.5px;margin:12px 0}
+.or::before,.or::after{content:"";flex:1;border-top:1px solid var(--line)}
+button.wide{width:100%;padding:9px 12px;font-size:14px}
+.acct p{margin:0 0 8px;color:var(--muted)}
+.acct ul{list-style:none;padding:0;margin:0 0 10px}
+.acct li{display:flex;gap:10px;align-items:baseline;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.acct li span{flex:1}
+.acct small{color:var(--muted);font-size:12px}
 @media (max-width:820px){
   .head{display:none}
   .row,body.editor .row{
@@ -191,6 +201,15 @@ dialog .row2{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
     <summary>Recent changes</summary>
     <ol id="histList"></ol>
   </details>
+  <details class="history acct" id="acct">
+    <summary>Sign-in and passkeys</summary>
+    <p id="acctWho"></p>
+    <ul id="pkList"></ul>
+    <div class="toolbar">
+      <button type="button" id="addPk">Add a passkey on this device</button>
+      <button type="button" class="link" id="signOutOthers">Sign out on all other devices</button>
+    </div>
+  </details>
 </section>
 
 <footer>
@@ -204,17 +223,14 @@ dialog .row2{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 </footer>
 </div>
 
-<dialog id="loginDlg">
-  <form id="loginForm" method="dialog">
-    <h3>Sign in to edit</h3>
-    <label for="pass">Passphrase</label>
-    <input type="password" id="pass" autocomplete="current-password" required>
-    <div class="err" id="loginErr"></div>
-    <div class="row2">
-      <button type="button" id="loginCancel">Cancel</button>
-      <button type="submit" class="primary">Sign in</button>
-    </div>
-  </form>
+<dialog id="loginDlg" aria-labelledby="loginTitle">
+  <h3 id="loginTitle">Sign in to edit</h3>
+  <p>Only the tune book's owner can edit. Everyone else can read.</p>
+  <div class="gbtn" id="gBtn"></div>
+  <div class="or hidden" id="loginOr">or</div>
+  <button type="button" class="wide hidden" id="pkLogin">Sign in with a passkey</button>
+  <div class="err" id="loginErr" role="alert"></div>
+  <div class="row2"><button type="button" id="loginCancel">Cancel</button></div>
 </dialog>
 
 <datalist id="genreList"></datalist>
@@ -225,7 +241,7 @@ const GENRE_ORDER = ["Old-time","Contra","English","Irish","Québécois","Gaspé
 const API = "/fiddle/api/";
 const PENDING_KEY = "tunebook.pending.v1";
 
-let state = { editor:false, editingEnabled:false, tunes:[], open:[], working_notes:"" };
+let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[], open:[], working_notes:"" };
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), fG = $("fGenre"), fK = $("fKnow"), sortEl = $("sort");
@@ -436,7 +452,7 @@ function renderAll(){ fillFilters(); applyMode(); render(); renderOpen(); }
 
 async function reload(){
   const d = await call("GET", "data");
-  state = Object.assign({ editingEnabled:false, working_notes:"" }, d);
+  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"" }, d);
   // re-apply unsaved local edits on top of server data
   for (const p of pending.values()){
     const list = p.tbl === "tunes" ? state.tunes : state.open;
@@ -607,22 +623,162 @@ $("histList").addEventListener("click", async e => {
 
 // ------------------------------------------------------------ sign in / out
 
-function openLogin(){ $("loginErr").textContent = ""; $("pass").value = ""; $("loginDlg").showModal(); $("pass").focus(); }
-$("signIn").addEventListener("click", openLogin);
-$("loginCancel").addEventListener("click", () => $("loginDlg").close());
-$("loginForm").addEventListener("submit", async e => {
-  e.preventDefault();
+const toB64u = buf => { const b = new Uint8Array(buf); let s = ""; for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
+const fromB64u = str => { let s = str.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
+const passkeysOk = () => !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
+const loginErr = msg => { $("loginErr").textContent = msg || ""; };
+
+let gisLoading = null, gisClientId = null;
+function loadGoogle(){
+  if (window.google?.accounts?.id) return Promise.resolve();
+  gisLoading ??= new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client"; s.async = true;
+    s.onload = resolve;
+    s.onerror = () => { gisLoading = null; s.remove(); reject(new Error("Couldn't load Google sign-in. Check your connection or any content blocker.")); };
+    document.head.appendChild(s);
+  });
+  return gisLoading;
+}
+
+async function showGoogleButton(){
+  const box = $("gBtn");
+  box.classList.toggle("hidden", !state.googleClientId);
+  if (!state.googleClientId) return;
   try {
-    await call("POST", "login", { passphrase: $("pass").value });
-    $("loginDlg").close();
-    lastError = "";
-    await reload();
-    if (pending.size) flush();
-  } catch (err) { $("loginErr").textContent = err.message; }
+    await loadGoogle();
+    if (gisClientId !== state.googleClientId){
+      google.accounts.id.initialize({ client_id: state.googleClientId, callback: onGoogleCredential, ux_mode: "popup", auto_select: false });
+      gisClientId = state.googleClientId;
+    }
+    box.innerHTML = "";
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    google.accounts.id.renderButton(box, { type: "standard", theme: dark ? "filled_black" : "outline", size: "large",
+      text: "signin_with", shape: "rectangular", logo_alignment: "left", width: 280 });
+  } catch (err) { loginErr(err.message); }
+}
+
+async function onGoogleCredential(resp){
+  loginErr();
+  try { await call("POST", "auth/google", { credential: resp.credential }); await afterSignIn("google"); }
+  catch (err) { loginErr(err.message); }
+}
+
+async function passkeyLogin(){
+  loginErr();
+  const btn = $("pkLogin"); btn.disabled = true;
+  try {
+    const o = await call("POST", "auth/passkey/options", {});
+    let cred;
+    try {
+      cred = await navigator.credentials.get({ publicKey: { challenge: fromB64u(o.challenge), rpId: o.rpId,
+        timeout: o.timeout, userVerification: "required", allowCredentials: [] } });
+    } catch (e) {
+      throw new Error(e.name === "NotAllowedError" ? "Passkey sign-in was cancelled or timed out." : e.message);
+    }
+    const r = cred.response;
+    try {
+      await call("POST", "auth/passkey/login", { rawId: toB64u(cred.rawId), clientDataJSON: toB64u(r.clientDataJSON),
+        authenticatorData: toB64u(r.authenticatorData), signature: toB64u(r.signature),
+        userHandle: r.userHandle ? toB64u(r.userHandle) : null });
+    } catch (e) {
+      // Tell the device to forget a passkey the site no longer knows (supported browsers only).
+      if (e.status === 404) PublicKeyCredential.signalUnknownCredential?.({ rpId: o.rpId, credentialId: toB64u(cred.rawId) }).catch(() => {});
+      throw e;
+    }
+    await afterSignIn("passkey");
+  } catch (err) { loginErr(err.message); }
+  finally { btn.disabled = false; }
+}
+
+function openLogin(){
+  loginErr();
+  const pk = passkeysOk();
+  $("pkLogin").classList.toggle("hidden", !pk);
+  $("loginOr").classList.toggle("hidden", !(pk && state.googleClientId));
+  if (!state.googleClientId && !pk) loginErr("This browser can't sign in here. Try a current version of Chrome, Edge, Safari or Firefox.");
+  if (!$("loginDlg").open) $("loginDlg").showModal();
+  showGoogleButton();
+}
+
+async function afterSignIn(how){
+  if ($("loginDlg").open) $("loginDlg").close();
+  lastError = "";
+  await reload();
+  if (pending.size) flush();
+  if (how === "google" && passkeysOk()){
+    let platform = false;
+    try { platform = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } catch (e) {}
+    if (platform) toast("Signed in. Add a passkey so this device can sign in with one tap?", "Add passkey", addPasskey);
+  }
+}
+
+async function addPasskey(){
+  const o = await call("POST", "auth/passkey/register/options", {});
+  let cred;
+  try {
+    cred = await navigator.credentials.create({ publicKey: {
+      challenge: fromB64u(o.challenge), rp: o.rp, user: { ...o.user, id: fromB64u(o.user.id) },
+      pubKeyCredParams: o.pubKeyCredParams, authenticatorSelection: o.authenticatorSelection,
+      attestation: o.attestation, timeout: o.timeout,
+      excludeCredentials: o.excludeCredentials.map(c => ({ type: "public-key", id: fromB64u(c.id), transports: c.transports })),
+    } });
+  } catch (e) {
+    if (e.name === "InvalidStateError") throw new Error("This device already has a passkey for the tune book.");
+    if (e.name === "NotAllowedError") throw new Error("Adding the passkey was cancelled or timed out.");
+    throw e;
+  }
+  const r = cred.response;
+  const pub = typeof r.getPublicKey === "function" ? r.getPublicKey() : null;
+  if (!pub) throw new Error("This browser can't add passkeys here. Try a current version of Chrome, Edge, Safari or Firefox.");
+  await call("POST", "auth/passkey/register", { rawId: toB64u(cred.rawId), clientDataJSON: toB64u(r.clientDataJSON),
+    authenticatorData: toB64u(r.getAuthenticatorData()), publicKey: toB64u(pub), publicKeyAlgorithm: r.getPublicKeyAlgorithm(),
+    transports: typeof r.getTransports === "function" ? r.getTransports() : [] });
+  toast("Passkey added. Next time, choose “Sign in with a passkey”.");
+  if ($("acct").open) loadPasskeys();
+}
+
+const shortDate = iso => iso ? new Date(iso).toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" }) : "";
+let pkInfo = null;
+async function loadPasskeys(){
+  const ul = $("pkList");
+  try { pkInfo = await call("GET", "auth/passkeys"); }
+  catch (err) { ul.innerHTML = `<li>Couldn't load passkeys: ${esc(err.message)}</li>`; return; }
+  $("acctWho").textContent = `Signed in as ${pkInfo.email}. Google sign-in always works; passkeys are a faster option on your own devices.`;
+  $("addPk").classList.toggle("hidden", !passkeysOk());
+  ul.innerHTML = pkInfo.passkeys.length ? pkInfo.passkeys.map(p => `<li><span>${esc(p.label)}<br><small>Added ${esc(shortDate(p.created_at))}${p.last_used_at ? " · last used " + esc(shortDate(p.last_used_at)) : " · not used yet"}</small></span>
+      <button type="button" class="link" data-pk-del="${esc(p.id)}">Remove</button></li>`).join("")
+    : `<li><span>No passkeys yet.</span></li>`;
+}
+$("acct").addEventListener("toggle", e => { if (e.target.open) loadPasskeys(); });
+$("addPk").addEventListener("click", async () => {
+  try { await addPasskey(); } catch (err) { toast("Passkey not added: " + err.message); }
 });
+$("pkList").addEventListener("click", async e => {
+  const b = e.target.closest("[data-pk-del]");
+  if (!b) return;
+  if (!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Confirm remove"; setTimeout(() => { if (b.isConnected){ delete b.dataset.armed; b.textContent = "Remove"; } }, 5000); return; }
+  try {
+    await call("DELETE", `auth/passkeys/${b.dataset.pkDel}`);
+    await loadPasskeys();
+    // Let the device drop passkeys the site no longer accepts (supported browsers only).
+    window.PublicKeyCredential?.signalAllAcceptedCredentials?.({ rpId: pkInfo.rpId, userId: pkInfo.userHandle,
+      allAcceptedCredentialIds: pkInfo.passkeys.map(p => p.id) }).catch(() => {});
+    toast("Passkey removed.");
+  } catch (err) { toast("Couldn't remove it: " + err.message); }
+});
+$("signOutOthers").addEventListener("click", async () => {
+  try { await call("POST", "auth/signout-others", {}); toast("Signed out everywhere except here."); }
+  catch (err) { toast("That didn't work: " + err.message); }
+});
+
+$("signIn").addEventListener("click", openLogin);
+$("pkLogin").addEventListener("click", passkeyLogin);
+$("loginCancel").addEventListener("click", () => $("loginDlg").close());
 $("signOut").addEventListener("click", async () => {
   await flush();
-  await call("POST", "logout");
+  await call("POST", "logout", {});
+  window.google?.accounts?.id?.disableAutoSelect?.();
   await reload();
 });
 
