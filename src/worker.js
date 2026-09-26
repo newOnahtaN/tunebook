@@ -14,7 +14,7 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '4';
+const SCHEMA_VERSION = '5';
 const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
 const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
@@ -27,7 +27,7 @@ const SEED_AKA = {
 };
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
-                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text' };
+                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text', genres2: 'text' };
 const OPEN_FIELDS = { title: 'text', source: 'text', notes: 'text' };
 const TABLES = { tunes: TUNE_FIELDS, open: OPEN_FIELDS };
 const TABLE_NAME = { tunes: 'tunes', open: 'open_titles' };
@@ -151,6 +151,11 @@ async function initDb(env) {
     const cols = (await db.prepare(`PRAGMA table_info(media)`).all()).results.map(c => c.name);
     // audio_id on a video row: the Drive id of its audio-only copy, or 'none' when it has no audio track
     if (!cols.includes('audio_id')) await db.prepare(`ALTER TABLE media ADD COLUMN audio_id TEXT`).run();
+  }
+  if (version < 5) {
+    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
+    // genres2: comma-separated secondary genres, alongside the required primary "genre" column.
+    if (!cols.includes('genres2')) await db.prepare(`ALTER TABLE tunes ADD COLUMN genres2 TEXT NOT NULL DEFAULT ''`).run();
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
@@ -636,6 +641,7 @@ function toMarkdown(d) {
     `Exported from nategrimwood.com/fiddle on ${d.exported_at.slice(0, 10)}.`, '',
     '## How the columns work', '',
     '- **Common**: rough 1-10 guess at how widely players of that genre know the tune. Blank means unrated.',
+    "- **Also**: other genres the tune fits, besides the section it's grouped under.",
     '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet.',
     "- **From**: Drive folder name where files exist, otherwise the list in Nate's jam notes where the title appeared.",
     '- A `?` in Key, Form, or Origin means unconfirmed, not absent.', '',
@@ -647,9 +653,9 @@ function toMarkdown(d) {
   for (const g of genres) {
     const rows = d.tunes.filter(t => t.genre === g)
       .sort((a, b) => (b.common ? 1 : 0) - (a.common ? 1 : 0) || b.common - a.common || a.name.localeCompare(b.name));
-    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Origin | Status | From | Notes |', '|---|---|---|---|---|---|---|---|');
+    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Also | Origin | Status | From | Notes |', '|---|---|---|---|---|---|---|---|---|');
     for (const t of rows) {
-      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${cell(t.source)} | ${cell(t.notes)} |`);
+      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.genres2)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${cell(t.source)} | ${cell(t.notes)} |`);
     }
     out.push('');
   }
