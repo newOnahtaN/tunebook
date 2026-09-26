@@ -48,10 +48,15 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tune types have plain-language definitions in `TYPE_INFO` in `public/fiddle/vocab.js` (the "Tune types" legend).
   Add a definition whenever a new type is used. The tag vocabulary is `TAGS` in the same file.
 - Be generous with traditions: label every tradition where a tune is commonly played, not only where it came from.
-- Coverage: all 129 tunes reviewed twice (Sep 26 2026). Low confidence: the VOM camp compositions, Bea's Waltz, Texas
-  Sandy Hill, Roland White's.
-- Next best step: verify the low-confidence ones; add "crooked" and "cross-tuned" checks from Slippery-Hill and the
-  Traditional Tune Archive; label tunes added since.
+- Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
+  the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
+  and "Alabama" were added under Old-time.
+- Coverage: 118 of 129 tunes have complete core research (gaps page, Sep 26 2026). The other 11 need Nate: tune
+  types for the six VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game of
+  Drones, Pacific Sunrise), plus Bea's Waltz, Back Home, Habas para una Amiga, Roland White's and Texas Sandy Hill,
+  where no source could be found online.
+- Next best step: ask Nate the rhythm of each camp composition; add "crooked" and "cross-tuned" checks from
+  Slippery-Hill and the Traditional Tune Archive; label tunes added since.
 - Proposals waiting for Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes under
   their real traditions; consider making Campbell's Farewell to Red Gap primarily Scottish.
 
@@ -212,3 +217,5 @@ for now (Sep 26 2026).
   (tune type legend).
 - 2026-09-26: Added the data gaps page (F6) and the "every new tune gets enriched" checklist in `CLAUDE.md`. Moved
   the genre families, type definitions and tag vocabulary into `public/fiddle/vocab.js`, shared by both pages.
+- 2026-09-26: Core-gap pass (A1): filled region for 82 tunes and traditions for 15, and a tag for Stumptown Stomp.
+  Core research complete went from 40 to 118 of 129; the remaining 11 need Nate's knowledge.
