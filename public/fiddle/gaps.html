@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data gaps · Tune Book</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDEFE9; --surface:#F7F8F4; --line:#CFD5CC;
+  --ink:#1B241F; --muted:#5C6A62;
+  --claret:#7A2E3A; --pine:#2E6355; --sun:#B8813A; --warn:#9A3B1F;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141917; --surface:#1B211E; --line:#333C37;
+    --ink:#E7EAE3; --muted:#9AA79F;
+    --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141917; --surface:#1B211E; --line:#333C37;
+  --ink:#E7EAE3; --muted:#9AA79F;
+  --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+main{max-width:860px;margin:0 auto;padding:22px 16px 64px}
+a{color:var(--pine)}
+.back{font-size:14px}
+h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:clamp(30px,7vw,44px);letter-spacing:-.015em;line-height:1.05;margin:12px 0 6px}
+h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:21px;margin:30px 0 4px}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.hero{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:20px 0 4px}
+.hero b{font-size:34px;font-weight:600;font-variant-numeric:tabular-nums}
+.hero span{color:var(--muted)}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:4px 0 0;max-width:420px}
+.meter i{display:block;height:100%;background:var(--pine)}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:12px 0 0}
+.check{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;font:inherit;font-size:14px;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:9px 11px;cursor:pointer}
+.check b{font-variant-numeric:tabular-nums;font-weight:600;color:var(--warn)}
+.check.zero{opacity:.55;cursor:default}
+.check.zero b{color:var(--pine)}
+.check[aria-pressed="true"]{border-color:var(--pine);box-shadow:inset 0 0 0 1px var(--pine)}
+.group{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 0}
+.filterbar{display:flex;align-items:center;gap:10px;margin:14px 0 6px;font-size:13.5px;color:var(--muted);min-height:24px}
+.filterbar button{font:inherit;font-size:13px;background:none;border:0;color:var(--pine);text-decoration:underline;padding:0;cursor:pointer}
+ul.tunes{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+ul.tunes li{padding:10px 2px;border-bottom:1px solid var(--line)}
+.tn{font-weight:600}
+.tg{color:var(--muted);font-size:13px;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.chip{font-size:12px;border:1px solid var(--line);border-radius:10px;padding:0 8px;line-height:19px;color:var(--muted);background:var(--surface)}
+.chip.m{color:var(--warn);border-color:currentColor;background:none}
+details{margin-top:8px}
+summary{cursor:pointer;color:var(--pine);font-size:14px}
+.empty{color:var(--muted);font-style:italic}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;margin-top:30px;font-size:14px}
+.how p{margin:0 0 6px}.how p:last-child{margin:0}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/fiddle">&larr; Tune book</a>
+  <h1>Data gaps</h1>
+  <p class="sub">What's still missing from each tune, so every tune gets the same research and all the filters work. This page is for keeping the book complete; none of it shows on the main tune book.</p>
+  <p class="note" id="signedOut" hidden>You're not signed in, so Drive recordings aren't counted. Sign in on the main page to include them.</p>
+
+  <div id="app"><p class="empty">Loading…</p></div>
+
+  <div class="how">
+    <p><b>How to fill these:</b> ask Claude in chat to "fill the data gaps" (or name a tune). Every new tune should come back fully enriched in the same turn.</p>
+    <p>Genre families, tune types and style tags are defined in <code>/fiddle/vocab.js</code>. A "not in the family map" or "not in the legend" gap means a label was used that the site doesn't know yet.</p>
+  </div>
+</main>
+
+<script src="/fiddle/vocab.js"></script>
+<script>
+const V = window.TUNE_VOCAB;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]);
+const split = s => String(s || "").split(/[,;]/).map(x => x.trim()).filter(Boolean);
+const lc = s => String(s).toLowerCase();
+
+// Every genre the site knows how to place: the family tree plus its roots.
+const KNOWN_GENRES = new Set([...V.GENRE_ROOTS, ...V.GENRE_TREE.flatMap(([p, kids]) => [p, ...kids])].map(lc));
+const KNOWN_TAGS = new Set(V.TAGS.map(lc));
+const KNOWN_TYPES = new Set(Object.keys(V.TYPE_INFO).map(lc));
+
+// Checks. "core" ones are what the filters depend on; "deeper" ones are longer-term enrichment.
+// Each returns false when fine, true (or a detail string / list) when there's a gap.
+const CHECKS = [
+  { id:"type", group:"core", label:"No tune type", test: c => !c.r.type },
+  { id:"typevocab", group:"core", label:"Type not in the legend", test: c => c.r.type && !KNOWN_TYPES.has(lc(c.r.type)) ? c.r.type : false },
+  { id:"trad", group:"core", label:"No secondary genres or traditions", test: c => !split(c.r.genres).length && !split(c.t.genres2).length },
+  { id:"tags", group:"core", label:"No style tags", test: c => !split(c.r.tags).length },
+  { id:"tagvocab", group:"core", label:"Tag not in the vocabulary", test: c => { const x = split(c.r.tags).filter(g => !KNOWN_TAGS.has(lc(g))); return x.length ? x.join(", ") : false; } },
+  { id:"genrevocab", group:"core", label:"Genre not in the family map", test: c => { const x = [c.t.genre, ...split(c.t.genres2), ...split(c.r.genres)].filter(g => g && !KNOWN_GENRES.has(lc(g))); return x.length ? [...new Set(x)].join(", ") : false; } },
+  { id:"region", group:"core", label:"No region", test: c => !c.r.region },
+  { id:"summary", group:"core", label:"No researched fact", test: c => !c.r.summary },
+  { id:"sources", group:"core", label:"No sources", test: c => !(c.r.sources || []).length },
+  { id:"lowconf", group:"core", label:"Low-confidence research", test: c => lc(c.r.confidence || "") === "low" },
+  { id:"key", group:"basics", label:"Key missing or unconfirmed", test: c => !c.t.key || c.t.key.includes("?") },
+  { id:"form", group:"basics", label:"Form missing or unconfirmed", test: c => !c.t.form || c.t.form.includes("?") },
+  { id:"origin", group:"basics", label:"No origin", test: c => !c.t.origin },
+  { id:"heard", group:"basics", label:"No hearing logged", test: c => !c.heard },
+  { id:"rec", group:"deeper", label:"No recording at all", test: c => !c.drive && !c.refRecs.length },
+  { id:"outrec", group:"deeper", label:"No outside recording", test: c => !c.refRecs.length },
+  { id:"style", group:"deeper", label:"No style-model recording", test: c => !c.refRecs.some(f => f.category === "style") },
+  { id:"history", group:"deeper", label:"No full history", test: c => !c.r.history },
+];
+const GROUPS = [
+  ["core", "Core research", "What the genre, type and tag filters depend on. Every tune should have all of these."],
+  ["basics", "Tune basics", "Nate's own fields and hearing log."],
+  ["deeper", "Deeper enrichment", "Longer-term goals: recordings and full histories. These are never really finished."],
+];
+
+let selected = null, results = [], data = null;
+
+async function load(){
+  const r = await fetch("/fiddle/api/data", { credentials:"same-origin" });
+  data = await r.json();
+  $("signedOut").hidden = !!data.editor;
+  const R = new Map((data.research || []).map(x => [x.tune_id, x]));
+  const refs = new Map();
+  for (const f of data.refs || []) (refs.get(f.tune_id) || refs.set(f.tune_id, []).get(f.tune_id)).push(f);
+  const heard = new Set((data.hearings || []).filter(h => h.tune_id != null).map(h => h.tune_id));
+  const media = new Map((data.media || []).map(m => [m.id, m]));
+  const drive = new Set();
+  for (const [mid, tid] of data.links || []){ const m = media.get(mid); if (m && !m.ignored && (m.kind === "audio" || m.kind === "video")) drive.add(tid); }
+  results = data.tunes.map(t => {
+    const c = { t, r: R.get(t.id) || {}, heard: heard.has(t.id), drive: drive.has(t.id),
+      refRecs: (refs.get(t.id) || []).filter(f => f.kind === "recording") };
+    const gaps = [];
+    for (const ch of CHECKS){
+      if (ch.id === "rec" && !data.editor) continue;  // Drive files aren't visible when signed out
+      const v = ch.test(c);
+      if (v) gaps.push({ ch, detail: typeof v === "string" ? v : "" });
+    }
+    return { t, gaps };
+  });
+  render();
+}
+
+function render(){
+  const total = results.length;
+  const coreGaps = x => x.gaps.filter(g => g.ch.group === "core");
+  const full = results.filter(x => !coreGaps(x).length).length;
+  const pct = total ? Math.round(full / total * 100) : 0;
+  const count = id => results.filter(x => x.gaps.some(g => g.ch.id === id)).length;
+
+  let html = `<div class="hero"><b>${full} of ${total}</b><span>tunes have complete core research</span></div>
+    <div class="meter" role="img" aria-label="${pct}% complete"><i style="width:${pct}%"></i></div>`;
+  for (const [gid, title, blurb] of GROUPS){
+    const checks = CHECKS.filter(c => c.group === gid && !(c.id === "rec" && !data.editor));
+    html += `<h2>${esc(title)}</h2><p class="sub">${esc(blurb)}</p><div class="checks">` +
+      checks.map(c => { const n = count(c.id);
+        return `<button type="button" class="check${n ? "" : " zero"}" data-check="${c.id}" aria-pressed="${selected === c.id}"${n ? "" : " disabled"}><span>${esc(c.label)}</span><b>${n || "✓"}</b></button>`; }).join("") +
+      `</div>`;
+  }
+
+  // The list: tunes with gaps in the selected check, or with any core/basics gap by default.
+  const shown = results
+    .map(x => ({ ...x, list: selected ? x.gaps.filter(g => g.ch.id === selected) : x.gaps.filter(g => g.ch.group !== "deeper") }))
+    .filter(x => x.list.length)
+    .sort((a, b) => b.list.length - a.list.length || a.t.name.localeCompare(b.t.name));
+  const selLabel = selected ? CHECKS.find(c => c.id === selected).label : "";
+  html += `<h2 id="list">Tunes to fill in</h2>
+    <div class="filterbar">${selected ? `Showing: ${esc(selLabel)} · <button type="button" data-clear>Show all core and basics gaps</button>` : "Core research and basics gaps. Tap a check above to see one kind."}</div>`;
+  html += shown.length ? `<ul class="tunes">${shown.map(x => `<li><span class="tn">${esc(x.t.name)}</span><span class="tg">${esc(x.t.genre)}</span>
+      <div class="chips">${x.list.map(g => `<span class="chip${g.ch.group === "core" ? " m" : ""}">${esc(g.ch.label)}${g.detail ? ": " + esc(g.detail) : ""}</span>`).join("")}</div></li>`).join("")}</ul>`
+    : `<p class="empty">Nothing missing here.</p>`;
+
+  const open = data.open || [];
+  html += `<h2>Still unidentified</h2><p class="sub">Tunes heard but not yet matched to a known tune.</p>` +
+    (open.length ? `<ul class="tunes">${open.map(o => `<li><span class="tn">${esc(o.title)}</span><span class="tg">${esc(o.source)}</span></li>`).join("")}</ul>` : `<p class="empty">None.</p>`);
+  $("app").innerHTML = html;
+}
+
+$("app").addEventListener("click", e => {
+  const b = e.target.closest("[data-check]");
+  if (b && !b.disabled){ selected = selected === b.dataset.check ? null : b.dataset.check; render(); if (selected) $("list").scrollIntoView({ behavior:"smooth" }); return; }
+  if (e.target.closest("[data-clear]")){ selected = null; render(); }
+});
+load().catch(() => { $("app").innerHTML = `<p class="empty">Couldn't load the tune book. Try again in a moment.</p>`; });
+</script>
+</body>
+</html>
