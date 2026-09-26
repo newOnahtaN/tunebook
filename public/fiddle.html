@@ -70,6 +70,9 @@ select{flex:0 1 auto}
 .mselpanel label{display:flex;align-items:center;gap:7px;padding:4px 6px;font-size:13.5px;border-radius:2px;cursor:pointer;white-space:nowrap}
 .mselpanel label:hover{background:var(--paper)}
 .mselpanel input[type=checkbox]{margin:0}
+.mselpanel label.fam{font-weight:600}
+.rtags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.rtag{font-size:11px;border:1px solid var(--line);border-radius:9px;padding:0 7px;color:var(--muted);background:var(--surface)}
 .mselfoot{display:flex;justify-content:flex-end;margin-top:2px;padding-top:5px;border-top:1px solid var(--line)}
 .mselfoot button{font-size:12px;padding:3px 8px}
 .primaryonly{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);white-space:nowrap}
@@ -237,6 +240,14 @@ a.btn:hover{border-color:var(--muted)}
     <button type="button" class="mselbtn" id="fKnowBtn" aria-haspopup="true" aria-expanded="false">All statuses</button>
     <div class="mselpanel hidden" id="fKnowPanel" role="group" aria-label="Filter by status"></div>
   </div>
+  <div class="msel">
+    <button type="button" class="mselbtn" id="fTypeBtn" aria-haspopup="true" aria-expanded="false">All types</button>
+    <div class="mselpanel hidden" id="fTypePanel" role="group" aria-label="Filter by tune type"></div>
+  </div>
+  <div class="msel">
+    <button type="button" class="mselbtn" id="fTagBtn" aria-haspopup="true" aria-expanded="false">All tags</button>
+    <div class="mselpanel hidden" id="fTagPanel" role="group" aria-label="Filter by style tag"></div>
+  </div>
   <select id="sort" aria-label="Sort">
     <option value="genre">Sort: genre</option>
     <option value="common">Sort: most common first</option>
@@ -321,7 +332,53 @@ let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[],
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
-const filterGenres = new Set(), filterKnow = new Set();
+const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set();
+
+// Genre families: picking a broad genre also matches everything under it. A genre can sit under more than one
+// parent (Cape Breton is both Scottish and Canadian). The first parent listed decides where it's shown in the filter.
+const GENRE_TREE = [
+  ["Celtic", ["Irish", "Scottish", "Breton"]],
+  ["Irish", ["Donegal", "Sliabh Luachra"]],
+  ["Scottish", ["Shetland", "Orkney", "Cape Breton"]],
+  ["English", ["Northumbrian"]],
+  ["Canadian", ["Québécois", "Métis", "Canadian old-time", "PEI", "Newfoundland", "Cape Breton"]],
+  ["Québécois", ["Gaspé"]],
+  ["American", ["Old-time", "Bluegrass", "Contra", "Cajun"]],
+  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Texas contest", "Black string band", "Minstrel"]],
+  ["Appalachian", ["Round Peak", "Galax", "West Virginia"]],
+  ["Nordic", ["Swedish", "Finnish", "Scandinavian"]],
+];
+const GENRE_ROOTS = ["Celtic", "English", "Canadian", "American", "Nordic", "Waltz", "Castilian", "Camp composition"];
+const genreKids = new Map(GENRE_TREE);
+function genreDescendants(g, out = new Set()){
+  if (out.has(g)) return out;
+  out.add(g);
+  for (const c of genreKids.get(g) || []) genreDescendants(c, out);
+  return out;
+}
+// Filter options as a tree of the genres in use (plus their ancestors), each with a depth for indenting.
+let genreDepth = new Map();
+function genreFilterOptions(){
+  const used = new Set(state.tunes.flatMap(t => tuneGenres(t, false)));
+  const shown = [], seen = new Set();
+  genreDepth = new Map();
+  const walk = (g, depth) => {
+    if (seen.has(g)) return;
+    const sub = [...genreDescendants(g)];
+    if (!sub.some(x => used.has(x))) return;
+    seen.add(g); shown.push(g); genreDepth.set(g, depth);
+    for (const c of genreKids.get(g) || []) walk(c, depth + 1);
+  };
+  GENRE_ROOTS.forEach(g => walk(g, 0));
+  [...used].filter(g => !seen.has(g)).sort().forEach(g => { shown.push(g); genreDepth.set(g, 0); });
+  return shown;
+}
+function selectedGenreSet(){
+  const out = new Set();
+  for (const g of filterGenres) genreDescendants(g, out);
+  return out;
+}
+const researchList = (field) => [...new Set(state.tunes.flatMap(t => splitList((researchByTune.get(t.id) || {})[field])))].sort();
 
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
 function splitList(s){ return String(s || "").split(/[,;]/).map(x => x.trim()).filter(Boolean); }
@@ -333,7 +390,7 @@ function tuneGenres(t, primaryOnly){
 
 // A dropdown button that opens a checkbox list. `getOptions()` returns the current option values;
 // `labelOf(v)` (default identity) is the text shown for a value in the panel and the closed button.
-function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf = x => x }){
+function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf = x => x, depthOf = () => 0 }){
   function label(){
     const n = selected.size;
     btn.textContent = n === 0 ? allLabel : n === 1 ? labelOf([...selected][0]) : `${name}: ${n} selected`;
@@ -344,7 +401,7 @@ function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf
     const options = getOptions();
     for (const v of [...selected]) if (!options.includes(v)) selected.delete(v);
     panel.innerHTML = (options.length
-      ? options.map(x => `<label><input type="checkbox" value="${esc(x)}"${selected.has(x) ? " checked" : ""}> ${esc(labelOf(x))}</label>`).join("")
+      ? options.map(x => { const d = depthOf(x); return `<label${d === 0 && genreKids.has(x) ? ' class="fam"' : ""} style="padding-left:${6 + d * 16}px"><input type="checkbox" value="${esc(x)}"${selected.has(x) ? " checked" : ""}> ${esc(labelOf(x))}</label>`; }).join("")
         + `<div class="mselfoot"><button type="button" class="link" data-act="clear">Clear</button></div>`
       : `<p class="empty" style="margin:4px 6px">None yet</p>`);
     label();
@@ -362,6 +419,11 @@ function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf
     document.querySelectorAll(".mselpanel").forEach(p => p.classList.add("hidden"));
     if (willOpen) build();
     panel.classList.toggle("hidden", !willOpen);
+    if (willOpen) {
+      panel.style.left = "0px";
+      const over = panel.getBoundingClientRect().right - (document.documentElement.clientWidth - 8);
+      if (over > 0) panel.style.left = -over + "px";
+    }
     label();
   });
   document.addEventListener("click", e => {
@@ -371,7 +433,10 @@ function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.classList.contains("hidden")){ panel.classList.add("hidden"); label(); } });
   return { build, label };
 }
-const genreFilter = multiSelect($("fGenreBtn"), $("fGenrePanel"), genreList, filterGenres, { allLabel: "All genres", name: "Genre" });
+const genreFilter = multiSelect($("fGenreBtn"), $("fGenrePanel"), genreFilterOptions, filterGenres,
+  { allLabel: "All genres", name: "Genre", depthOf: g => genreDepth.get(g) || 0 });
+const typeFilter = multiSelect($("fTypeBtn"), $("fTypePanel"), () => researchList("type"), filterTypes, { allLabel: "All types", name: "Type" });
+const tagFilter = multiSelect($("fTagBtn"), $("fTagPanel"), () => researchList("tags"), filterTags, { allLabel: "All tags", name: "Tags" });
 const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW.map((_, i) => String(i)), filterKnow,
   { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i] });
 
@@ -500,6 +565,8 @@ function genreList(){
 function fillFilters(){
   genreFilter.build();
   knowFilter.build();
+  typeFilter.build();
+  tagFilter.build();
   $("genreList").innerHTML = genreList().map(x => `<option value="${esc(x)}">`).join("");
 }
 
@@ -507,13 +574,17 @@ function render(){
   const term = q.value.trim().toLowerCase();
   const primaryOnly = primaryOnlyEl.checked;
   const genres = genreList();
+  const wanted = selectedGenreSet();
   let list = state.tunes.filter(t => {
-    if (filterGenres.size && !tuneGenres(t, primaryOnly).some(g => filterGenres.has(g))) return false;
+    if (filterGenres.size && !tuneGenres(t, primaryOnly).some(g => wanted.has(g))) return false;
+    const r = researchByTune.get(t.id) || {};
+    if (filterTypes.size && !filterTypes.has(r.type)) return false;
+    if (filterTags.size && !splitList(r.tags).some(x => filterTags.has(x))) return false;
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
     if (term){
       const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
         ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" ")),
-        ...(r => r ? [r.type, r.genres, r.region, r.summary, r.history] : [])(researchByTune.get(t.id)),
+        ...(r => r ? [r.type, r.genres, r.tags, r.region, r.summary, r.history] : [])(researchByTune.get(t.id)),
         ...(refsByTune.get(t.id) || []).map(f => refLabel(f))].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
     }
@@ -697,6 +768,7 @@ function researchBlock(t, E){
   const hist = r && r.history ? r.history.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join("") : "";
   return `<div class="rblock"><h5>From research <small>added by Claude${when ? " · " + esc(when) : ""}${r && r.confidence ? " · " + esc(r.confidence) + " confidence" : ""}</small></h5>
     ${meta ? `<div class="rmeta">${meta}</div>` : ""}
+    ${r && r.tags ? `<div class="rtags">${splitList(r.tags).map(x => `<span class="rtag">${esc(x)}</span>`).join("")}</div>` : ""}
     ${r && r.summary ? `<p>${esc(r.summary)}</p>` : ""}${hist}
     ${refs.length ? `<ul>${refs.map(f => refItem(t, f, E)).join("")}</ul>` : ""}
     ${sources}</div>`;
