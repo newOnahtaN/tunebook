@@ -326,6 +326,7 @@ a.btn:hover{border-color:var(--muted)}
   <div id="foot">Commonality is a rough 1–10 guess at how widely players of that genre know the tune. A ? in a key or form means it isn't confirmed yet.</div>
   <div class="links">
     <button class="link hidden" id="signIn" type="button">Sign in to edit</button>
+    <a class="ed-only hidden" href="/fiddle/gaps">Data gaps</a>
     <a class="ed-only hidden" href="/fiddle/api/export.md">Download markdown</a>
     <a class="ed-only hidden" href="/fiddle/api/export.json">Download JSON</a>
     <button class="link ed-only hidden" id="signOut" type="button">Sign out</button>
@@ -354,6 +355,7 @@ a.btn:hover{border-color:var(--muted)}
 <datalist id="tuneList"></datalist>
 <datalist id="mediaList"></datalist>
 
+<script src="/fiddle/vocab.js"></script>
 <script>
 const KNOW = ["Memorized","Played, still learning","Not played yet"];
 const GENRE_ORDER = ["Old-time","Contra","English","Irish","Québécois","Gaspé","Scottish","Shetland","Cape Breton","Waltz","Castilian","Camp composition"];
@@ -366,21 +368,8 @@ const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
 const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set();
 
-// Genre families: picking a broad genre also matches everything under it. A genre can sit under more than one
-// parent (Cape Breton is both Scottish and Canadian). The first parent listed decides where it's shown in the filter.
-const GENRE_TREE = [
-  ["Celtic", ["Irish", "Scottish", "Breton"]],
-  ["Irish", ["Donegal", "Sliabh Luachra"]],
-  ["Scottish", ["Shetland", "Orkney", "Cape Breton"]],
-  ["English", ["Northumbrian"]],
-  ["Canadian", ["Québécois", "Métis", "Canadian old-time", "PEI", "Newfoundland", "Cape Breton"]],
-  ["Québécois", ["Gaspé"]],
-  ["American", ["Old-time", "Bluegrass", "Contra", "Cajun"]],
-  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Texas contest", "Black string band", "Minstrel"]],
-  ["Appalachian", ["Round Peak", "Galax", "West Virginia"]],
-  ["Nordic", ["Swedish", "Finnish", "Scandinavian"]],
-];
-const GENRE_ROOTS = ["Celtic", "English", "Canadian", "American", "Nordic", "Waltz", "Castilian", "Camp composition"];
+// Genre families, tune types and tags are defined in /fiddle/vocab.js (shared with the data gaps page).
+const { GENRE_TREE, GENRE_ROOTS } = window.TUNE_VOCAB;
 const genreKids = new Map(GENRE_TREE);
 function genreDescendants(g, out = new Set()){
   if (out.has(g)) return out;
@@ -850,25 +839,7 @@ function researchBlock(t, E){
 }
 
 // ------------------------------------------------------------ tune type legend
-const TYPE_INFO = {
-  reel: "The workhorse dance tune of Irish, Scottish, Cape Breton, Québécois and contra music: cut time (2/2 or 4/4), played fast in steady running eighth notes, usually two 8-bar parts, each repeated (AABB).",
-  breakdown: "The old-time and bluegrass name for a fast dance tune in 2/4 or cut time, the American cousin of the reel. Driving, with a strong backbeat from the bow.",
-  jig: "6/8 time, with the beat split into threes (\"diddle-dee, diddle-dee\"). Lilting rather than driving. The most common is the double jig; single jigs and slip jigs (9/8) are relatives.",
-  slide: "A fast 12/8 tune from the Sliabh Luachra area on the Kerry–Cork border, played for set dancing. Feels like a jig with a long-short bounce.",
-  polka: "A quick, bouncy 2/4 tune in short phrases. In Irish music it's the signature of Sliabh Luachra; it's also a staple of contra and Scandinavian dances.",
-  hornpipe: "4/4 with a dotted or swung rhythm, slower and heavier than a reel, and parts that often end on three strong \"stops\". Originally for step dancing.",
-  barndance: "A relaxed 4/4 tune with a hornpipe-like swing, played for barn dances and \"germans\". Related to the schottische.",
-  strathspey: "A Scottish dance tune in slow 4/4 packed with the \"Scotch snap\" (a short note before a long one) and dotted rhythms. Usually played before a reel in a set.",
-  march: "A tune for marching, usually in 2/4, 4/4 or 6/8, with a steady, stately pulse.",
-  "pipe march": "A march from the Highland bagpipe repertoire, played on fiddle. Expect big gracenote-style ornaments and a range that sits on the pipes' nine notes.",
-  rag: "An old-time tune that borrows ragtime's syncopation and moving chords, often chromatic passing notes and circle-of-fifths progressions.",
-  "two-step": "A 2/4 or 4/4 tune for the two-step couples dance, common in Métis, Canadian old-time and Cajun music.",
-  waltz: "3/4 time, one strong beat per bar, for couples dancing. Played at anything from a slow ballad pace to a brisk turn.",
-  "slow air": "A slow, free-time melody played expressively rather than for dancing, often from a song. The player shapes the rhythm like a singer.",
-  "song tune": "An instrumental version of a song's melody. The words usually still exist and shape the phrasing.",
-  jota: "A lively Spanish folk dance from Aragon and Castile in quick triple time (3/4 or 6/8), traditionally with castanets.",
-  schottische: "A 4/4 couples dance tune with a dotted, skipping rhythm, slower than a reel. Common in Scandinavian, Scottish and old-time dances.",
-};
+const TYPE_INFO = window.TUNE_VOCAB.TYPE_INFO;
 function openTypes(focus){
   const counts = new Map();
   for (const t of state.tunes){ const ty = (researchByTune.get(t.id) || {}).type; if (ty) counts.set(ty, (counts.get(ty) || 0) + 1); }
