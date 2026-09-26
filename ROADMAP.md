@@ -111,7 +111,9 @@ Open questions for Nate before designing:
 
 - Frank's Reel is marked "Not played yet", but Hayden taught it on Sep 22, 2026 and the video is in Drive. Should it change?
 - "Bill Harris" from Maura's VOM class is logged as Bill Collins'. That's a guess and needs confirming.
-- Andy De Jarlis (VOM 2026) is in the unidentified list and has no recording yet.
+- Is "Alabama Walk Around" (Ritz jam, Aug 27) actually Step Around Johnny, Sam Taylor's Alabama tune? If so, it's a second hearing.
+- Still unidentified, with no leads online: Kid and the Bacon, Ravelin Wheel, McClellan's Row and November Sun. November Sun may be a new Katie McNally tune taught at VOM.
+- Genre research leads to review in the next S1 pass: tunearch lists Myra's Jig (Ian Lowthian) as Scottish, though the site files it as Irish; Return from Helsinki is Ian Stephenson's (Northumbrian/English); Dancing Bear is Bob McQuillen's New England reel; Stumptown Stomp is a Texas reel (Spencer & Rains); Donegal Lass is Brian Finnegan's jig.
 - More open questions live in the site's Working notes (editor-only).
 
 ---
@@ -120,3 +122,4 @@ Open questions for Nate before designing:
 
 - 2026-09-26: Created this roadmap. Added the hearing log (21 occasions, 146 hearings), merged the three Peg Ryan's
   polka rows, added Andy De Jarlis to the unidentified list, and added Bonaparte's Retreat (W.H. Stepp, 1937).
+- 2026-09-26: Unidentified-titles pass. Identified Andy De Jarlis as Andy De Jarlis' Jig (Métis composer, a Cape Breton favourite) and moved it to the tunes; tagged Sleeping Giant Two-Step as Métis too. Logged leads for the rest under Open data questions.
