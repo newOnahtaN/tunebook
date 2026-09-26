@@ -12,7 +12,7 @@ const GENRE_TREE = [
   ["Canadian", ["Québécois", "Métis", "Canadian old-time", "PEI", "Newfoundland", "Cape Breton"]],
   ["Québécois", ["Gaspé"]],
   ["American", ["Old-time", "Bluegrass", "Contra", "Cajun"]],
-  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Texas contest", "Black string band", "Minstrel"]],
+  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Texas contest", "Black string band", "Minstrel", "Alabama", "Pacific Northwest"]],
   ["Appalachian", ["Round Peak", "Galax", "West Virginia"]],
   ["Nordic", ["Swedish", "Finnish", "Scandinavian"]],
 ];
