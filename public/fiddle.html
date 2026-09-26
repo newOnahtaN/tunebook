@@ -86,6 +86,23 @@ button.primary{background:var(--pine);border-color:var(--pine);color:var(--paper
 button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
 :focus-visible{outline:2px solid var(--pine);outline-offset:2px}
 .genre2{font-size:12px;color:var(--muted);font-style:italic}
+.gchip.gres{border-style:dashed;opacity:.85}
+.genre2 .gres{border-bottom:1px dashed currentColor}
+.gmore{font-style:normal;opacity:.8}
+.gchips{display:flex;flex-wrap:wrap;gap:5px}
+.gchip{font-size:12.5px;padding:1px 9px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);line-height:20px}
+.gchip.gprim{font-weight:600;border-color:var(--pine);color:var(--pine)}
+.gchip.gres{color:var(--muted)}
+.gnote{display:block;margin-top:4px;color:var(--muted);font-size:11.5px}
+.helpbtn{width:30px;padding:0;border-radius:50%;font-weight:600}
+.typebtn{border:0;background:none;padding:0;color:inherit;font:inherit;text-decoration:underline dotted;text-underline-offset:2px;cursor:pointer}
+#typeDlg{max-width:440px;max-height:85vh;overflow:auto}
+.dlgsub{color:var(--muted);font-size:13px;margin:4px 0 10px}
+.typelist{margin:0}
+.typelist dt{font-weight:600;margin-top:10px;display:flex;gap:8px;align-items:baseline}
+.typelist dt small{font-weight:400;color:var(--muted)}
+.typelist dt button{margin-left:auto;font-size:12px}
+.typelist dd{margin:2px 0 0;font-size:13.5px;line-height:1.45}
 .bars{display:inline-flex;gap:2px;align-items:center}
 .bars i{width:4px;height:12px;background:var(--line);border-radius:1px}
 .bars i.on{background:var(--claret)}
@@ -241,9 +258,14 @@ a.btn:hover{border-color:var(--muted)}
     <div class="mselpanel hidden" id="fKnowPanel" role="group" aria-label="Filter by status"></div>
   </div>
   <div class="msel">
+    <button type="button" class="mselbtn" id="fHeardBtn" aria-haspopup="true" aria-expanded="false">Heard or not</button>
+    <div class="mselpanel hidden" id="fHeardPanel" role="group" aria-label="Filter by whether you've heard it in real life"></div>
+  </div>
+  <div class="msel">
     <button type="button" class="mselbtn" id="fTypeBtn" aria-haspopup="true" aria-expanded="false">All types</button>
     <div class="mselpanel hidden" id="fTypePanel" role="group" aria-label="Filter by tune type"></div>
   </div>
+  <button type="button" class="helpbtn" id="typeHelp" aria-label="What the tune types mean" title="What the tune types mean">?</button>
   <div class="msel">
     <button type="button" class="mselbtn" id="fTagBtn" aria-haspopup="true" aria-expanded="false">All tags</button>
     <div class="mselpanel hidden" id="fTagPanel" role="group" aria-label="Filter by style tag"></div>
@@ -253,6 +275,9 @@ a.btn:hover{border-color:var(--muted)}
     <option value="common">Sort: most common first</option>
     <option value="name">Sort: A–Z</option>
     <option value="know">Sort: status</option>
+    <option value="heard">Sort: most heard</option>
+    <option value="lastheard">Sort: recently heard</option>
+    <option value="firstheard">Sort: first heard (newest)</option>
     <option value="src">Sort: source</option>
     <option value="recent">Sort: recently changed</option>
   </select>
@@ -318,6 +343,13 @@ a.btn:hover{border-color:var(--muted)}
   <div class="row2"><button type="button" id="loginCancel">Cancel</button></div>
 </dialog>
 
+<dialog id="typeDlg" aria-labelledby="typeTitle">
+  <h3 id="typeTitle">Tune types</h3>
+  <p class="dlgsub">What each type means, with how many tunes in the book have it. Types come from research. Tap "show" to filter.</p>
+  <dl class="typelist" id="typeList"></dl>
+  <div class="row2"><button type="button" id="typeClose">Close</button></div>
+</dialog>
+
 <datalist id="genreList"></datalist>
 <datalist id="tuneList"></datalist>
 <datalist id="mediaList"></datalist>
@@ -332,7 +364,7 @@ let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[],
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
-const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set();
+const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set();
 
 // Genre families: picking a broad genre also matches everything under it. A genre can sit under more than one
 // parent (Cape Breton is both Scottish and Canadian). The first parent listed decides where it's shown in the filter.
@@ -439,6 +471,19 @@ const typeFilter = multiSelect($("fTypeBtn"), $("fTypePanel"), () => researchLis
 const tagFilter = multiSelect($("fTagBtn"), $("fTagPanel"), () => researchList("tags"), filterTags, { allLabel: "All tags", name: "Tags" });
 const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW.map((_, i) => String(i)), filterKnow,
   { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i] });
+// Heard in real life: anywhere, at a particular kind of occasion, or not yet.
+const HEARD_KINDS = ["lesson", "class", "jam", "session", "camp", "other"];
+const HEARD_LABEL = { heard:"Heard in real life", none:"Not heard yet", lesson:"…at a lesson", class:"…in a class",
+  jam:"…at a jam", session:"…at a session", camp:"…at a camp", other:"…somewhere else" };
+const heardFilter = multiSelect($("fHeardBtn"), $("fHeardPanel"), () => {
+  const kinds = new Set((state.occasions || []).map(o => o.kind));
+  return ["heard", ...HEARD_KINDS.filter(k => kinds.has(k)), "none"];
+}, filterHeard, { allLabel: "Heard or not", name: "Heard", labelOf: v => HEARD_LABEL[v] || v, depthOf: v => HEARD_KINDS.includes(v) ? 1 : 0 });
+const heardOf = t => heardByTune.get(t.id) || [];
+function heardMatches(t){
+  const hs = heardOf(t);
+  return [...filterHeard].some(v => v === "none" ? !hs.length : v === "heard" ? hs.length > 0 : hs.some(h => h.o.kind === v));
+}
 
 async function call(method, path, body){
   const opts = { method, headers:{}, credentials:"same-origin" };
@@ -549,9 +594,28 @@ function ed(tbl, id, field, value, cls, ph, tag = "span"){
   return `<${tag} class="${cls}" contenteditable="plaintext-only" spellcheck="false" data-tbl="${tbl}" data-id="${id}" data-field="${field}" data-ph="${esc(ph)}">${esc(value)}</${tag}>`;
 }
 
+// Secondary genres: Nate's own first, then research traditions (marked with a dashed underline).
+function researchGenres(t){
+  const own = new Set([t.genre, ...splitList(t.genres2)].map(g => String(g).toLowerCase()));
+  return splitList((researchByTune.get(t.id) || {}).genres).filter(g => !own.has(g.toLowerCase()));
+}
 function genre2Cell(t){
-  const list = splitList(t.genres2);
-  return list.length ? `<span class="genre2">also ${esc(list.join(", "))}</span>` : "";
+  const shown = [...splitList(t.genres2).map(g => [g, false]), ...researchGenres(t).map(g => [g, true])];
+  if (!shown.length) return "";
+  const MAX = 2;
+  const parts = shown.slice(0, MAX).map(([g, r]) => r ? `<span class="gres" title="From research">${esc(g)}</span>` : esc(g));
+  const more = shown.length > MAX ? ` <span class="gmore">+${shown.length - MAX}</span>` : "";
+  return `<span class="genre2">also ${parts.join(", ")}${more}</span>`;
+}
+function genresField(t, E){
+  const chip = (g, cls, title) => `<button type="button" class="gchip ${cls}" data-genre="${esc(g)}" title="${esc(title)}">${esc(g)}</button>`;
+  const mine = splitList(t.genres2), res = researchGenres(t);
+  const chips = [t.genre ? chip(t.genre, "gprim", "Primary genre. Tap to show all " + t.genre + " tunes") : "",
+    ...mine.map(g => chip(g, "", "Tap to show all " + g + " tunes")),
+    ...res.map(g => chip(g, "gres", "From research. Tap to show all " + g + " tunes"))].join("");
+  return `<div class="dfield"><span class="lbl">Genres</span><div class="gchips">${chips}</div>
+    ${res.length ? `<small class="gnote">Dashed ones are traditions from research. Tap any genre to filter by it.</small>` : ""}</div>
+    ${E ? `<div class="dfield"><span class="lbl">Your secondary genres</span>${ed("tunes", t.id, "genres2", t.genres2, "", "Also (comma-separated)")}</div>` : ""}`;
 }
 
 function genreList(){
@@ -565,6 +629,7 @@ function genreList(){
 function fillFilters(){
   genreFilter.build();
   knowFilter.build();
+  heardFilter.build();
   typeFilter.build();
   tagFilter.build();
   $("genreList").innerHTML = genreList().map(x => `<option value="${esc(x)}">`).join("");
@@ -581,6 +646,7 @@ function render(){
     if (filterTypes.size && !filterTypes.has(r.type)) return false;
     if (filterTags.size && !splitList(r.tags).some(x => filterTags.has(x))) return false;
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
+    if (filterHeard.size && !heardMatches(t)) return false;
     if (term){
       const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
         ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" ")),
@@ -596,6 +662,11 @@ function render(){
     if (by === "common") return b.common - a.common || a.name.localeCompare(b.name);
     if (by === "know") return a.status - b.status || b.common - a.common;
     if (by === "src") return a.source.localeCompare(b.source) || b.common - a.common;
+    if (by === "heard") return heardOf(b).length - heardOf(a).length || b.common - a.common || a.name.localeCompare(b.name);
+    if (by === "lastheard" || by === "firstheard"){
+      const at = t => { const hs = heardOf(t); return hs.length ? (by === "lastheard" ? hs[hs.length - 1] : hs[0]).o.start : ""; };
+      return at(b).localeCompare(at(a)) || b.common - a.common || a.name.localeCompare(b.name);
+    }
     if (by === "recent") return (b.updated_at || "").localeCompare(a.updated_at || "") || b.id - a.id;
     return genres.indexOf(a.genre) - genres.indexOf(b.genre) || b.common - a.common || a.name.localeCompare(b.name);
   });
@@ -619,7 +690,7 @@ function render(){
             ${ed("tunes", t.id, "key", t.key, "tcard-key", "Key")}
           </div>
           <div class="tcard-meta">
-            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t)}
+            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t, by)}
             ${status}
           </div>
           <div class="tcard-bottom">${bars(t.common, t.id)}</div>
@@ -638,7 +709,7 @@ function detailHtml(t, E){
     <div class="dfield"><span class="lbl">Origin</span>${ed("tunes", t.id, "origin", t.origin, "", "Origin", "div")}</div>
     <div class="dfield"><span class="lbl">Form</span>${ed("tunes", t.id, "form", t.form, "", "Form")}</div>
     ${heardField(t, E)}
-    ${E ? `<div class="dfield"><span class="lbl">Also (secondary genres)</span>${ed("tunes", t.id, "genres2", t.genres2, "", "Also (comma-separated)")}</div>` : ""}
+    ${genresField(t, E)}
     ${E ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
     ${E ? mediaCountLabel(t.id) : ""}
     ${E ? mediaPanel(t) : ""}
@@ -700,8 +771,13 @@ function occWhen(o){
   if (o.precision === "season") return `${["Winter","Winter","Spring","Spring","Spring","Summer","Summer","Summer","Fall","Fall","Fall","Winter"][m - 1]} ${y}`;
   return String(y);
 }
-function heardChip(t){
-  const n = (heardByTune.get(t.id) || []).length;
+function heardChip(t, by){
+  const hs = heardByTune.get(t.id) || [], n = hs.length;
+  if (n && (by === "lastheard" || by === "firstheard")){
+    const o = (by === "lastheard" ? hs[n - 1] : hs[0]).o;
+    return `<span class="heardchip" title="${by === "lastheard" ? "Last" : "First"} heard at ${esc(o.name)}">${by === "lastheard" ? "last" : "first"} ${esc(occWhen(o))}</span>`;
+  }
+  if (!n && by && by.endsWith("heard")) return `<span class="heardchip" style="opacity:.6">not heard yet</span>`;
   return n > 1 ? `<span class="heardchip" title="Heard at ${n} separate occasions">heard ${n}×</span>` : "";
 }
 function heardField(t, E){
@@ -758,9 +834,8 @@ function researchBlock(t, E){
   if (!r && !refs.length) return "";
   const when = r && r.updated_at ? new Date(r.updated_at).toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" }) : "";
   const meta = r ? [
-    r.type && `<span>Type <b>${esc(r.type)}</b></span>`,
+    r.type && `<span>Type <b><button type="button" class="typebtn" data-typeinfo="${esc(r.type)}" title="What is a ${esc(r.type)}?">${esc(r.type)}</button></b></span>`,
     r.region && `<span>Region <b>${esc(r.region)}</b></span>`,
-    r.genres && `<span>Traditions <b>${esc(r.genres)}</b></span>`,
   ].filter(Boolean).join("") : "";
   const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } };
   const sources = r && r.sources && r.sources.length
@@ -773,6 +848,43 @@ function researchBlock(t, E){
     ${refs.length ? `<ul>${refs.map(f => refItem(t, f, E)).join("")}</ul>` : ""}
     ${sources}</div>`;
 }
+
+// ------------------------------------------------------------ tune type legend
+const TYPE_INFO = {
+  reel: "The workhorse dance tune of Irish, Scottish, Cape Breton, Québécois and contra music: cut time (2/2 or 4/4), played fast in steady running eighth notes, usually two 8-bar parts, each repeated (AABB).",
+  breakdown: "The old-time and bluegrass name for a fast dance tune in 2/4 or cut time, the American cousin of the reel. Driving, with a strong backbeat from the bow.",
+  jig: "6/8 time, with the beat split into threes (\"diddle-dee, diddle-dee\"). Lilting rather than driving. The most common is the double jig; single jigs and slip jigs (9/8) are relatives.",
+  slide: "A fast 12/8 tune from the Sliabh Luachra area on the Kerry–Cork border, played for set dancing. Feels like a jig with a long-short bounce.",
+  polka: "A quick, bouncy 2/4 tune in short phrases. In Irish music it's the signature of Sliabh Luachra; it's also a staple of contra and Scandinavian dances.",
+  hornpipe: "4/4 with a dotted or swung rhythm, slower and heavier than a reel, and parts that often end on three strong \"stops\". Originally for step dancing.",
+  barndance: "A relaxed 4/4 tune with a hornpipe-like swing, played for barn dances and \"germans\". Related to the schottische.",
+  strathspey: "A Scottish dance tune in slow 4/4 packed with the \"Scotch snap\" (a short note before a long one) and dotted rhythms. Usually played before a reel in a set.",
+  march: "A tune for marching, usually in 2/4, 4/4 or 6/8, with a steady, stately pulse.",
+  "pipe march": "A march from the Highland bagpipe repertoire, played on fiddle. Expect big gracenote-style ornaments and a range that sits on the pipes' nine notes.",
+  rag: "An old-time tune that borrows ragtime's syncopation and moving chords, often chromatic passing notes and circle-of-fifths progressions.",
+  "two-step": "A 2/4 or 4/4 tune for the two-step couples dance, common in Métis, Canadian old-time and Cajun music.",
+  waltz: "3/4 time, one strong beat per bar, for couples dancing. Played at anything from a slow ballad pace to a brisk turn.",
+  "slow air": "A slow, free-time melody played expressively rather than for dancing, often from a song. The player shapes the rhythm like a singer.",
+  "song tune": "An instrumental version of a song's melody. The words usually still exist and shape the phrasing.",
+  jota: "A lively Spanish folk dance from Aragon and Castile in quick triple time (3/4 or 6/8), traditionally with castanets.",
+  schottische: "A 4/4 couples dance tune with a dotted, skipping rhythm, slower than a reel. Common in Scandinavian, Scottish and old-time dances.",
+};
+function openTypes(focus){
+  const counts = new Map();
+  for (const t of state.tunes){ const ty = (researchByTune.get(t.id) || {}).type; if (ty) counts.set(ty, (counts.get(ty) || 0) + 1); }
+  const types = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a) || a.localeCompare(b));
+  $("typeList").innerHTML = types.map(ty => `<dt id="type-${esc(ty.replace(/\s+/g, "-"))}">${esc(ty)} <small>${counts.get(ty)} tune${counts.get(ty) === 1 ? "" : "s"}</small>
+      <button type="button" class="link" data-showtype="${esc(ty)}">show</button></dt>
+    <dd>${esc(TYPE_INFO[ty] || "No description yet.")}</dd>`).join("");
+  if (!$("typeDlg").open) $("typeDlg").showModal();
+  if (focus){ const el = document.getElementById("type-" + focus.replace(/\s+/g, "-")); if (el) el.scrollIntoView({ block: "center" }); }
+}
+$("typeHelp").addEventListener("click", () => openTypes());
+$("typeClose").addEventListener("click", () => $("typeDlg").close());
+$("typeList").addEventListener("click", e => {
+  const b = e.target.closest("[data-showtype]"); if (!b) return;
+  filterTypes.clear(); filterTypes.add(b.dataset.showtype); typeFilter.build(); render(); $("typeDlg").close();
+});
 
 function renderAll(){ indexMedia(); indexHearings(); indexResearch(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
 
@@ -1089,6 +1201,14 @@ async function setLink(mediaIds, tuneId, linked){
 }
 
 rowsEl.addEventListener("click", async e => {
+  const gb = e.target.closest("[data-genre]");
+  if (gb){
+    filterGenres.clear(); filterGenres.add(gb.dataset.genre); primaryOnlyEl.checked = false;
+    genreFilter.build(); render(); window.scrollTo({ top: $("q").getBoundingClientRect().top + window.scrollY - 12, behavior: "smooth" });
+    return;
+  }
+  const ti = e.target.closest("[data-typeinfo]");
+  if (ti){ openTypes(ti.dataset.typeinfo); return; }
   const toggle = e.target.closest("[data-toggle]");
   if (toggle && !e.target.closest("[contenteditable],button,select,a,input")){
     const id = +toggle.dataset.toggle;
