@@ -8,6 +8,12 @@ update the item's status, coverage or open questions, and add a line to the log 
 something to improve: more tunes covered, deeper sources, better recordings, fixed mistakes, fresher local data.
 Each one lists how far it has got and the best next step, so any session can pick it up cold.
 
+**Where the gaps are:** nategrimwood.com/fiddle/gaps lists every tune's missing data (core research, tune basics,
+deeper enrichment) and the unidentified tunes. Start any enrichment session there. Gap information lives only on that
+page, never on the main tune book (Nate, Sep 26 2026).
+
+**New tunes are enriched when they're added** (Nate, Sep 26 2026): see the checklist in `CLAUDE.md`.
+
 Sizes: **S** fits in part of a session, **M** is about a session, **L** is several sessions or needs design first.
 Feature statuses: `idea` → `designing` → `building` → `shipped`.
 
@@ -33,14 +39,14 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Nate's labels: `tunes.genre` (primary) and `tunes.genres2` (his secondary genres). Research labels:
   `research.genres` (traditions), `research.type`, `research.tags`. The site shows them together as one genre list,
   with research ones marked; filters and search use both unless "Primary only" is checked.
-- Genre families: `GENRE_TREE` in `public/fiddle.html` maps parents to children (Celtic → Irish, Scottish, Breton;
+- Genre families: `GENRE_TREE` in `public/fiddle/vocab.js` maps parents to children (Celtic → Irish, Scottish, Breton;
   Scottish → Shetland, Orkney, Cape Breton; Canadian → Québécois, Métis, PEI...; American → Old-time → Appalachian
   → Round Peak...). Picking a parent matches all its descendants. Add new traditions to the tree when they appear.
 - Tag vocabulary: traditional, modern composition, crooked, cross-tuned, pipe tune, modal, three+ parts, slow air,
   has words, descriptive piece, fast showpiece, session standard, jam standard, contra favorite, square dance,
   Scottish country dance, ceilidh, beginner friendly. Reuse these spellings; add new ones sparingly.
-- Tune types have plain-language definitions in `TYPE_INFO` in `public/fiddle.html` (the "Tune types" legend). Add
-  a definition whenever a new type is used.
+- Tune types have plain-language definitions in `TYPE_INFO` in `public/fiddle/vocab.js` (the "Tune types" legend).
+  Add a definition whenever a new type is used. The tag vocabulary is `TAGS` in the same file.
 - Be generous with traditions: label every tradition where a tune is commonly played, not only where it came from.
 - Coverage: all 129 tunes reviewed twice (Sep 26 2026). Low confidence: the VOM camp compositions, Bea's Waltz, Texas
   Sandy Hill, Roland White's.
@@ -163,6 +169,19 @@ Buddies list (no counts) earn a fixed boost? Should session counts be public or 
 A "Tune types" popup explaining each type (reel, jig, strathspey...), opened from the Type filter and from a tune's
 type.
 
+### F6. Data gaps page — `shipped` (Sep 26 2026) · S
+
+/fiddle/gaps, linked from the main page's footer when signed in. Shows how many tunes have complete core research
+and a tappable count for each check (no type, no traditions, no tags, labels missing from `vocab.js`, no region,
+fact or sources, low confidence, unconfirmed key or form, no hearing, no recordings, no history). Possible extras:
+link each tune to its card on the main page; include session-sheet tunes once A5 lands.
+
+### F7. Scheduled enrichment runs — `idea` · M
+
+A weekly scheduled session that checks /fiddle/gaps and fills core gaps without Nate asking. Needs a way for an
+unattended run to write research without the browser sign-in (e.g. a dedicated API key). Nate chose to skip this
+for now (Sep 26 2026).
+
 ---
 
 ## Open data questions
@@ -191,3 +210,5 @@ type.
 - 2026-09-26: Reorganized this file as a menu. Merged research traditions into the genre display (marked as research)
   so they read as secondary genres; tapping a genre filters by it. Shipped F1 (hearing sorts and filter) and F5
   (tune type legend).
+- 2026-09-26: Added the data gaps page (F6) and the "every new tune gets enriched" checklist in `CLAUDE.md`. Moved
+  the genre families, type definitions and tag vocabulary into `public/fiddle/vocab.js`, shared by both pages.
