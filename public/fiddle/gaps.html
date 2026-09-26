@@ -99,7 +99,7 @@ const KNOWN_TYPES = new Set(Object.keys(V.TYPE_INFO).map(lc));
 const CHECKS = [
   { id:"type", group:"core", label:"No tune type", test: c => !c.r.type },
   { id:"typevocab", group:"core", label:"Type not in the legend", test: c => c.r.type && !KNOWN_TYPES.has(lc(c.r.type)) ? c.r.type : false },
-  { id:"trad", group:"core", label:"No secondary genres or traditions", test: c => !split(c.r.genres).length && !split(c.t.genres2).length },
+  { id:"trad", group:"core", label:"Traditions not researched", test: c => !split(c.r.genres).length && !split(c.t.genres2).length },
   { id:"tags", group:"core", label:"No style tags", test: c => !split(c.r.tags).length },
   { id:"tagvocab", group:"core", label:"Tag not in the vocabulary", test: c => { const x = split(c.r.tags).filter(g => !KNOWN_TAGS.has(lc(g))); return x.length ? x.join(", ") : false; } },
   { id:"genrevocab", group:"core", label:"Genre not in the family map", test: c => { const x = [c.t.genre, ...split(c.t.genres2), ...split(c.r.genres)].filter(g => g && !KNOWN_GENRES.has(lc(g))); return x.length ? [...new Set(x)].join(", ") : false; } },
