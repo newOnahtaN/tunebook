@@ -89,6 +89,40 @@ Keep logging every occasion Nate hears a tune (lessons, classes, jams, sessions,
 prioritization. Nate reports new occasions in chat; log them with `POST /fiddle/api/hearings/import` (upserts an
 occasion by `key` and replaces its tune list; the payload format is documented in `src/worker.js`).
 
+### S5. Local session popularity, from community tune lists
+
+**Major goal (Nate, Sep 26 2026).** Community members keep spreadsheets of every tune played at Seattle-area sessions.
+Keep the tune book in sync with them and use them as the main measure of how popular a tune is locally.
+
+Sources (linked from Nate's "Fiddle Tune Learning" Google Doc, doc id `1nDN5qlES0aV-cpu9H1R9DhIL8-BpX_8Bl0MMTytl1a4`):
+
+| Sheet | Maintainer | What it has |
+|---|---|---|
+| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. Count rows per tune to get times played. |
+| PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played. |
+| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played. |
+| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | A shared list of tunes with key, artist, recording link, difficulty. No play counts. |
+
+Nate's rules:
+
+- **Local data beats internet sentiment.** Popularity should come from these play counts first. The current
+  `common` score (broad, inferred) is only the fallback for tunes the sheets don't cover.
+- **Every tune in these sheets should appear in the tune book**, including ones Nate has never heard.
+- **It must stay obvious which tunes Nate has actually heard.** At a glance he should see both "popular at local
+  sessions" and "hasn't come up for me yet". This is the provenance rule again, with a third source: community data is
+  neither Nate's own life nor AI research, and should look distinct from both. Nate's own hearings keep precedence.
+
+Implementation notes (not yet designed; propose before building):
+
+- Probably a `session_counts` table (tune_id, sheet, times_played, first_played, last_played, synced_at) rather than
+  writing into Nate's fields, and a flag or origin on `tunes` for rows created from a sheet (e.g. `origin = 'sheet'`),
+  so they can be filtered and are never confused with tunes he logged.
+- Match names carefully: sheets use variants ("Abbey Reel, The", "Andy Dejarlis"), so reuse the name/aka matcher and
+  keep a manual alias list for misses.
+- The sheets live in other people's Drives and are shared with Nate, not with the site's service account. Syncing
+  needs either Nate's Drive OAuth token or a periodic import run from chat.
+- Coverage: the share of sheet tunes matched to tune book rows, and the date of the last sync per sheet.
+
 ---
 
 ## Features
@@ -124,6 +158,20 @@ Open questions for Nate before designing:
 - How should a practice session be scored (for example again / hard / good / easy, or just "played it")?
 - For accompaniment: which Strum Machine features matter most, and where do chord charts come from?
 
+### F4. Popularity overhaul and session-only tunes — `idea`
+
+The feature side of S5. Replace the popularity score with one driven by local play counts, add every sheet tune to
+the book, and make "not heard by me yet" unmistakable.
+
+Open questions for Nate before designing:
+
+- How to weight the sessions against each other (for example Columbia City has years of data, Couth Buzzard about two),
+  and how much recency should matter.
+- Should the score be per genre (popular at the Irish session vs. the old-time jam), overall, or both?
+- Should sheet-only tunes count in the header totals, or sit behind a toggle so the main list stays "my tunes"?
+- The Old Time Buddies sheet has no play counts. Should being on it count as a fixed popularity boost?
+- Public visibility: is it fine to show these session counts on the public site, or should they be editor-only?
+
 ---
 
 ## Open data questions
@@ -149,3 +197,5 @@ Open questions for Nate before designing:
 - 2026-09-26: Genre labelling pass. Added genre families to the filter (a broad pick like Celtic or Canadian pulls in
   its relatives), Type and Tags filters, and a `research.tags` column (schema 8). Relabelled all 129 tunes with
   generous traditions and style tags (crooked, cross-tuned, pipe tune, session standard...).
+- 2026-09-26: Added S5 (local session popularity from community tune lists) and F4 (popularity overhaul and
+  session-only tunes), from Nate's request. Nothing built yet.
