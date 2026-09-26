@@ -61,6 +61,19 @@ input[type=search],input[type=password],select,textarea{
 }
 input[type=search]{flex:1 1 190px}
 select{flex:0 1 auto}
+.msel{position:relative}
+.mselbtn{position:relative}
+.mselbtn.active{border-color:var(--pine);color:var(--pine)}
+.mselpanel{position:absolute;top:calc(100% + 4px);left:0;z-index:20;min-width:200px;max-height:280px;overflow:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.mselpanel.hidden{display:none}
+.mselpanel label{display:flex;align-items:center;gap:7px;padding:4px 6px;font-size:13.5px;border-radius:2px;cursor:pointer;white-space:nowrap}
+.mselpanel label:hover{background:var(--paper)}
+.mselpanel input[type=checkbox]{margin:0}
+.mselfoot{display:flex;justify-content:flex-end;margin-top:2px;padding-top:5px;border-top:1px solid var(--line)}
+.mselfoot button{font-size:12px;padding:3px 8px}
+.primaryonly{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);white-space:nowrap}
+.primaryonly input{margin:0}
 button{
   font:inherit; font-size:13.5px; color:var(--ink); background:var(--surface);
   border:1px solid var(--line); border-radius:var(--radius); padding:6px 11px; cursor:pointer;
@@ -76,6 +89,7 @@ body.editor .head,body.editor .row{grid-template-columns:2.1fr .7fr 1.1fr .9fr .
 .row:hover{background:var(--surface)}
 .name{font-weight:500}
 .origin{display:block;font-size:12.5px;color:var(--muted)}
+.genre2{display:block;font-size:12px;color:var(--muted);font-style:italic}
 .key{font-variant-numeric:tabular-nums;color:var(--pine);font-weight:500}
 .genre,.form,.src{font-size:13px;color:var(--muted)}
 .bars{display:inline-flex;gap:2px;align-items:center}
@@ -198,8 +212,15 @@ a.btn:hover{border-color:var(--muted)}
 
 <div class="controls">
   <input type="search" id="q" placeholder="Search tunes, origins, sources" aria-label="Search tunes">
-  <select id="fGenre" aria-label="Filter by genre"></select>
-  <select id="fKnow" aria-label="Filter by status"></select>
+  <div class="msel">
+    <button type="button" class="mselbtn" id="fGenreBtn" aria-haspopup="true" aria-expanded="false">All genres</button>
+    <div class="mselpanel hidden" id="fGenrePanel" role="group" aria-label="Filter by genre"></div>
+  </div>
+  <label class="primaryonly"><input type="checkbox" id="primaryOnly"> Primary only</label>
+  <div class="msel">
+    <button type="button" class="mselbtn" id="fKnowBtn" aria-haspopup="true" aria-expanded="false">All statuses</button>
+    <div class="mselpanel hidden" id="fKnowPanel" role="group" aria-label="Filter by status"></div>
+  </div>
   <select id="sort" aria-label="Sort">
     <option value="genre">Sort: genre</option>
     <option value="common">Sort: most common first</option>
@@ -286,9 +307,56 @@ const PENDING_KEY = "tunebook.pending.v1";
 let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[], open:[], working_notes:"", media:[], links:[] };
 
 const $ = id => document.getElementById(id);
-const rowsEl = $("rows"), q = $("q"), fG = $("fGenre"), fK = $("fKnow"), sortEl = $("sort");
+const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
+const filterGenres = new Set(), filterKnow = new Set();
 
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+function splitList(s){ return String(s || "").split(/[,;]/).map(x => x.trim()).filter(Boolean); }
+function tuneGenres(t, primaryOnly){ return primaryOnly ? [t.genre].filter(Boolean) : [t.genre, ...splitList(t.genres2)].filter(Boolean); }
+
+// A dropdown button that opens a checkbox list. `getOptions()` returns the current option values;
+// `labelOf(v)` (default identity) is the text shown for a value in the panel and the closed button.
+function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf = x => x }){
+  function label(){
+    const n = selected.size;
+    btn.textContent = n === 0 ? allLabel : n === 1 ? labelOf([...selected][0]) : `${name}: ${n} selected`;
+    btn.classList.toggle("active", n > 0);
+    btn.setAttribute("aria-expanded", String(!panel.classList.contains("hidden")));
+  }
+  function build(){
+    const options = getOptions();
+    for (const v of [...selected]) if (!options.includes(v)) selected.delete(v);
+    panel.innerHTML = (options.length
+      ? options.map(x => `<label><input type="checkbox" value="${esc(x)}"${selected.has(x) ? " checked" : ""}> ${esc(labelOf(x))}</label>`).join("")
+        + `<div class="mselfoot"><button type="button" class="link" data-act="clear">Clear</button></div>`
+      : `<p class="empty" style="margin:4px 6px">None yet</p>`);
+    label();
+  }
+  panel.addEventListener("change", e => {
+    if (e.target.type !== "checkbox") return;
+    if (e.target.checked) selected.add(e.target.value); else selected.delete(e.target.value);
+    label(); render();
+  });
+  panel.addEventListener("click", e => {
+    if (e.target.dataset.act === "clear"){ selected.clear(); build(); render(); }
+  });
+  btn.addEventListener("click", () => {
+    const willOpen = panel.classList.contains("hidden");
+    document.querySelectorAll(".mselpanel").forEach(p => p.classList.add("hidden"));
+    if (willOpen) build();
+    panel.classList.toggle("hidden", !willOpen);
+    label();
+  });
+  document.addEventListener("click", e => {
+    if (panel.classList.contains("hidden")) return;
+    if (!panel.contains(e.target) && e.target !== btn){ panel.classList.add("hidden"); label(); }
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.classList.contains("hidden")){ panel.classList.add("hidden"); label(); } });
+  return { build, label };
+}
+const genreFilter = multiSelect($("fGenreBtn"), $("fGenrePanel"), genreList, filterGenres, { allLabel: "All genres", name: "Genre" });
+const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW.map((_, i) => String(i)), filterKnow,
+  { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i] });
 
 async function call(method, path, body){
   const opts = { method, headers:{}, credentials:"same-origin" };
@@ -399,8 +467,14 @@ function ed(tbl, id, field, value, cls, ph, tag = "span"){
   return `<${tag} class="${cls}" contenteditable="plaintext-only" spellcheck="false" data-tbl="${tbl}" data-id="${id}" data-field="${field}" data-ph="${esc(ph)}">${esc(value)}</${tag}>`;
 }
 
+function genre2Cell(t){
+  if (state.editor) return ed("tunes", t.id, "genres2", t.genres2, "genre2", "Also (comma-separated)");
+  const list = splitList(t.genres2);
+  return list.length ? `<span class="genre2">also ${esc(list.join(", "))}</span>` : "";
+}
+
 function genreList(){
-  const set = new Set(state.tunes.map(t => t.genre).filter(Boolean));
+  const set = new Set(state.tunes.flatMap(t => [t.genre, ...splitList(t.genres2)]).filter(Boolean));
   return [...set].sort((a, b) => {
     const ia = GENRE_ORDER.indexOf(a), ib = GENRE_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
@@ -408,24 +482,20 @@ function genreList(){
 }
 
 function fillFilters(){
-  const g = fG.value, k = fK.value;
-  const genres = genreList();
-  fG.innerHTML = '<option value="">All genres</option>' + genres.map(x => `<option>${esc(x)}</option>`).join("");
-  fG.value = genres.includes(g) ? g : "";
-  fK.innerHTML = '<option value="">All statuses</option>' + KNOW.map((x, i) => `<option value="${i}">${x}</option>`).join("");
-  fK.value = k;
-  $("genreList").innerHTML = genres.map(x => `<option value="${esc(x)}">`).join("");
+  genreFilter.build();
+  knowFilter.build();
+  $("genreList").innerHTML = genreList().map(x => `<option value="${esc(x)}">`).join("");
 }
 
 function render(){
   const term = q.value.trim().toLowerCase();
-  const g = fG.value, k = fK.value;
+  const primaryOnly = primaryOnlyEl.checked;
   const genres = genreList();
   let list = state.tunes.filter(t => {
-    if (g && t.genre !== g) return false;
-    if (k !== "" && String(t.status) !== k) return false;
+    if (filterGenres.size && !tuneGenres(t, primaryOnly).some(g => filterGenres.has(g))) return false;
+    if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
     if (term){
-      const hay = [t.name, t.origin, t.source, t.genre, t.key, t.form, t.notes, t.aka].join(" ").toLowerCase();
+      const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
     }
     return true;
@@ -448,7 +518,7 @@ function render(){
     return `<div class="row" data-row="${t.id}">
       <div class="c-tune">${ed("tunes", t.id, "name", t.name, "name", "Tune name")}${ed("tunes", t.id, "origin", t.origin, "origin", "Origin")}${E ? mediaSummary(t.id) : ""}</div>
       <div class="c-key">${ed("tunes", t.id, "key", t.key, "key", "Key")}</div>
-      <div class="c-genre">${ed("tunes", t.id, "genre", t.genre, "genre", "Genre")}</div>
+      <div class="c-genre">${ed("tunes", t.id, "genre", t.genre, "genre", "Genre")}${genre2Cell(t)}</div>
       <div class="c-common common">${bars(t.common, t.id)}</div>
       <div class="c-form">${ed("tunes", t.id, "form", t.form, "form", "Form")}</div>
       <div class="c-know know">${status}${E ? ed("tunes", t.id, "notes", t.notes, "note", "Add a note") : ""}</div>
@@ -516,7 +586,7 @@ rowsEl.addEventListener("input", e => {
   const value = el.textContent;
   const row = state.tunes.find(t => t.id === +id);
   if (row) row[field] = value;
-  if (field === "genre" || field === "name") reorderNeeded = true;
+  if (field === "genre" || field === "genres2" || field === "name") reorderNeeded = true;
   queueSave(tbl, +id, field, value);
 });
 rowsEl.addEventListener("change", e => {
@@ -562,9 +632,10 @@ document.addEventListener("focusout", e => {
 
 $("addTune").addEventListener("click", async () => {
   try {
-    const t = await call("POST", "tunes", { fields:{ name:"New tune", genre: fG.value || "Old-time", key:"?", form:"?" } });
+    const defaultGenre = filterGenres.size === 1 ? [...filterGenres][0] : "Old-time";
+    const t = await call("POST", "tunes", { fields:{ name:"New tune", genre: defaultGenre, key:"?", form:"?" } });
     state.tunes.push(t);
-    q.value = ""; fK.value = ""; sortEl.value = "recent";
+    q.value = ""; filterKnow.clear(); sortEl.value = "recent";
     fillFilters(); render();
     const el = rowsEl.querySelector(`[data-row="${t.id}"] .name`);
     if (el){ el.scrollIntoView({ block:"center" }); el.focus(); document.getSelection().selectAllChildren(el); }
@@ -1109,7 +1180,8 @@ function toast(msg, actionLabel, action){
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 7000);
 }
 
-[q, fG, fK, sortEl].forEach(el => el.addEventListener("input", render));
+[q, sortEl].forEach(el => el.addEventListener("input", render));
+primaryOnlyEl.addEventListener("change", render);
 
 (async function init(){
   loadPending();
