@@ -129,6 +129,17 @@ async function initDb(env) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT NOT NULL UNIQUE, name TEXT NOT NULL DEFAULT '', detail TEXT NOT NULL DEFAULT '',
       series TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL DEFAULT '', start TEXT NOT NULL DEFAULT '', end TEXT NOT NULL DEFAULT '',
       precision TEXT NOT NULL DEFAULT 'day', created_at TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '')`),
+    // What enrichment runs (Claude researching the tune) found out, kept apart from what Nate added himself.
+    db.prepare(`CREATE TABLE IF NOT EXISTS research (
+      tune_id INTEGER PRIMARY KEY, type TEXT NOT NULL DEFAULT '', genres TEXT NOT NULL DEFAULT '', region TEXT NOT NULL DEFAULT '',
+      summary TEXT NOT NULL DEFAULT '', history TEXT NOT NULL DEFAULT '', sources TEXT NOT NULL DEFAULT '[]',
+      confidence TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '')`),
+    // Recordings, sheet music and references outside Drive (YouTube, archives...). origin: 'research' or 'mine'.
+    db.prepare(`CREATE TABLE IF NOT EXISTS refs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, tune_id INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'recording', url TEXT NOT NULL,
+      title TEXT NOT NULL DEFAULT '', performer TEXT NOT NULL DEFAULT '', year TEXT NOT NULL DEFAULT '',
+      category TEXT NOT NULL DEFAULT '', note TEXT NOT NULL DEFAULT '', origin TEXT NOT NULL DEFAULT 'research',
+      created_at TEXT NOT NULL DEFAULT '', UNIQUE (tune_id, url))`),
     db.prepare(`CREATE TABLE IF NOT EXISTS hearings (
       id INTEGER PRIMARY KEY AUTOINCREMENT, occasion_id INTEGER NOT NULL, tune_id INTEGER, open_id INTEGER,
       note TEXT NOT NULL DEFAULT '')`),
@@ -474,6 +485,61 @@ async function importHearings(env, occasions) {
   return { ok: true, occasions: occasions.length, hearings: count, unmatched };
 }
 
+const REF_KINDS = ['recording', 'sheet', 'reference'];
+const REF_CATEGORIES = ['style', 'source', 'band', 'teaching', 'other', ''];
+
+// POST /research/import  body: { tunes: [{ tune | tune_id, type, genres: [], region, summary, history, sources: [], confidence }],
+//                                refs: [{ tune | tune_id, kind, url, title, performer, year, category, note, origin }] }
+// Research rows are replaced field by field (omitted fields stay); refs upsert by (tune, url).
+async function importResearch(env, body) {
+  const tunes = (await env.DB.prepare(`SELECT id, name, aka FROM tunes`).all()).results;
+  const norm = s => String(s || '').trim().toLowerCase();
+  const byName = new Map();
+  for (const t of tunes) for (const n of [t.name, ...String(t.aka || '').split(/[,;]/)]) if (norm(n) && !byName.has(norm(n))) byName.set(norm(n), t.id);
+  const ids = new Set(tunes.map(t => t.id));
+  const find = x => x.tune_id != null ? (ids.has(Number(x.tune_id)) ? Number(x.tune_id) : null) : (byName.get(norm(x.tune)) ?? null);
+  const now = new Date().toISOString(), unmatched = [], stmts = [];
+  const list = v => Array.isArray(v) ? v.map(x => clean('text', x)).filter(Boolean) : String(v || '').split(/[,;]/).map(x => x.trim()).filter(Boolean);
+  for (const r of body.tunes || []) {
+    const id = find(r);
+    if (id == null) { unmatched.push(r.tune ?? r.tune_id); continue; }
+    const cur = await env.DB.prepare(`SELECT * FROM research WHERE tune_id = ?`).bind(id).first() || {};
+    const v = {
+      type: 'type' in r ? clean('text', r.type) : cur.type || '',
+      genres: 'genres' in r ? list(r.genres).join(', ') : cur.genres || '',
+      region: 'region' in r ? clean('text', r.region) : cur.region || '',
+      summary: 'summary' in r ? clean('text', r.summary) : cur.summary || '',
+      history: 'history' in r ? String(r.history || '').slice(0, 20000) : cur.history || '',
+      sources: 'sources' in r ? JSON.stringify(list(r.sources).filter(u => /^https?:\/\//.test(u))) : cur.sources || '[]',
+      confidence: 'confidence' in r ? clean('text', r.confidence) : cur.confidence || '',
+    };
+    stmts.push(env.DB.prepare(`INSERT OR REPLACE INTO research (tune_id,type,genres,region,summary,history,sources,confidence,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?)`).bind(id, v.type, v.genres, v.region, v.summary, v.history, v.sources, v.confidence, now));
+  }
+  for (const f of body.refs || []) {
+    const id = find(f), url = String(f.url || '');
+    if (id == null || !/^https?:\/\//.test(url)) { unmatched.push({ ref: f.url, tune: f.tune ?? f.tune_id }); continue; }
+    const kind = REF_KINDS.includes(f.kind) ? f.kind : 'recording';
+    const category = REF_CATEGORIES.includes(f.category) ? f.category : 'other';
+    const origin = f.origin === 'mine' ? 'mine' : 'research';
+    stmts.push(env.DB.prepare(`INSERT INTO refs (tune_id,kind,url,title,performer,year,category,note,origin,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT (tune_id, url) DO UPDATE SET kind = excluded.kind, title = excluded.title,
+      performer = excluded.performer, year = excluded.year, category = excluded.category, note = excluded.note, origin = excluded.origin`)
+      .bind(id, kind, url, clean('text', f.title), clean('text', f.performer), clean('text', String(f.year ?? '')), category,
+            clean('text', f.note), origin, now));
+  }
+  for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
+  return { ok: true, research: (body.tunes || []).length, refs: (body.refs || []).length, unmatched };
+}
+
+async function researchData(env) {
+  const [research, refs] = await Promise.all([
+    env.DB.prepare(`SELECT * FROM research ORDER BY tune_id`).all(),
+    env.DB.prepare(`SELECT * FROM refs ORDER BY tune_id, id`).all(),
+  ]);
+  return { research: research.results.map(r => ({ ...r, sources: JSON.parse(r.sources || '[]') })), refs: refs.results };
+}
+
 async function hearingData(env, editor) {
   const [occ, hear] = await Promise.all([
     env.DB.prepare(`SELECT id, key, name, detail, series, kind, start, end, precision FROM occasions ORDER BY start, id`).all(),
@@ -509,9 +575,9 @@ async function api(request, env, url) {
     const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(editor
       ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
-          ...(await hearingData(env, true)), ...(await mediaForEditor(ctx)) }
+          ...(await hearingData(env, true)), ...(await researchData(env)), ...(await mediaForEditor(ctx)) }
       : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
-          open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)) },
+          open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env)) },
       200, { cookies });
   }
 
@@ -607,6 +673,14 @@ async function api(request, env, url) {
   if (path === 'hearings/import' && method === 'POST') {
     const body = await readJson(request);
     return json(await importHearings(env, body.occasions));
+  }
+  if (path === 'research/import' && method === 'POST') {
+    return json(await importResearch(env, await readJson(request)));
+  }
+  // DELETE /refs/:id
+  if ((m = path.match(/^refs\/(\d+)$/)) && method === 'DELETE') {
+    await env.DB.prepare(`DELETE FROM refs WHERE id = ?`).bind(Number(m[1])).run();
+    return json({ ok: true });
   }
   // DELETE /occasions/:key  (and its hearings)
   if ((m = path.match(/^occasions\/([^/]{1,200})$/)) && method === 'DELETE') {
@@ -746,7 +820,7 @@ async function exportData(env) {
   const media = await env.DB.prepare(`SELECT m.id, m.name, m.path, m.kind, m.url, group_concat(l.tune_id) AS tunes FROM media m
     JOIN media_links l ON l.media_id = m.id AND l.state = 1 WHERE m.gone = 0 GROUP BY m.id ORDER BY m.path, m.name`).all();
   return { exported_at: new Date().toISOString(), tunes: tunes.results, open: open.results, working_notes: notes || '',
-    ...(await hearingData(env, true)),
+    ...(await hearingData(env, true)), ...(await researchData(env)),
     media: media.results.map(x => ({ ...x, tunes: String(x.tunes || '').split(',').map(Number) })) };
 }
 
