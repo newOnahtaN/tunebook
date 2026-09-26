@@ -14,7 +14,7 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '5';
+const SCHEMA_VERSION = '6';
 const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
 const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
@@ -27,7 +27,8 @@ const SEED_AKA = {
 };
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
-                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text', genres2: 'text' };
+                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text', genres2: 'text',
+                      top_media: 'text' };
 const OPEN_FIELDS = { title: 'text', source: 'text', notes: 'text' };
 const TABLES = { tunes: TUNE_FIELDS, open: OPEN_FIELDS };
 const TABLE_NAME = { tunes: 'tunes', open: 'open_titles' };
@@ -156,6 +157,12 @@ async function initDb(env) {
     const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
     // genres2: comma-separated secondary genres, alongside the required primary "genre" column.
     if (!cols.includes('genres2')) await db.prepare(`ALTER TABLE tunes ADD COLUMN genres2 TEXT NOT NULL DEFAULT ''`).run();
+  }
+  if (version < 6) {
+    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
+    // top_media: the Drive media id to play from the compact card's play button, when manually chosen
+    // (unset means "auto-pick" on the frontend: prefer a recording, then a video's audio-only copy, then the video).
+    if (!cols.includes('top_media')) await db.prepare(`ALTER TABLE tunes ADD COLUMN top_media TEXT NOT NULL DEFAULT ''`).run();
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
@@ -387,7 +394,7 @@ async function getRow(env, tbl, id) {
 }
 
 function publicTune(t) {
-  const { notes, created_at, updated_at, aka, ...rest } = t;
+  const { notes, created_at, updated_at, aka, top_media, ...rest } = t;
   return rest;
 }
 
