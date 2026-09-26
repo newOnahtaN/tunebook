@@ -691,7 +691,9 @@ function indexMedia(){
 const mediaUrl = (m, dl) => `${API}media/${m.id}/${state.mediaToken}/${encodeURIComponent(m.name)}${dl ? "?dl=1" : ""}`;
 // Android: ask the system which app should open the file (Music Speed Changer, a player, Files...).
 // Sharing hands the actual file to another app (Music Speed Changer only opens real files, not web links).
-const canShareFile = m => { try { return !!(navigator.canShare && navigator.canShare({ files:[new File([""], m.name, { type:m.type })] })); } catch (e) { return false; } };
+// Chrome's share allowlist knows .m4a only as "audio/x-m4a" (it refuses "audio/mp4" with "Permission denied").
+const shareType = m => /\.(m4a|aac)$/i.test(m.name) ? "audio/x-m4a" : m.type;
+const canShareFile = m => { try { return !!(navigator.canShare && navigator.canShare({ files:[new File([""], m.name, { type:shareType(m) })] })); } catch (e) { return false; } };
 const fmtSize = b => b >= 1e6 ? `${Math.round(b / 1e6)} MB` : `${Math.max(1, Math.round(b / 1e3))} KB`;
 
 function mediaSummary(tid){
@@ -762,7 +764,7 @@ function prefetch(m, onProgress){
 }
 
 async function shareNow(m, blob){
-  await navigator.share({ files:[new File([blob], m.name, { type:m.type })], title:m.name });
+  await navigator.share({ files:[new File([blob], m.name, { type:shareType(m) })], title:m.name });
 }
 
 async function setLink(mediaIds, tuneId, linked){
