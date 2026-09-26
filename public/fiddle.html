@@ -125,6 +125,25 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .heard time{flex:none;min-width:88px;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
 .heard small{display:block;color:var(--muted);font-size:12px}
 .heardsum{font-size:12.5px;color:var(--muted);margin-bottom:2px}
+/* research (added by enrichment runs) is visually secondary to what Nate added himself */
+.rtype{font-size:12px;color:var(--muted);opacity:.8}
+.rtype::before{content:"· "}
+.rblock{margin-top:16px;padding:10px 12px;border:1px dashed var(--line);border-radius:6px;background:color-mix(in srgb, var(--paper) 70%, var(--surface));font-size:13px;color:var(--muted)}
+.rblock h5{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.rblock h5 small{font-weight:400;text-transform:none;letter-spacing:0}
+.rblock p{margin:6px 0;color:var(--ink);opacity:.85;line-height:1.5}
+.rblock .rmeta{display:flex;flex-wrap:wrap;gap:4px 12px}
+.rblock .rmeta b{font-weight:500;color:var(--ink);opacity:.85}
+.rblock ul{list-style:none;padding:0;margin:6px 0 0}
+.rblock li.ref{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)}
+.rblock .rsrc{margin-top:8px;font-size:12px;overflow-wrap:anywhere}
+.rblock .rsrc a{color:var(--muted)}
+.rcat{font-size:11px;border:1px solid var(--line);border-radius:9px;padding:0 6px;white-space:nowrap}
+.rcat[data-c="style"]{border-color:var(--pine);color:var(--pine)}
+.refname{flex:1 1 200px;min-width:0;color:var(--ink);opacity:.9}
+.refname small{display:block;color:var(--muted);font-size:11.5px}
+.embed{width:100%;aspect-ratio:16/9;border:0;margin-top:6px;border-radius:4px}
+.mylinks{margin-top:8px}
 .ddel{margin-top:16px;display:flex;justify-content:flex-end}
 .ddel button{color:var(--muted);font-size:13px}
 .ddel button.confirm{color:var(--paper);background:var(--warn);border-color:var(--warn)}
@@ -306,7 +325,11 @@ const filterGenres = new Set(), filterKnow = new Set();
 
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
 function splitList(s){ return String(s || "").split(/[,;]/).map(x => x.trim()).filter(Boolean); }
-function tuneGenres(t, primaryOnly){ return primaryOnly ? [t.genre].filter(Boolean) : [t.genre, ...splitList(t.genres2)].filter(Boolean); }
+function tuneGenres(t, primaryOnly){
+  if (primaryOnly) return [t.genre].filter(Boolean);
+  const r = researchByTune.get(t.id);
+  return [...new Set([t.genre, ...splitList(t.genres2), ...splitList(r && r.genres)].filter(Boolean))];
+}
 
 // A dropdown button that opens a checkbox list. `getOptions()` returns the current option values;
 // `labelOf(v)` (default identity) is the text shown for a value in the panel and the closed button.
@@ -467,7 +490,7 @@ function genre2Cell(t){
 }
 
 function genreList(){
-  const set = new Set(state.tunes.flatMap(t => [t.genre, ...splitList(t.genres2)]).filter(Boolean));
+  const set = new Set(state.tunes.flatMap(t => tuneGenres(t, false)));
   return [...set].sort((a, b) => {
     const ia = GENRE_ORDER.indexOf(a), ib = GENRE_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
@@ -489,7 +512,9 @@ function render(){
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
     if (term){
       const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
-        ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" "))].join(" ").toLowerCase();
+        ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" ")),
+        ...(r => r ? [r.type, r.genres, r.region, r.summary, r.history] : [])(researchByTune.get(t.id)),
+        ...(refsByTune.get(t.id) || []).map(f => refLabel(f))].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
     }
     return true;
@@ -510,8 +535,11 @@ function render(){
     const status = E
       ? `<select data-tbl="tunes" data-id="${t.id}" data-field="status" aria-label="Status for ${esc(t.name)}">${KNOW.map((l, i) => `<option value="${i}"${i === t.status ? " selected" : ""}>${l}</option>`).join("")}</select>`
       : `<span class="status-text" data-k="${t.status}">${KNOW[t.status] ?? ""}</span>`;
-    const top = E ? topRecording(t) : null;
-    const playBtn = top ? `<button type="button" class="playbtn" data-play="${esc(top.id)}" aria-label="Play top recording of ${esc(t.name)}" title="Play top recording">▶</button>` : "";
+    const top = topRecording(t);
+    const playBtn = !top ? "" : top.ref
+      ? `<button type="button" class="playbtn" data-playref="${top.ref.id}" aria-label="Play top recording of ${esc(t.name)}" title="Play top recording: ${esc(refLabel(top.ref))}">▶</button>`
+      : `<button type="button" class="playbtn" data-play="${esc(top.id)}" aria-label="Play top recording of ${esc(t.name)}" title="Play top recording">▶</button>`;
+    const rtype = (researchByTune.get(t.id) || {}).type;
     return `<div class="tcard" data-row="${t.id}" data-open="${open}">
       <div class="tcard-top" data-toggle="${t.id}">
         <div class="tcard-main">
@@ -520,7 +548,7 @@ function render(){
             ${ed("tunes", t.id, "key", t.key, "tcard-key", "Key")}
           </div>
           <div class="tcard-meta">
-            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${heardChip(t)}
+            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t)}
             ${status}
           </div>
           <div class="tcard-bottom">${bars(t.common, t.id)}</div>
@@ -543,6 +571,8 @@ function detailHtml(t, E){
     ${E ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
     ${E ? mediaCountLabel(t.id) : ""}
     ${E ? mediaPanel(t) : ""}
+    ${myLinks(t)}
+    ${researchBlock(t, E)}
     ${E ? `<div class="ddel"><button type="button" class="${confirmingDelete.has(t.id) ? "confirm" : ""}" data-del="${t.id}">${confirmingDelete.has(t.id) ? "Tap again to delete" : "Delete tune"}</button></div>` : ""}
   </div>`;
 }
@@ -614,11 +644,69 @@ function heardField(t, E){
   return `<div class="dfield"><span class="lbl">Heard</span>${sum}<ul class="heard">${items}</ul></div>`;
 }
 
-function renderAll(){ indexMedia(); indexHearings(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
+// ------------------------------------------------------------ research runs + outside recordings
+let researchByTune = new Map(), refsByTune = new Map(), refById = new Map();
+function indexResearch(){
+  researchByTune = new Map((state.research || []).map(r => [r.tune_id, r]));
+  refsByTune = new Map(); refById = new Map();
+  for (const f of state.refs || []){
+    refById.set(f.id, f);
+    if (!refsByTune.has(f.tune_id)) refsByTune.set(f.tune_id, []);
+    refsByTune.get(f.tune_id).push(f);
+  }
+}
+const CAT_LABEL = { style:"style model", source:"source recording", band:"band", teaching:"teaching", other:"" };
+const CAT_ORDER = { style:0, teaching:1, source:2, band:3, other:4, "":5 };
+function refLabel(f){ return [f.performer, f.title].filter(Boolean).join(" – ") || f.url; }
+function youtubeId(url){
+  const m = String(url).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+const isAudioUrl = url => /\.(mp3|m4a|ogg|wav|aac|flac)(\?|$)/i.test(url);
+function refItem(t, f, E){
+  const inline = youtubeId(f.url) || isAudioUrl(f.url);
+  const play = f.kind === "recording"
+    ? (inline ? `<button type="button" data-playref="${f.id}">Play</button>` : `<a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">Listen ↗</a>`)
+    : `<a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">Open ↗</a>`;
+  const share = f.kind === "recording" && navigator.share ? `<button type="button" data-shareref="${f.id}">Share</button>` : "";
+  const top = E && f.kind === "recording" ? topBtn(t, { id:"ref:" + f.id }) : "";
+  const cat = CAT_LABEL[f.category] ? `<span class="rcat" data-c="${esc(f.category)}">${esc(CAT_LABEL[f.category])}</span>` : "";
+  const sub = [f.year, f.note].filter(Boolean).join(" · ");
+  return `<li class="ref" data-item="ref:${f.id}"><div class="refname">${esc(refLabel(f))} ${cat}${sub ? `<small>${esc(sub)}</small>` : ""}</div>
+    <div class="macts">${play}${share}${top}</div></li>`;
+}
+// Outside links Nate added himself sit with his own recordings.
+function myLinks(t){
+  const mine = (refsByTune.get(t.id) || []).filter(f => f.origin === "mine");
+  return mine.length ? `<div class="dfield mylinks"><span class="lbl">Your links</span><ul class="heard">${mine.map(f => refItem(t, f, state.editor)).join("")}</ul></div>` : "";
+}
+function researchBlock(t, E){
+  const r = researchByTune.get(t.id);
+  const refs = (refsByTune.get(t.id) || []).filter(f => f.origin !== "mine")
+    .sort((a, b) => (CAT_ORDER[a.category] ?? 9) - (CAT_ORDER[b.category] ?? 9));
+  if (!r && !refs.length) return "";
+  const when = r && r.updated_at ? new Date(r.updated_at).toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" }) : "";
+  const meta = r ? [
+    r.type && `<span>Type <b>${esc(r.type)}</b></span>`,
+    r.region && `<span>Region <b>${esc(r.region)}</b></span>`,
+    r.genres && `<span>Traditions <b>${esc(r.genres)}</b></span>`,
+  ].filter(Boolean).join("") : "";
+  const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } };
+  const sources = r && r.sources && r.sources.length
+    ? `<div class="rsrc">Sources: ${r.sources.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a>`).join(", ")}</div>` : "";
+  const hist = r && r.history ? r.history.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join("") : "";
+  return `<div class="rblock"><h5>From research <small>added by Claude${when ? " · " + esc(when) : ""}${r && r.confidence ? " · " + esc(r.confidence) + " confidence" : ""}</small></h5>
+    ${meta ? `<div class="rmeta">${meta}</div>` : ""}
+    ${r && r.summary ? `<p>${esc(r.summary)}</p>` : ""}${hist}
+    ${refs.length ? `<ul>${refs.map(f => refItem(t, f, E)).join("")}</ul>` : ""}
+    ${sources}</div>`;
+}
+
+function renderAll(){ indexMedia(); indexHearings(); indexResearch(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
 
 async function reload(){
   const d = await call("GET", "data");
-  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null, occasions:[], hearings:[] }, d);
+  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null, occasions:[], hearings:[], research:[], refs:[] }, d);
   // re-apply unsaved local edits on top of server data
   for (const p of pending.values()){
     const list = p.tbl === "tunes" ? state.tunes : state.open;
@@ -836,13 +924,21 @@ function playableCandidates(t){
   return out;
 }
 function topRecording(t){
-  const cands = playableCandidates(t);
-  if (!cands.length) return null;
-  if (t.top_media){
-    const hit = cands.find(m => (m.ids ? m.ids.includes(t.top_media) : m.id === t.top_media));
+  const drive = state.editor ? playableCandidates(t) : [];
+  const refs = (refsByTune.get(t.id) || []).filter(f => f.kind === "recording")
+    .sort((a, b) => (a.origin === "mine" ? 0 : 1) - (b.origin === "mine" ? 0 : 1) || (CAT_ORDER[a.category] ?? 9) - (CAT_ORDER[b.category] ?? 9));
+  if (t.top_media && String(t.top_media).startsWith("ref:")){
+    const f = refById.get(Number(String(t.top_media).slice(4)));
+    if (f && f.tune_id === t.id) return { ref:f };
+  } else if (t.top_media){
+    const hit = drive.find(m => (m.ids ? m.ids.includes(t.top_media) : m.id === t.top_media));
     if (hit) return hit;
   }
-  return cands[0];
+  // Auto-pick: your own recordings first (Drive, then links you added), then research's style models.
+  if (drive.length) return drive[0];
+  const mine = refs.find(f => f.origin === "mine");
+  if (mine) return { ref:mine };
+  return refs.length ? { ref:refs[0] } : null;
 }
 function topBtn(t, m){
   const id = m.ids ? m.ids[0] : m.id;
@@ -939,13 +1035,45 @@ rowsEl.addEventListener("click", async e => {
     const li = compact ? play.closest(".tcard").querySelector(".tcard-audio") : (play.closest(".vsub") || play.closest(".mitem"));
     const m = mediaById.get(play.dataset.play);
     const existing = li.querySelector("audio");
-    document.querySelectorAll(".mpanel audio, .tcard-audio audio").forEach(a => { if (a !== existing){ a.pause(); a.remove(); } });
+    document.querySelectorAll(".mpanel audio, .tcard-audio audio, iframe.embed, .rblock audio, .mylinks audio").forEach(a => { if (a !== existing){ if (a.pause) a.pause(); a.remove(); } });
     document.querySelectorAll("[data-play]").forEach(b => { if (b !== play) b.textContent = b.classList.contains("playbtn") ? "▶" : "Play"; });
     if (existing){ existing.pause(); existing.remove(); play.textContent = compact ? "▶" : "Play"; return; }
     const a = document.createElement("audio");
     a.controls = true; a.autoplay = true; a.preload = "auto"; a.src = mediaUrl(m);
     a.onerror = () => toast("Couldn't play that recording. Try Download instead.");
     li.appendChild(a); play.textContent = compact ? "⏸" : "Stop";
+    return;
+  }
+  const pref = e.target.closest("[data-playref]");
+  if (pref){
+    const f = refById.get(+pref.dataset.playref);
+    if (!f) return;
+    const compact = pref.classList.contains("playbtn");
+    const box = compact ? pref.closest(".tcard").querySelector(".tcard-audio") : pref.closest("li");
+    const existing = box.querySelector("audio, iframe.embed");
+    document.querySelectorAll(".mpanel audio, .tcard-audio audio, .tcard-audio iframe.embed, .rblock iframe.embed, .rblock audio, .mylinks iframe.embed, .mylinks audio")
+      .forEach(x => { if (x !== existing){ if (x.pause) x.pause(); x.remove(); } });
+    document.querySelectorAll("[data-play],[data-playref]").forEach(b => { if (b !== pref) b.textContent = b.classList.contains("playbtn") ? "▶" : "Play"; });
+    if (existing){ if (existing.pause) existing.pause(); existing.remove(); pref.textContent = compact ? "▶" : "Play"; return; }
+    const yt = youtubeId(f.url);
+    if (!yt && !isAudioUrl(f.url)){ window.open(f.url, "_blank", "noopener"); return; }
+    let el;
+    if (yt){
+      el = document.createElement("iframe");
+      el.className = "embed"; el.allow = "autoplay; encrypted-media; picture-in-picture"; el.allowFullscreen = true;
+      el.src = `https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0`;
+    } else {
+      el = document.createElement("audio");
+      el.controls = true; el.autoplay = true; el.src = f.url;
+      el.onerror = () => toast("Couldn't play that recording. Try opening the link instead.");
+    }
+    box.appendChild(el); pref.textContent = compact ? "⏸" : "Stop";
+    return;
+  }
+  const sref = e.target.closest("[data-shareref]");
+  if (sref){
+    const f = refById.get(+sref.dataset.shareref);
+    try { await navigator.share({ title: refLabel(f), url: f.url }); } catch (err) { if (err.name !== "AbortError") toast("Couldn't share it: " + err.message); }
     return;
   }
   const settop = e.target.closest("[data-settop]");
