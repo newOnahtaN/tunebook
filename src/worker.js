@@ -14,7 +14,7 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '6';
+const SCHEMA_VERSION = '7';
 const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
 const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
@@ -122,6 +122,16 @@ async function initDb(env) {
     db.prepare(`CREATE TABLE IF NOT EXISTS media_links (
       media_id TEXT NOT NULL, tune_id INTEGER NOT NULL, state INTEGER NOT NULL DEFAULT 1, source TEXT NOT NULL DEFAULT 'auto',
       created_at TEXT NOT NULL DEFAULT '', PRIMARY KEY (media_id, tune_id))`),
+    // Each time a tune was heard. An occasion is one lesson, class term, jam night, session or camp;
+    // precision says how exact its dates are: day, month, season (a class term) or event (a camp week).
+    // name is public; detail (a host's house, a teacher's name) and hearing notes are editor-only.
+    db.prepare(`CREATE TABLE IF NOT EXISTS occasions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT NOT NULL UNIQUE, name TEXT NOT NULL DEFAULT '', detail TEXT NOT NULL DEFAULT '',
+      series TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL DEFAULT '', start TEXT NOT NULL DEFAULT '', end TEXT NOT NULL DEFAULT '',
+      precision TEXT NOT NULL DEFAULT 'day', created_at TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '')`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS hearings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, occasion_id INTEGER NOT NULL, tune_id INTEGER, open_id INTEGER,
+      note TEXT NOT NULL DEFAULT '')`),
   ]);
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
@@ -393,6 +403,86 @@ async function getRow(env, tbl, id) {
   return row;
 }
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function occasionLabel(o) {
+  const [y, mo, d] = String(o.start || '').split('-').map(Number);
+  if (!y) return o.name;
+  if (o.precision === 'event') return `${o.name} ${y}`;
+  const season = ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Fall', 'Fall', 'Fall', 'Winter'][mo - 1];
+  const when = o.precision === 'day' ? `${MONTHS[mo - 1]} ${d}, ${y}` : o.precision === 'month' ? `${MONTHS[mo - 1]} ${y}` : `${season} ${y}`;
+  return `${o.name}, ${when}`;
+}
+const OCCASION_KINDS = ['lesson', 'class', 'jam', 'session', 'camp', 'other'];
+const PRECISIONS = ['day', 'month', 'season', 'event'];
+const isoDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) ? String(v) : '';
+
+// "From" (tunes.source) is the first occasion a tune was heard at, whenever it has any hearings.
+async function refreshSources(env) {
+  const rows = (await env.DB.prepare(`SELECT h.tune_id, o.* FROM hearings h JOIN occasions o ON o.id = h.occasion_id
+    WHERE h.tune_id IS NOT NULL ORDER BY o.start, o.id`).all()).results;
+  const first = new Map();
+  for (const r of rows) if (!first.has(r.tune_id)) first.set(r.tune_id, occasionLabel(r));
+  const openRows = (await env.DB.prepare(`SELECT h.open_id, o.* FROM hearings h JOIN occasions o ON o.id = h.occasion_id
+    WHERE h.open_id IS NOT NULL ORDER BY o.start, o.id`).all()).results;
+  const firstOpen = new Map();
+  for (const r of openRows) if (!firstOpen.has(r.open_id)) firstOpen.set(r.open_id, occasionLabel(r));
+  const stmts = [...first].map(([id, label]) => env.DB.prepare(`UPDATE tunes SET source = ? WHERE id = ? AND source != ?`).bind(label, id, label))
+    .concat([...firstOpen].map(([id, label]) => env.DB.prepare(`UPDATE open_titles SET source = ? WHERE id = ? AND source != ?`).bind(label, id, label)));
+  if (stmts.length) await env.DB.batch(stmts);
+}
+
+// Upsert occasions by key and replace each one's hearings. Tunes are matched by id, exact name or an
+// "also known as" name; unidentified titles by id or exact title. Returns anything it couldn't match.
+async function importHearings(env, occasions) {
+  if (!Array.isArray(occasions) || !occasions.length) throw new HttpError(400, 'Send { occasions: [...] }.');
+  const tunes = (await env.DB.prepare(`SELECT id, name, aka FROM tunes`).all()).results;
+  const opens = (await env.DB.prepare(`SELECT id, title FROM open_titles`).all()).results;
+  const norm = s => String(s || '').trim().toLowerCase();
+  const byName = new Map();
+  for (const t of tunes) for (const n of [t.name, ...String(t.aka || '').split(/[,;]/)]) if (norm(n) && !byName.has(norm(n))) byName.set(norm(n), t.id);
+  const openByTitle = new Map(opens.map(o => [norm(o.title), o.id]));
+  const tuneIds = new Set(tunes.map(t => t.id)), openIds = new Set(opens.map(o => o.id));
+  const unmatched = [], now = new Date().toISOString();
+  let count = 0;
+  for (const o of occasions) {
+    const key = clean('text', o.key);
+    if (!key) throw new HttpError(400, 'Every occasion needs a key.');
+    const kind = OCCASION_KINDS.includes(o.kind) ? o.kind : 'other';
+    const precision = PRECISIONS.includes(o.precision) ? o.precision : 'day';
+    const start = isoDate(o.start), end = isoDate(o.end) || start;
+    if (!start) throw new HttpError(400, `Occasion ${key} needs a start date (YYYY-MM-DD).`);
+    const occ = await env.DB.prepare(`INSERT INTO occasions (key,name,detail,series,kind,start,end,precision,created_at,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT (key) DO UPDATE SET name = excluded.name, detail = excluded.detail,
+      series = excluded.series, kind = excluded.kind, start = excluded.start, end = excluded.end,
+      precision = excluded.precision, updated_at = excluded.updated_at RETURNING id`)
+      .bind(key, clean('text', o.name), clean('text', o.detail), clean('text', o.series), kind, start, end, precision, now, now).first();
+    const stmts = [env.DB.prepare(`DELETE FROM hearings WHERE occasion_id = ?`).bind(occ.id)];
+    for (const h of o.hearings || []) {
+      let tuneId = null, openId = null;
+      if (h.tune_id != null) tuneId = tuneIds.has(Number(h.tune_id)) ? Number(h.tune_id) : null;
+      else if (h.open_id != null) openId = openIds.has(Number(h.open_id)) ? Number(h.open_id) : null;
+      else if (h.tune) tuneId = byName.get(norm(h.tune)) ?? null;
+      else if (h.open) openId = openByTitle.get(norm(h.open)) ?? null;
+      if (tuneId == null && openId == null) { unmatched.push({ occasion: key, ...h }); continue; }
+      stmts.push(env.DB.prepare(`INSERT INTO hearings (occasion_id, tune_id, open_id, note) VALUES (?,?,?,?)`)
+        .bind(occ.id, tuneId, openId, clean('text', h.note)));
+      count++;
+    }
+    await env.DB.batch(stmts);
+  }
+  await refreshSources(env);
+  return { ok: true, occasions: occasions.length, hearings: count, unmatched };
+}
+
+async function hearingData(env, editor) {
+  const [occ, hear] = await Promise.all([
+    env.DB.prepare(`SELECT id, key, name, detail, series, kind, start, end, precision FROM occasions ORDER BY start, id`).all(),
+    env.DB.prepare(`SELECT id, occasion_id, tune_id, open_id, note FROM hearings ORDER BY id`).all(),
+  ]);
+  return editor ? { occasions: occ.results, hearings: hear.results }
+    : { occasions: occ.results.map(({ detail, key, series, ...o }) => o), hearings: hear.results.map(({ note, ...h }) => h) };
+}
+
 function publicTune(t) {
   const { notes, created_at, updated_at, aka, top_media, ...rest } = t;
   return rest;
@@ -419,9 +509,10 @@ async function api(request, env, url) {
     const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(editor
       ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
-          ...(await mediaForEditor(ctx)) }
+          ...(await hearingData(env, true)), ...(await mediaForEditor(ctx)) }
       : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
-          open: open.results.map(({ title, source, id }) => ({ id, title, source })) }, 200, { cookies });
+          open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)) },
+      200, { cookies });
   }
 
   if (path === 'logout' && method === 'POST') {
@@ -503,9 +594,31 @@ async function api(request, env, url) {
       await logEdit(env, { action: 'promote', tbl: 'open', row_id: id, label: row.title, old: JSON.stringify(row) }),
     ]);
     const tune = res[0].results[0];
-    await env.DB.prepare(`UPDATE edits SET new = ? WHERE id = (SELECT MAX(id) FROM edits WHERE action = 'promote' AND row_id = ?)`)
-      .bind(String(tune.id), id).run();
+    await env.DB.batch([
+      env.DB.prepare(`UPDATE edits SET new = ? WHERE id = (SELECT MAX(id) FROM edits WHERE action = 'promote' AND row_id = ?)`)
+        .bind(String(tune.id), id),
+      env.DB.prepare(`UPDATE hearings SET tune_id = ?, open_id = NULL WHERE open_id = ?`).bind(tune.id, id),
+    ]);
     return json(tune, 201);
+  }
+
+  // POST /hearings/import  body: { occasions: [{ key, name, detail, series, kind, start, end, precision,
+  //                                                hearings: [{ tune | tune_id | open | open_id, note }] }] }
+  if (path === 'hearings/import' && method === 'POST') {
+    const body = await readJson(request);
+    return json(await importHearings(env, body.occasions));
+  }
+  // DELETE /occasions/:key  (and its hearings)
+  if ((m = path.match(/^occasions\/([^/]{1,200})$/)) && method === 'DELETE') {
+    const key = decodeURIComponent(m[1]);
+    const occ = await env.DB.prepare(`SELECT id FROM occasions WHERE key = ?`).bind(key).first();
+    if (!occ) throw new HttpError(404, 'No such occasion.');
+    await env.DB.batch([
+      env.DB.prepare(`DELETE FROM hearings WHERE occasion_id = ?`).bind(occ.id),
+      env.DB.prepare(`DELETE FROM occasions WHERE id = ?`).bind(occ.id),
+    ]);
+    await refreshSources(env);
+    return json({ ok: true });
   }
 
   if (path === 'meta/working_notes' && method === 'PUT') {
@@ -633,6 +746,7 @@ async function exportData(env) {
   const media = await env.DB.prepare(`SELECT m.id, m.name, m.path, m.kind, m.url, group_concat(l.tune_id) AS tunes FROM media m
     JOIN media_links l ON l.media_id = m.id AND l.state = 1 WHERE m.gone = 0 GROUP BY m.id ORDER BY m.path, m.name`).all();
   return { exported_at: new Date().toISOString(), tunes: tunes.results, open: open.results, working_notes: notes || '',
+    ...(await hearingData(env, true)),
     media: media.results.map(x => ({ ...x, tunes: String(x.tunes || '').split(',').map(Number) })) };
 }
 
@@ -643,6 +757,8 @@ function toMarkdown(d) {
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
   });
   const counts = [0, 1, 2].map(i => d.tunes.filter(t => t.status === i).length);
+  const heard = new Map();
+  for (const h of d.hearings || []) if (h.tune_id != null) heard.set(h.tune_id, (heard.get(h.tune_id) || new Set()).add(h.occasion_id));
   const out = [
     "# Nate's tune book", '',
     `Exported from nategrimwood.com/fiddle on ${d.exported_at.slice(0, 10)}.`, '',
@@ -650,7 +766,7 @@ function toMarkdown(d) {
     '- **Common**: rough 1-10 guess at how widely players of that genre know the tune. Blank means unrated.',
     "- **Also**: other genres the tune fits, besides the section it's grouped under.",
     '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet.',
-    "- **From**: Drive folder name where files exist, otherwise the list in Nate's jam notes where the title appeared.",
+    '- **From**: where Nate first heard the tune. **Heard**: how many separate occasions (lessons, classes, jams, sessions, camps) he has heard it at.',
     '- A `?` in Key, Form, or Origin means unconfirmed, not absent.', '',
     '## Totals', '',
     `- ${d.tunes.length} tunes traced`, `- ${counts[0]} memorized`, `- ${counts[1]} played, still learning`,
@@ -660,9 +776,9 @@ function toMarkdown(d) {
   for (const g of genres) {
     const rows = d.tunes.filter(t => t.genre === g)
       .sort((a, b) => (b.common ? 1 : 0) - (a.common ? 1 : 0) || b.common - a.common || a.name.localeCompare(b.name));
-    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Also | Origin | Status | From | Notes |', '|---|---|---|---|---|---|---|---|---|');
+    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Also | Origin | Status | From | Heard | Notes |', '|---|---|---|---|---|---|---|---|---|---|');
     for (const t of rows) {
-      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.genres2)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${cell(t.source)} | ${cell(t.notes)} |`);
+      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.genres2)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${cell(t.source)} | ${heard.get(t.id)?.size || ''} | ${cell(t.notes)} |`);
     }
     out.push('');
   }
