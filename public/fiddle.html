@@ -82,35 +82,46 @@ button:hover{border-color:var(--muted)}
 button.primary{background:var(--pine);border-color:var(--pine);color:var(--paper);font-weight:500}
 button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
 :focus-visible{outline:2px solid var(--pine);outline-offset:2px}
-.head,.row{display:grid;gap:4px 14px;align-items:baseline;grid-template-columns:2.1fr .7fr 1.2fr .9fr .9fr 1.5fr 1.3fr}
-body.editor .head,body.editor .row{grid-template-columns:2.1fr .7fr 1.1fr .9fr .9fr 1.6fr 1.2fr 28px}
-.head{padding:14px 4px 6px;border-bottom:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.02em}
-.row{padding:11px 4px;border-bottom:1px solid var(--line)}
-.row:hover{background:var(--surface)}
-.name{font-weight:500}
-.origin{display:block;font-size:12.5px;color:var(--muted)}
-.genre2{display:block;font-size:12px;color:var(--muted);font-style:italic}
-.key{font-variant-numeric:tabular-nums;color:var(--pine);font-weight:500}
-.genre,.form,.src{font-size:13px;color:var(--muted)}
+.genre2{font-size:12px;color:var(--muted);font-style:italic}
 .bars{display:inline-flex;gap:2px;align-items:center}
 .bars i{width:4px;height:12px;background:var(--line);border-radius:1px}
 .bars i.on{background:var(--claret)}
 .bars span{margin-left:6px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.know select{width:100%;font-size:12.5px;padding:4px 6px}
 .status-text{font-size:13px}
 .status-text[data-k="0"]{color:var(--pine)}
 .status-text[data-k="1"]{color:var(--sun)}
 .status-text[data-k="2"]{color:var(--muted)}
-.note{display:block;font-size:12px;color:var(--muted);margin-top:3px}
-.common select{font-size:12px;padding:2px 4px;margin-left:6px}
 [contenteditable]{border-radius:2px;outline:none;cursor:text;min-width:2ch;display:inline-block}
 [contenteditable]:hover{box-shadow:0 0 0 1px var(--line)}
 [contenteditable]:focus{box-shadow:0 0 0 2px var(--pine);background:var(--surface)}
 [contenteditable]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.7;font-style:italic}
-.origin[contenteditable],.note[contenteditable]{display:block}
-.del{border:0;background:none;color:var(--muted);font-size:17px;line-height:1;padding:2px 6px;justify-self:end}
-.del:hover{color:var(--warn)}
 .hidden{display:none !important}
+/* -------- tune cards -------- */
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:10px}
+.tcard-top{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;cursor:pointer}
+.tcard-top:hover{background:color-mix(in srgb, var(--surface) 85%, var(--ink))}
+.tcard-main{flex:1;min-width:0}
+.tcard-name-row{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.tcard-name{font-weight:600;font-size:16px}
+.tcard-key{font-variant-numeric:tabular-nums;color:var(--pine);font-weight:500;font-size:13px}
+.tcard-meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:3px;font-size:13px;color:var(--muted);align-items:baseline}
+.tcard-genre{color:var(--muted)}
+.tcard-bottom{margin-top:8px}
+.tcard-side{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+.playbtn{border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;background:var(--pine);border-color:var(--pine);color:var(--paper)}
+.chev{color:var(--muted);font-size:11px;transition:transform .15s}
+.tcard[data-open="true"] .chev{transform:rotate(180deg)}
+.tcard-audio:empty{display:none}
+.tcard-audio{padding:0 14px}
+.tcard-audio audio{width:100%;margin-top:6px}
+.tcard-detail{border-top:1px solid var(--line);padding:12px 14px 14px;background:var(--paper);border-radius:0 0 8px 8px}
+.dfield{margin-bottom:10px}
+.dfield .lbl{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.mcount{font-size:12px;color:var(--muted);margin:10px 0 4px}
+.toplink{font-size:12px}
+.ddel{margin-top:16px;display:flex;justify-content:flex-end}
+.ddel button{color:var(--muted);font-size:13px}
+.ddel button.confirm{color:var(--paper);background:var(--warn);border-color:var(--warn)}
 h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:22px;margin:44px 0 6px;letter-spacing:-.01em}
 h2+p{margin:0 0 14px;color:var(--muted);max-width:62ch}
 .open{list-style:none;padding:0;margin:0;columns:2;column-gap:28px}
@@ -152,11 +163,7 @@ button.wide{width:100%;padding:9px 12px;font-size:14px}
 .acct li{display:flex;gap:10px;align-items:baseline;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
 .acct li span{flex:1}
 .acct small{color:var(--muted);font-size:12px}
-.medbtn{display:inline-block;border:0;background:none;padding:2px 0;margin-top:4px;color:var(--pine);font-size:12.5px;text-align:left}
-.medbtn:hover{text-decoration:underline}
-.medbtn.faint{color:var(--muted)}
-@media (hover:hover){ .medbtn.faint{visibility:hidden} .row:hover .medbtn.faint,.medbtn.faint:focus-visible{visibility:visible} }
-.mpanel{grid-column:1/-1;margin:8px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);font-size:13.5px}
+.mpanel{margin:4px 0 0;padding:0;font-size:13.5px}
 .mpanel h4{margin:6px 0 4px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.02em}
 .mpanel ul,.drive ul{list-style:none;padding:0;margin:0}
 .mitem{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
@@ -180,23 +187,7 @@ a.btn:hover{border-color:var(--muted)}
 .drive ol{padding-left:20px;margin:0 0 10px;color:var(--ink)}
 .drive ol li{padding:2px 0}
 .drive code{font-size:12px;background:var(--surface);padding:1px 4px;border-radius:2px;overflow-wrap:anywhere}
-@media (max-width:820px){
-  .head{display:none}
-  .row,body.editor .row{
-    grid-template-columns:1fr auto; gap:2px 10px;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--radius); margin-bottom:8px; padding:12px;
-  }
-  .c-tune{grid-column:1/2}
-  .c-key{grid-column:2/3;text-align:right}
-  .c-genre{grid-column:1/2}
-  .c-common{grid-column:2/3;justify-self:end}
-  .c-form,.c-src{grid-column:1/3}
-  .c-know{grid-column:1/3;margin-top:6px}
-  .c-del{grid-column:2/3;grid-row:1;justify-self:end;align-self:start;margin:-6px -8px 0 0}
-  body.editor .c-key{grid-column:1/2;text-align:left}
-  .c-form::before{content:"Form: ";color:var(--muted)}
-  .c-src::before{content:"From: ";color:var(--muted)}
+@media (max-width:640px){
   .open{columns:1}
 }
 </style>
@@ -232,9 +223,6 @@ a.btn:hover{border-color:var(--muted)}
   <button class="primary ed-only hidden" id="addTune" type="button">Add tune</button>
 </div>
 
-<div class="head" aria-hidden="true">
-  <div>Tune</div><div>Key</div><div>Genre</div><div>Common</div><div>Form</div><div>Status</div><div>First heard</div><div class="ed-only hidden"></div>
-</div>
 <div id="rows"><p class="empty">Loading…</p></div>
 
 <h2>Not yet identified</h2>
@@ -468,7 +456,6 @@ function ed(tbl, id, field, value, cls, ph, tag = "span"){
 }
 
 function genre2Cell(t){
-  if (state.editor) return ed("tunes", t.id, "genres2", t.genres2, "genre2", "Also (comma-separated)");
   const list = splitList(t.genres2);
   return list.length ? `<span class="genre2">also ${esc(list.join(", "))}</span>` : "";
 }
@@ -512,22 +499,45 @@ function render(){
 
   rowsEl.innerHTML = list.length ? list.map(t => {
     const E = state.editor;
+    const open = expanded.has(t.id);
     const status = E
       ? `<select data-tbl="tunes" data-id="${t.id}" data-field="status" aria-label="Status for ${esc(t.name)}">${KNOW.map((l, i) => `<option value="${i}"${i === t.status ? " selected" : ""}>${l}</option>`).join("")}</select>`
       : `<span class="status-text" data-k="${t.status}">${KNOW[t.status] ?? ""}</span>`;
-    return `<div class="row" data-row="${t.id}">
-      <div class="c-tune">${ed("tunes", t.id, "name", t.name, "name", "Tune name")}${ed("tunes", t.id, "origin", t.origin, "origin", "Origin")}${E ? mediaSummary(t.id) : ""}</div>
-      <div class="c-key">${ed("tunes", t.id, "key", t.key, "key", "Key")}</div>
-      <div class="c-genre">${ed("tunes", t.id, "genre", t.genre, "genre", "Genre")}${genre2Cell(t)}</div>
-      <div class="c-common common">${bars(t.common, t.id)}</div>
-      <div class="c-form">${ed("tunes", t.id, "form", t.form, "form", "Form")}</div>
-      <div class="c-know know">${status}${E ? ed("tunes", t.id, "notes", t.notes, "note", "Add a note") : ""}</div>
-      <div class="c-src">${ed("tunes", t.id, "source", t.source, "src", "Where you heard it")}</div>
-      ${E ? `<button class="c-del del" type="button" data-del="${t.id}" title="Delete ${esc(t.name)}" aria-label="Delete ${esc(t.name)}">×</button>` : ""}
-      ${E && expanded.has(t.id) ? mediaPanel(t) : ""}
+    const top = E ? topRecording(t) : null;
+    const playBtn = top ? `<button type="button" class="playbtn" data-play="${esc(top.id)}" aria-label="Play top recording of ${esc(t.name)}" title="Play top recording">▶</button>` : "";
+    return `<div class="tcard" data-row="${t.id}" data-open="${open}">
+      <div class="tcard-top" data-toggle="${t.id}">
+        <div class="tcard-main">
+          <div class="tcard-name-row">
+            ${ed("tunes", t.id, "name", t.name, "tcard-name", "Tune name")}
+            ${ed("tunes", t.id, "key", t.key, "tcard-key", "Key")}
+          </div>
+          <div class="tcard-meta">
+            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}
+            ${status}
+          </div>
+          <div class="tcard-bottom">${bars(t.common, t.id)}</div>
+        </div>
+        <div class="tcard-side">${playBtn}<span class="chev" aria-hidden="true">▾</span></div>
+      </div>
+      <div class="tcard-audio"></div>
+      ${open ? detailHtml(t, E) : ""}
     </div>`;
   }).join("") : '<p class="empty">No tunes match that. Clear the search or filters to see them all.</p>';
   counts();
+}
+
+function detailHtml(t, E){
+  return `<div class="tcard-detail">
+    <div class="dfield"><span class="lbl">Origin</span>${ed("tunes", t.id, "origin", t.origin, "", "Origin", "div")}</div>
+    <div class="dfield"><span class="lbl">Form</span>${ed("tunes", t.id, "form", t.form, "", "Form")}</div>
+    <div class="dfield"><span class="lbl">Where you heard it</span>${ed("tunes", t.id, "source", t.source, "", "Where you heard it")}</div>
+    ${E ? `<div class="dfield"><span class="lbl">Also (secondary genres)</span>${ed("tunes", t.id, "genres2", t.genres2, "", "Also (comma-separated)")}</div>` : ""}
+    ${E ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
+    ${E ? mediaCountLabel(t.id) : ""}
+    ${E ? mediaPanel(t) : ""}
+    ${E ? `<div class="ddel"><button type="button" class="${confirmingDelete.has(t.id) ? "confirm" : ""}" data-del="${t.id}">${confirmingDelete.has(t.id) ? "Tap again to delete" : "Delete tune"}</button></div>` : ""}
+  </div>`;
 }
 
 function renderOpen(){
@@ -600,20 +610,6 @@ rowsEl.addEventListener("change", e => {
   queueSave(tbl, +id, field, value, 0);
   counts();
 });
-rowsEl.addEventListener("click", async e => {
-  const b = e.target.closest("[data-del]");
-  if (!b) return;
-  const id = +b.dataset.del;
-  const t = state.tunes.find(x => x.id === id);
-  try {
-    const r = await call("DELETE", `tunes/${id}`);
-    state.tunes = state.tunes.filter(x => x.id !== id);
-    for (const k of [...pending.keys()]) if (k.startsWith(`tunes:${id}:`)) pending.delete(k);
-    storePending(); render(); fillFilters();
-    toast(`Deleted “${t ? t.name : "tune"}”.`, "Undo", async () => { await call("POST", `undo/${r.edit_id}`); await reload(); });
-  } catch (err) { toast("Couldn't delete: " + err.message); }
-});
-
 // single-line fields: Enter finishes editing
 document.addEventListener("keydown", e => {
   const el = e.target.closest && e.target.closest("[contenteditable]");
@@ -637,7 +633,7 @@ $("addTune").addEventListener("click", async () => {
     state.tunes.push(t);
     q.value = ""; filterKnow.clear(); sortEl.value = "recent";
     fillFilters(); render();
-    const el = rowsEl.querySelector(`[data-row="${t.id}"] .name`);
+    const el = rowsEl.querySelector(`[data-row="${t.id}"] .tcard-name`);
     if (el){ el.scrollIntoView({ block:"center" }); el.focus(); document.getSelection().selectAllChildren(el); }
   } catch (err) { toast("Couldn't add a tune: " + err.message); }
 });
@@ -737,7 +733,8 @@ $("histList").addEventListener("click", async e => {
 
 // ------------------------------------------------------------ Drive recordings
 
-const expanded = new Set();          // tune ids whose file panel is open
+const expanded = new Set();          // tune ids whose card detail view is open
+const confirmingDelete = new Map();  // tune id -> pending revert timeout, for the two-tap delete confirm
 let mediaById = new Map(), mediaByTune = new Map();
 
 let audioOfVideo = new Map();       // video id -> its audio-only copy
@@ -775,14 +772,39 @@ const shareType = m => /\.(m4a|aac)$/i.test(m.name) ? "audio/x-m4a" : m.type;
 const canShareFile = m => { try { return !!(navigator.canShare && navigator.canShare({ files:[new File([""], m.name, { type:shareType(m) })] })); } catch (e) { return false; } };
 const fmtSize = b => b >= 1e6 ? `${Math.round(b / 1e6)} MB` : `${Math.max(1, Math.round(b / 1e3))} KB`;
 
-function mediaSummary(tid){
+function mediaCountLabel(tid){
   const list = mediaByTune.get(tid);
-  const open = expanded.has(tid);
-  if (!list || !list.length) return `<button type="button" class="medbtn faint" data-media="${tid}" aria-expanded="${open}">${open ? "▾" : "+"} Drive files</button>`;
+  if (!list || !list.length) return "";
   const n = k => list.filter(m => m.kind === k).length;
   const parts = [[n("audio"), "recording", "recordings"], [n("pdf"), "PDF", "PDFs"], [n("video"), "video", "videos"]]
     .filter(p => p[0]).map(([c, one, many]) => `${c} ${c === 1 ? one : many}`);
-  return `<button type="button" class="medbtn" data-media="${tid}" aria-expanded="${open}">${open ? "▾" : "▸"} ${parts.join(" · ")}</button>`;
+  return `<div class="mcount">${parts.join(" · ")}</div>`;
+}
+
+// Candidate recordings a compact-card play button could play, in priority order: real audio files, then
+// each video's audio-only copy (a video itself has no inline player). Used to pick or set the "top" one.
+function playableCandidates(t){
+  const list = mediaByTune.get(t.id) || [];
+  const out = [];
+  for (const m of list){
+    if (m.kind === "audio") out.push(m);
+    else if (m.kind === "video"){ const a = audioOfVideo.get(m.id); if (a) out.push(a); }
+  }
+  return out;
+}
+function topRecording(t){
+  const cands = playableCandidates(t);
+  if (!cands.length) return null;
+  if (t.top_media){
+    const hit = cands.find(m => (m.ids ? m.ids.includes(t.top_media) : m.id === t.top_media));
+    if (hit) return hit;
+  }
+  return cands[0];
+}
+function topBtn(t, m){
+  const id = m.ids ? m.ids[0] : m.id;
+  const isTop = !!t.top_media && (m.ids ? m.ids.includes(t.top_media) : t.top_media === m.id);
+  return `<button type="button" class="link toplink" data-settop="${isTop ? "" : esc(id)}" data-tune="${t.id}">${isTop ? "★ Top" : "☆ Set as top"}</button>`;
 }
 
 function mediaPanel(t){
@@ -796,12 +818,12 @@ function mediaPanel(t){
     if (m.kind === "video"){
       const a = audioOfVideo.get(m.id);
       const aShare = a && canShareFile(a) ? `<button type="button" data-share="${esc(a.id)}">Share</button>` : "";
-      const audioRow = a ? `<div class="vsub" data-item="${esc(a.id)}"><span class="lbl">Audio only</span><div class="macts"><button type="button" data-play="${esc(a.id)}">Play</button>${aShare}<a class="btn" href="${esc(mediaUrl(a, true))}">Download</a></div></div>`
+      const audioRow = a ? `<div class="vsub" data-item="${esc(a.id)}"><span class="lbl">Audio only</span><div class="macts"><button type="button" data-play="${esc(a.id)}">Play</button>${aShare}<a class="btn" href="${esc(mediaUrl(a, true))}">Download</a>${topBtn(t, a)}</div></div>`
         : (m.audio_id === "none" ? "" : (state.drive && state.drive.writer && state.drive.writer.connected ? `<div class="vsub"><span class="lbl">Audio only: made overnight</span></div>` : ""));
       return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div>
         <div class="vsub"><span class="lbl">Full video</span><div class="macts">${share}${dl}</div></div>${audioRow}</li>`;
     }
-    return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">
+    return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">${topBtn(t, m)}
       <button type="button" data-play="${esc(m.id)}">Play</button>${share}${dl}${unlink}</div></li>`;
   };
   const sections = [["audio", "Recordings"], ["pdf", "Sheet music"], ["video", "Videos"]].map(([k, label]) => {
@@ -856,9 +878,9 @@ async function setLink(mediaIds, tuneId, linked){
 }
 
 rowsEl.addEventListener("click", async e => {
-  const tog = e.target.closest("[data-media]");
-  if (tog){
-    const id = +tog.dataset.media;
+  const toggle = e.target.closest("[data-toggle]");
+  if (toggle && !e.target.closest("[contenteditable],button,select,a,input")){
+    const id = +toggle.dataset.toggle;
     if (expanded.has(id)) expanded.delete(id); else {
       expanded.add(id);
       // Audio files are small, so fetch them now and Share opens instantly.
@@ -870,15 +892,44 @@ rowsEl.addEventListener("click", async e => {
   }
   const play = e.target.closest("[data-play]");
   if (play){
-    const li = play.closest(".vsub") || play.closest(".mitem"), m = mediaById.get(play.dataset.play);
+    const compact = play.classList.contains("playbtn");
+    const li = compact ? play.closest(".tcard").querySelector(".tcard-audio") : (play.closest(".vsub") || play.closest(".mitem"));
+    const m = mediaById.get(play.dataset.play);
     const existing = li.querySelector("audio");
-    document.querySelectorAll(".mpanel audio").forEach(a => { if (a !== existing){ a.pause(); a.remove(); } });
-    document.querySelectorAll("[data-play]").forEach(b => { if (b !== play) b.textContent = "Play"; });
-    if (existing){ existing.pause(); existing.remove(); play.textContent = "Play"; return; }
+    document.querySelectorAll(".mpanel audio, .tcard-audio audio").forEach(a => { if (a !== existing){ a.pause(); a.remove(); } });
+    document.querySelectorAll("[data-play]").forEach(b => { if (b !== play) b.textContent = b.classList.contains("playbtn") ? "▶" : "Play"; });
+    if (existing){ existing.pause(); existing.remove(); play.textContent = compact ? "▶" : "Play"; return; }
     const a = document.createElement("audio");
     a.controls = true; a.autoplay = true; a.preload = "auto"; a.src = mediaUrl(m);
     a.onerror = () => toast("Couldn't play that recording. Try Download instead.");
-    li.appendChild(a); play.textContent = "Stop";
+    li.appendChild(a); play.textContent = compact ? "⏸" : "Stop";
+    return;
+  }
+  const settop = e.target.closest("[data-settop]");
+  if (settop){
+    const tid = +settop.dataset.tune, val = settop.dataset.settop;
+    const t = state.tunes.find(x => x.id === tid);
+    if (t){ t.top_media = val; queueSave("tunes", tid, "top_media", val, 0); render(); }
+    return;
+  }
+  const del = e.target.closest("[data-del]");
+  if (del){
+    const id = +del.dataset.del;
+    if (!confirmingDelete.has(id)){
+      confirmingDelete.set(id, setTimeout(() => { confirmingDelete.delete(id); render(); }, 4000));
+      render();
+      return;
+    }
+    clearTimeout(confirmingDelete.get(id)); confirmingDelete.delete(id);
+    const t = state.tunes.find(x => x.id === id);
+    try {
+      const r = await call("DELETE", `tunes/${id}`);
+      state.tunes = state.tunes.filter(x => x.id !== id);
+      expanded.delete(id);
+      for (const k of [...pending.keys()]) if (k.startsWith(`tunes:${id}:`)) pending.delete(k);
+      storePending(); render(); fillFilters();
+      toast(`Deleted “${t ? t.name : "tune"}”.`, "Undo", async () => { await call("POST", `undo/${r.edit_id}`); await reload(); });
+    } catch (err) { toast("Couldn't delete: " + err.message); }
     return;
   }
   const share = e.target.closest("[data-share]");
