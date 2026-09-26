@@ -14,7 +14,7 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '7';
+const SCHEMA_VERSION = '8';
 const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
 const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
@@ -133,7 +133,7 @@ async function initDb(env) {
     db.prepare(`CREATE TABLE IF NOT EXISTS research (
       tune_id INTEGER PRIMARY KEY, type TEXT NOT NULL DEFAULT '', genres TEXT NOT NULL DEFAULT '', region TEXT NOT NULL DEFAULT '',
       summary TEXT NOT NULL DEFAULT '', history TEXT NOT NULL DEFAULT '', sources TEXT NOT NULL DEFAULT '[]',
-      confidence TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '')`),
+      confidence TEXT NOT NULL DEFAULT '', tags TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '')`),
     // Recordings, sheet music and references outside Drive (YouTube, archives...). origin: 'research' or 'mine'.
     db.prepare(`CREATE TABLE IF NOT EXISTS refs (
       id INTEGER PRIMARY KEY AUTOINCREMENT, tune_id INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'recording', url TEXT NOT NULL,
@@ -184,6 +184,11 @@ async function initDb(env) {
     // top_media: the Drive media id to play from the compact card's play button, when manually chosen
     // (unset means "auto-pick" on the frontend: prefer a recording, then a video's audio-only copy, then the video).
     if (!cols.includes('top_media')) await db.prepare(`ALTER TABLE tunes ADD COLUMN top_media TEXT NOT NULL DEFAULT ''`).run();
+  }
+  if (version < 8) {
+    const cols = (await db.prepare(`PRAGMA table_info(research)`).all()).results.map(c => c.name);
+    // tags: research-derived style tags (crooked, pipe tune, session standard...), comma-separated
+    if (!cols.includes('tags')) await db.prepare(`ALTER TABLE research ADD COLUMN tags TEXT NOT NULL DEFAULT ''`).run();
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
@@ -488,7 +493,7 @@ async function importHearings(env, occasions) {
 const REF_KINDS = ['recording', 'sheet', 'reference'];
 const REF_CATEGORIES = ['style', 'source', 'band', 'teaching', 'other', ''];
 
-// POST /research/import  body: { tunes: [{ tune | tune_id, type, genres: [], region, summary, history, sources: [], confidence }],
+// POST /research/import  body: { tunes: [{ tune | tune_id, type, genres: [], tags: [], region, summary, history, sources: [], confidence }],
 //                                refs: [{ tune | tune_id, kind, url, title, performer, year, category, note, origin }] }
 // Research rows are replaced field by field (omitted fields stay); refs upsert by (tune, url).
 async function importResearch(env, body) {
@@ -512,9 +517,10 @@ async function importResearch(env, body) {
       history: 'history' in r ? String(r.history || '').slice(0, 20000) : cur.history || '',
       sources: 'sources' in r ? JSON.stringify(list(r.sources).filter(u => /^https?:\/\//.test(u))) : cur.sources || '[]',
       confidence: 'confidence' in r ? clean('text', r.confidence) : cur.confidence || '',
+      tags: 'tags' in r ? list(r.tags).join(', ') : cur.tags || '',
     };
-    stmts.push(env.DB.prepare(`INSERT OR REPLACE INTO research (tune_id,type,genres,region,summary,history,sources,confidence,updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?)`).bind(id, v.type, v.genres, v.region, v.summary, v.history, v.sources, v.confidence, now));
+    stmts.push(env.DB.prepare(`INSERT OR REPLACE INTO research (tune_id,type,genres,region,summary,history,sources,confidence,tags,updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?)`).bind(id, v.type, v.genres, v.region, v.summary, v.history, v.sources, v.confidence, v.tags, now));
   }
   for (const f of body.refs || []) {
     const id = find(f), url = String(f.url || '');
