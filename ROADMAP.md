@@ -10,6 +10,11 @@ There are two kinds of goals:
   research improves. Each one has a coverage measure so progress is visible, but coverage is never "done".
 - **Features** can be finished. They have a status: `idea` → `designing` → `building` → `shipped`.
 
+**Provenance rule (Nate, Sep 26 2026):** always keep it obvious what came from enrichment runs versus what Nate added from
+his own life. His own data (hearings, notes, Drive recordings, links he gave) takes visual and UX precedence. Research lives
+in the `research` table and in `refs` with `origin = 'research'`, and it renders in a muted "From research" block at the
+bottom of each tune's detail view. Import it with `POST /fiddle/api/research/import` (see `src/worker.js`).
+
 How Nate works: he mostly browses on his phone and asks Claude in chat to change the data, rather than editing on
 the site. Propose designs before building anything big, and ask him about gaps instead of guessing.
 
@@ -29,7 +34,13 @@ its close relatives without flooding it with false positives.
 - Go beyond regions: add tune type (reel, jig, strathspey, march, waltz, polka, hornpipe, schottische), crooked vs.
   square, and any dance or style tradition it belongs to.
 - History research (S2) should feed these labels, for example a tune that crossed from Scotland to Cape Breton gets both.
-- Coverage: the share of tunes whose secondary genres and tune type have been reviewed at least once.
+- Research-derived traditions go in `research.genres`, not in Nate's `genres2`. The genre filter includes both unless
+  "Primary only" is checked.
+- Proposals still to make to Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes
+  under their real traditions (Swedish, Finnish, Old-time, Contra...); consider making Campbell's Farewell to Red Gap
+  primarily Scottish; the genre family map.
+- Coverage: 129 of 129 tunes had type and traditions reviewed once (Sep 26 2026). Low-confidence ones: the VOM camp
+  compositions, Bea's Waltz, Texas Sandy Hill, Roland White's.
 
 ### S2. Everything known about each tune
 
@@ -41,7 +52,8 @@ names, and any good stories.
   notes and so on). Say where sources disagree instead of picking one quietly.
 - Needs a place to live on the site: probably a long-form history field shown in the tune's detail view, plus
   structured bits (composer, origin region, dates, source players) that other features can use.
-- Coverage: the share of tunes with a reviewed history.
+- Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
+- Coverage: 129 tunes have a one-fact summary with sources (Sep 26 2026); none has a full history yet.
 
 ### S3. Recordings for every tune, and a well-chosen "top" recording
 
@@ -60,8 +72,11 @@ Nate's rubric for the top recording:
 
 - Each recording should record who is playing, the year, the source (the Drive file or an external link), its
   category (solo style model, source/historical, band, teaching) and a short note on why it's worth hearing.
-- The top-recording mechanism already exists for Drive files (`tunes.top_media`, with a manual pick in the detail
-  view). It needs extending to external recordings such as YouTube, Library of Congress and Slippery-Hill links.
+- Outside recordings live in `refs` (`kind` recording / sheet / reference, `category` style / source / band / teaching,
+  `origin` mine / research). YouTube links and direct audio files play inline, like Drive files; anything else opens in a
+  new tab. Any of them can be the top recording (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then
+  links he added, then research recordings, style models first.
+- Coverage: 2 tunes have outside recordings (Bonaparte's Retreat, Willow on the Lake). The main job of the next run.
 - Coverage: the share of tunes with at least one style-model recording, and the share with a reviewed top pick.
 
 ### S4. Where and when each tune was heard
@@ -111,9 +126,8 @@ Open questions for Nate before designing:
 
 - Frank's Reel is marked "Not played yet", but Hayden taught it on Sep 22, 2026 and the video is in Drive. Should it change?
 - "Bill Harris" from Maura's VOM class is logged as Bill Collins'. That's a guess and needs confirming.
-- Is "Alabama Walk Around" (Ritz jam, Aug 27) actually Step Around Johnny, Sam Taylor's Alabama tune? If so, it's a second hearing.
-- Still unidentified, with no leads online: Kid and the Bacon, Ravelin Wheel, McClellan's Row and November Sun. November Sun may be a new Katie McNally tune taught at VOM.
-- Genre research leads to review in the next S1 pass: tunearch lists Myra's Jig (Ian Lowthian) as Scottish, though the site files it as Irish; Return from Helsinki is Ian Stephenson's (Northumbrian/English); Dancing Bear is Bob McQuillen's New England reel; Stumptown Stomp is a Texas reel (Spencer & Rains); Donegal Lass is Brian Finnegan's jig.
+- Still unidentified: Kid and the Bacon (best guess Bacon Rind), Ravelin Wheel (SFSF favourite; guesses in its notes),
+  McClellan's Row and November Sun (maybe a new Katie McNally tune). Nate has no more to add; use judgment.
 - More open questions live in the site's Working notes (editor-only).
 
 ---
@@ -123,3 +137,8 @@ Open questions for Nate before designing:
 - 2026-09-26: Created this roadmap. Added the hearing log (21 occasions, 146 hearings), merged the three Peg Ryan's
   polka rows, added Andy De Jarlis to the unidentified list, and added Bonaparte's Retreat (W.H. Stepp, 1937).
 - 2026-09-26: Unidentified-titles pass. Identified Andy De Jarlis as Andy De Jarlis' Jig (Métis composer, a Cape Breton favourite) and moved it to the tunes; tagged Sleeping Giant Two-Step as Métis too. Logged leads for the rest under Open data questions.
+- 2026-09-26: First broad enrichment run. Added the `research` and `refs` tables and the "From research" block,
+  plus inline playback and top-recording picks for outside recordings. Researched type, traditions, region and one
+  sourced fact for all 129 tunes. Corrected primary genre (Myra's Jig → Scottish, Return from Helsinki → English,
+  Lucy Farr's Polka → Irish), origins (Booth Shot Lincoln, Old Man Gone, Hickory, Kilfenora) and one title
+  (Miss Oliver Morris' Reel). Merged "Alabama Walk Around" into Step Around Johnny as an Aug 27 hearing.
