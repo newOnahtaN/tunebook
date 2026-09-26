@@ -119,6 +119,12 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .dfield .lbl{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .mcount{font-size:12px;color:var(--muted);margin:10px 0 4px}
 .toplink{font-size:12px}
+.heardchip{font-size:11.5px;color:var(--claret);border:1px solid currentColor;border-radius:10px;padding:0 7px;line-height:17px;white-space:nowrap}
+.heard{list-style:none;padding:0;margin:2px 0 0}
+.heard li{display:flex;gap:10px;align-items:baseline;padding:3px 0;font-size:13.5px}
+.heard time{flex:none;min-width:88px;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+.heard small{display:block;color:var(--muted);font-size:12px}
+.heardsum{font-size:12.5px;color:var(--muted);margin-bottom:2px}
 .ddel{margin-top:16px;display:flex;justify-content:flex-end}
 .ddel button{color:var(--muted);font-size:13px}
 .ddel button.confirm{color:var(--paper);background:var(--warn);border-color:var(--warn)}
@@ -482,7 +488,8 @@ function render(){
     if (filterGenres.size && !tuneGenres(t, primaryOnly).some(g => filterGenres.has(g))) return false;
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
     if (term){
-      const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka].join(" ").toLowerCase();
+      const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
+        ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" "))].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
     }
     return true;
@@ -513,7 +520,7 @@ function render(){
             ${ed("tunes", t.id, "key", t.key, "tcard-key", "Key")}
           </div>
           <div class="tcard-meta">
-            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}
+            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${heardChip(t)}
             ${status}
           </div>
           <div class="tcard-bottom">${bars(t.common, t.id)}</div>
@@ -531,7 +538,7 @@ function detailHtml(t, E){
   return `<div class="tcard-detail">
     <div class="dfield"><span class="lbl">Origin</span>${ed("tunes", t.id, "origin", t.origin, "", "Origin", "div")}</div>
     <div class="dfield"><span class="lbl">Form</span>${ed("tunes", t.id, "form", t.form, "", "Form")}</div>
-    <div class="dfield"><span class="lbl">Where you heard it</span>${ed("tunes", t.id, "source", t.source, "", "Where you heard it")}</div>
+    ${heardField(t, E)}
     ${E ? `<div class="dfield"><span class="lbl">Also (secondary genres)</span>${ed("tunes", t.id, "genres2", t.genres2, "", "Also (comma-separated)")}</div>` : ""}
     ${E ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
     ${E ? mediaCountLabel(t.id) : ""}
@@ -571,11 +578,47 @@ function applyMode(){
   setSaveState();
 }
 
-function renderAll(){ indexMedia(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
+// ------------------------------------------------------------ where each tune was heard
+let occById = new Map(), heardByTune = new Map();
+function indexHearings(){
+  occById = new Map((state.occasions || []).map(o => [o.id, o]));
+  heardByTune = new Map();
+  for (const h of state.hearings || []){
+    const o = occById.get(h.occasion_id);
+    if (!o || h.tune_id == null) continue;
+    if (!heardByTune.has(h.tune_id)) heardByTune.set(h.tune_id, []);
+    heardByTune.get(h.tune_id).push({ o, note:h.note || "" });
+  }
+  for (const l of heardByTune.values()) l.sort((a, b) => a.o.start.localeCompare(b.o.start) || a.o.id - b.o.id);
+}
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function occWhen(o){
+  const [y, m, d] = o.start.split("-").map(Number);
+  if (o.precision === "day") return `${MONTHS[m - 1]} ${d}, ${y}`;
+  if (o.precision === "month") return `${MONTHS[m - 1]} ${y}`;
+  if (o.precision === "season") return `${["Winter","Winter","Spring","Spring","Spring","Summer","Summer","Summer","Fall","Fall","Fall","Winter"][m - 1]} ${y}`;
+  return String(y);
+}
+function heardChip(t){
+  const n = (heardByTune.get(t.id) || []).length;
+  return n > 1 ? `<span class="heardchip" title="Heard at ${n} separate occasions">heard ${n}×</span>` : "";
+}
+function heardField(t, E){
+  const list = heardByTune.get(t.id) || [];
+  if (!list.length) return `<div class="dfield"><span class="lbl">Where you heard it</span>${ed("tunes", t.id, "source", t.source, "", "Where you heard it")}</div>`;
+  const sum = list.length > 1 ? `<div class="heardsum">${list.length} times · first ${esc(occWhen(list[0].o))} · last ${esc(occWhen(list[list.length - 1].o))}</div>` : "";
+  const items = list.map(({ o, note }) => {
+    const extra = [E ? o.detail : "", E ? note : ""].filter(Boolean).join(" · ");
+    return `<li><time>${esc(occWhen(o))}</time><span>${esc(o.name)}${extra ? `<small>${esc(extra)}</small>` : ""}</span></li>`;
+  }).join("");
+  return `<div class="dfield"><span class="lbl">Heard</span>${sum}<ul class="heard">${items}</ul></div>`;
+}
+
+function renderAll(){ indexMedia(); indexHearings(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
 
 async function reload(){
   const d = await call("GET", "data");
-  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null }, d);
+  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null, occasions:[], hearings:[] }, d);
   // re-apply unsaved local edits on top of server data
   for (const p of pending.values()){
     const list = p.tbl === "tunes" ? state.tunes : state.open;
