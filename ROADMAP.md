@@ -27,19 +27,23 @@ the site. Propose designs before building anything big, and ask him about gaps i
 Every tune has a primary genre plus every secondary genre that honestly applies, so browsing a broad genre surfaces
 its close relatives without flooding it with false positives.
 
-- A broad pick should pull in its relatives: **Scottish** should bring up Shetland and Cape Breton, **Celtic** should
-  cover Irish, Scottish, Shetland and Cape Breton, and **Québécois** should bring up Gaspé. Likely design: a genre
-  family map (parent → children, plus "related" links) that the filter expands, kept separate from each tune's own
-  labels. This has not been decided yet; propose it to Nate first.
-- Go beyond regions: add tune type (reel, jig, strathspey, march, waltz, polka, hornpipe, schottische), crooked vs.
-  square, and any dance or style tradition it belongs to.
+- **Genre families (shipped Sep 26 2026):** `GENRE_TREE` in `public/fiddle.html` maps parents to children (Celtic →
+  Irish, Scottish, Breton; Scottish → Shetland, Orkney, Cape Breton; Canadian → Québécois, Métis, PEI...; American →
+  Old-time → Appalachian → Round Peak...). Picking a parent in the genre filter matches all its descendants. Add new
+  traditions to the tree when they show up; anything not in the tree still appears as its own top-level option.
+- **Type and Tags filters (shipped Sep 26 2026)** read `research.type` and `research.tags`. Tags vocabulary so far:
+  traditional, modern composition, crooked, cross-tuned, pipe tune, modal, three+ parts, slow air, has words,
+  descriptive piece, fast showpiece, session standard, jam standard, contra favorite, square dance, Scottish country
+  dance, ceilidh, beginner friendly. Reuse these spellings; add new ones sparingly.
+- Be generous with traditions: label every tradition where a tune is commonly played, not only where it came from.
 - History research (S2) should feed these labels, for example a tune that crossed from Scotland to Cape Breton gets both.
 - Research-derived traditions go in `research.genres`, not in Nate's `genres2`. The genre filter includes both unless
   "Primary only" is checked.
 - Proposals still to make to Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes
   under their real traditions (Swedish, Finnish, Old-time, Contra...); consider making Campbell's Farewell to Red Gap
-  primarily Scottish; the genre family map.
-- Coverage: 129 of 129 tunes had type and traditions reviewed once (Sep 26 2026). Low-confidence ones: the VOM camp
+  primarily Scottish.
+- Coverage: 129 of 129 tunes had type and traditions reviewed once, and a second generous-traditions and style-tags
+  pass (Sep 26 2026). Low-confidence ones: the VOM camp
   compositions, Bea's Waltz, Texas Sandy Hill, Roland White's.
 
 ### S2. Everything known about each tune
@@ -142,3 +146,6 @@ Open questions for Nate before designing:
   sourced fact for all 129 tunes. Corrected primary genre (Myra's Jig → Scottish, Return from Helsinki → English,
   Lucy Farr's Polka → Irish), origins (Booth Shot Lincoln, Old Man Gone, Hickory, Kilfenora) and one title
   (Miss Oliver Morris' Reel). Merged "Alabama Walk Around" into Step Around Johnny as an Aug 27 hearing.
+- 2026-09-26: Genre labelling pass. Added genre families to the filter (a broad pick like Celtic or Canadian pulls in
+  its relatives), Type and Tags filters, and a `research.tags` column (schema 8). Relabelled all 129 tunes with
+  generous traditions and style tags (crooked, cross-tuned, pipe tune, session standard...).
