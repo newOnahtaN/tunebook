@@ -91,10 +91,11 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 27 2026, after pass 2): 14 tunes have outside recordings (18 refs), 7 with a style model. Done so
+- Coverage (Sep 27 2026, after pass 3): 22 tunes have outside recordings (30 refs), 13 with a style model. Done so
   far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
-  Fly Around My Pretty Little Miss, Five Miles from Town) and Frank's Reel, Cliffs of Moher, La Bastringue,
-  Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin'.
+  Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
+  Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
+  Cliffs of Moher, La Bastringue, Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin'.
 - Waiting for Nate's ear: Martin Hayes, "Kilfenora Jig" on Under the Moon (1995,
   https://www.youtube.com/watch?v=4Cc9P-mkjLs, second tune in the track). The Traditional Tune Archive says it's The
   Old Favourite, but irishtune.info files it as a slide, so it may be a different tune. Add it once Nate confirms.
@@ -156,6 +157,22 @@ Nate's rubric for the top recording:
   refuse automated fetches (403) and the Traditional Tune Archive rate-limits (429), so pace those. Leads to follow:
   Tommy Jarrell's Ducks on the Millpond (Field Recorders' Collective FRC 211; check that it's fiddle, not banjo);
   Shetland Fiddlers (Leader LED 2052, 1973) for Sleep Soond; Tobar an Dualchais sets for Mrs. MacLeod.
+- **Pass 3 (Sep 27 2026), 13 refs, 10 tunes.** Two picker agents ran in parallel on old-time standards (Red Haired
+  Boy, Soldier's Joy, Cherokee Shuffle, Cumberland Gap, Buffalo Gals / Dry and Dusty, Forked Deer, Little Liza Jane,
+  Spotted Pony, Sandy Boys), then an independent audit of all 14 proposed refs. The audit rejected 1 of 14 outright
+  (a Skillet Lickers "Soldier's Joy" whose cited OKeh catalog number actually belongs to a different band and tune —
+  the real Skillet Lickers recording is a 1939 Bluebird side, not the 1927 one claimed) and fixed 5 more: an invented
+  "earliest commercial 78" claim (Red Haired Boy), a wrong record label (Cherokee Shuffle: Dot, not Decca), a wrong
+  year (Cumberland Gap/Jarrell: 1970, not 1971), an unsupported composer credit (Dry and Dusty: authorship is
+  actually disputed per Traditional Tune Archive), and an under-disclosed detail (the Eck Robertson Dry and Dusty
+  track was untitled on its original LP, catalogued as a variant rather than self-titled). Buffalo Gals got all 3
+  slots left empty: every candidate either turned out to be a different regional tune sharing the name, or lacked a
+  verifiable link. Both pickers erred toward empty slots over forced picks on ambiguous titles (Forked Deer, Little
+  Liza Jane, Spotted Pony all have multiple unrelated tunes sharing their name in the old-time repertoire) — the
+  audit independently confirmed each disambiguation rather than trusting the picker's own confidence. One picked ref
+  (Dry and Dusty, source) had no Tidal equivalent despite a search, so it stayed on Spotify; noted for Nate rather
+  than silently overridden. DAHR (adp.library.ucsb.edu) blocked automated fetches all pass (403), same as the
+  access limits hit in pass 2.
 - Courtesy: Slippery-Hill MP3s play straight from their server (a donation-supported site). The volume is tiny, but
   keep the page credited in each note.
 
@@ -296,3 +313,6 @@ for now (Sep 26 2026).
   two parallel agents and audited before import. Added checks V6 (instrument) and V7 (tune identity) to the method.
 - 2026-09-27: Nate asked to prefer Tidal over Spotify/Apple Music for streaming links going forward; added to the
   CLAUDE.md checklist and the A3 method (step 3). Existing Spotify/Apple Music refs flagged for retrofit.
+- 2026-09-27: Recordings pass 3: 13 refs for 10 old-time standards, picked by two parallel agents and audited
+  before import (audit rejected 1 of 14 outright, fixed 5 more). 22 tunes now have outside recordings (30 refs), 13
+  with a style model.
