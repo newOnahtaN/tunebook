@@ -55,10 +55,11 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
   the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
   and "Alabama" were added under Old-time.
-- Coverage: 118 of 129 tunes have complete core research (gaps page, Sep 26 2026). The other 11 need Nate: tune
-  types for the six VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game of
-  Drones, Pacific Sunrise), plus Bea's Waltz, Back Home, Habas para una Amiga, Roland White's and Texas Sandy Hill,
-  where no source could be found online.
+- Coverage: 123 of 129 tunes have complete core research (Sep 27 2026). The remaining 6 are all VOM camp
+  compositions with no findable source online (Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game
+  of Drones, Pacific Sunrise) — these need Nate's own knowledge of the tune type. Bea's Waltz, Back Home, Habas para
+  una Amiga, Roland White's and Texas Sandy Hill now have a research pass on file too, even though several came
+  back low-confidence or unidentified rather than a firm answer.
 - Next best step: ask Nate the rhythm of each camp composition; add "crooked" and "cross-tuned" checks from
   Slippery-Hill and the Traditional Tune Archive; label tunes added since.
 - Proposals waiting for Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes under
@@ -283,7 +284,6 @@ for now (Sep 26 2026).
 
 ## Open data questions
 
-- Frank's Reel is marked "Not played yet", but Hayden taught it on Sep 22, 2026 and the video is in Drive. Should it change?
 - "Bill Harris" from Maura's VOM class is logged as Bill Collins'. That's a guess and needs confirming.
 - Still unidentified: Kid and the Bacon (best guess Bacon Rind), Ravelin Wheel (SFSF favourite; guesses in its notes),
   McClellan's Row and November Sun (maybe a new Katie McNally tune). Nate has no more to add; use judgment.
@@ -317,6 +317,17 @@ for now (Sep 26 2026).
   two parallel agents and audited before import. Added checks V6 (instrument) and V7 (tune identity) to the method.
 - 2026-09-27: Nate asked to prefer Tidal over Spotify/Apple Music for streaming links going forward; added to the
   CLAUDE.md checklist and the A3 method (step 3). Existing Spotify/Apple Music refs flagged for retrofit.
+- 2026-09-27: Bea's Waltz research: first pass wrongly converged on 'Benny and Bea's Waltz' (Brenda Wallace-Kuehner);
+  Nate confirmed by ear it's a different tune, so that attribution and its 3 recording refs were removed. A second
+  pass found nothing new (origin back to unknown, low confidence) — PCC's own newsletter archive, the likeliest
+  primary source, was rate-limited and untried. Learned Nate's PCC-sourced tunes are all taught by Sarah Comer, a
+  PNW old-time fiddler; added that as a house rule so future low-confidence PCC tunes (Texas Sandy Hill, and the
+  Riro's House tuning discrepancy) know who to ask.
+- 2026-09-27: Stale-data sweep: fixed Frank's Reel, stuck on "Not played yet" despite 3 hearings including a Sep 22
+  Hayden lesson (now "Played, still learning"); checked every other "Not played yet" tune against lesson-specific
+  hearings and found no other instances of the bug (an ordinary session/jam hearing doesn't imply he's tried playing
+  it, so those weren't stale). Corrected the A1 coverage count above, which had gone stale after later research
+  passes.
 - 2026-09-27: Recordings pass 3: 13 refs for 10 old-time standards, picked by two parallel agents and audited
   before import (audit rejected 1 of 14 outright, fixed 5 more). 22 tunes now have outside recordings (30 refs), 13
   with a style model.
