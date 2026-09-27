@@ -1,0 +1,452 @@
+{
+  "generated": "2026-09-27",
+  "note": "Candidate tunes from local session data not yet in Nate's tune book, ranked as described in ROADMAP.md A5. 'plays' is the sheet's own times-played count where available.",
+  "sources": {
+    "quebecois_pnw": {
+      "sheet": "PNW Quebecois Tunes, Annotated",
+      "rank_method": "Times Played column, top 25",
+      "candidates": [
+        {
+          "tune": "Vagues du St. Laurent, Les (Waves of the St Lawrence)",
+          "plays": 67,
+          "meter": "4/4",
+          "key": "G",
+          "composer": "Aimé Gagnon",
+          "link": "https://youtu.be/2WKq_yr6Jqs?si=DTE-UCsexn9w9zMC&t=34"
+        },
+        {
+          "tune": "Reel a gastonguay",
+          "plays": 56,
+          "meter": "2/2, 3/2",
+          "key": "G",
+          "composer": "Édouard Richard",
+          "link": "Reel a Castonguay - Québécois Fiddle Lesson by André Brunet"
+        },
+        {
+          "tune": "André à toto (Reel à belzébuth), contemporary version",
+          "plays": 40,
+          "meter": "4/4, 6/4",
+          "key": "G",
+          "composer": "André (à Toto) Savoie",
+          "link": "https://youtu.be/MVQRpyeDe6Q "
+        },
+        {
+          "tune": "White Buffalo/Cut Knife Hill",
+          "plays": 38,
+          "meter": "2/2",
+          "key": "Em",
+          "composer": "Marvin \"Fatty\" Moran/John Arcand",
+          "link": "https://youtu.be/yU1lO-jLOgs"
+        },
+        {
+          "tune": "Maison de glace (The Ice House)",
+          "plays": 37,
+          "meter": "6/8",
+          "key": "D",
+          "composer": "Réjean Brunet",
+          "link": "https://youtu.be/AmR3nZBeEdk"
+        },
+        {
+          "tune": "Contredanse à Pitou",
+          "plays": 36,
+          "meter": "4/4, 2/4",
+          "key": "G",
+          "composer": "Louis Pitou Boudreault",
+          "link": "https://youtu.be/_QFP4Yc7c_Q"
+        },
+        {
+          "tune": "Gigue belle excuse, la",
+          "plays": 36,
+          "meter": "6/8",
+          "key": "D",
+          "composer": "Claude Methe",
+          "link": "https://youtu.be/yrEiHQjaAAE"
+        },
+        {
+          "tune": "Pellerinage (Vos amitiés la belle)",
+          "plays": 36,
+          "meter": "4/4",
+          "key": "G",
+          "composer": "Oliver Demers",
+          "link": "Vos amitiés la belle"
+        },
+        {
+          "tune": "Marche des élèves, La",
+          "plays": 33,
+          "meter": "6/8",
+          "key": "Bm",
+          "composer": "Richard Forest",
+          "link": "https://youtu.be/IPYVMd3Ejog?si=l2U9EbGoVadvwcDC&t=101"
+        },
+        {
+          "tune": "Moquine, La",
+          "plays": 32,
+          "meter": "2/2",
+          "key": "D",
+          "composer": "Claude Méthé",
+          "link": "https://youtu.be/qvbW_3jnnpk"
+        },
+        {
+          "tune": "Reel de la montée des mille-iles",
+          "plays": 32,
+          "meter": "4/4",
+          "key": "G",
+          "composer": "Olivier Demers",
+          "link": "none anywhere"
+        },
+        {
+          "tune": "Ruisseau français (French Creek), Le",
+          "plays": 32,
+          "meter": "4/4",
+          "key": "D",
+          "composer": "André Brunet",
+          "link": "https://www.youtube.com/watch?v=IJgZPX4CKiw"
+        },
+        {
+          "tune": "Reel de la cabane",
+          "plays": 32,
+          "meter": "2/2",
+          "key": "D",
+          "composer": "Réjean Lizotte",
+          "link": "https://maremusique.bandcamp.com/track/reel-de-la-cabane"
+        },
+        {
+          "tune": "Pêcheuse, La",
+          "plays": 30,
+          "meter": "4/4, 6/4",
+          "key": "D",
+          "composer": "trad",
+          "link": "https://youtu.be/nxxuHamjIGk"
+        },
+        {
+          "tune": "Valse des jeunes filles, La",
+          "plays": 30,
+          "meter": "3/4",
+          "key": "D",
+          "composer": "trad",
+          "link": "https://youtu.be/j-1glNhrklY"
+        },
+        {
+          "tune": "Louis Cyr",
+          "plays": 30,
+          "meter": "2/2",
+          "key": "G",
+          "composer": "Jean-Claude Mirandette",
+          "link": "https://youtu.be/ixkqmg4MQlE"
+        },
+        {
+          "tune": "Garde ton souffle (Save your Breath)",
+          "plays": 29,
+          "meter": "2/2",
+          "key": "A",
+          "composer": "André Brunet",
+          "link": "https://youtu.be/PoH0aJDBqSo"
+        },
+        {
+          "tune": "Coin du balcon, Le (The Corner of the Balcony)",
+          "plays": 29,
+          "meter": "6/8, 9/8",
+          "key": "G",
+          "composer": "André Brunet",
+          "link": "https://andrbrunet.bandcamp.com/track/le-coin-du-balcon"
+        },
+        {
+          "tune": "Reel du mois de juillet",
+          "plays": 28,
+          "meter": "4/4",
+          "key": "Em",
+          "composer": "Stéphanie Lépine",
+          "link": ""
+        },
+        {
+          "tune": "Grondeuse, La (four part)",
+          "plays": 27,
+          "meter": "4/4",
+          "key": "D",
+          "composer": "",
+          "link": "https://youtu.be/y8YZqeYjs_4"
+        },
+        {
+          "tune": "Talencourt, Le",
+          "plays": 27,
+          "meter": "4/4",
+          "key": "D",
+          "composer": "Philias Bouchard & Albertine Villeneuve",
+          "link": "https://www.collectionscanada.gc.ca/obj/m2/f7/12614.mp3"
+        },
+        {
+          "tune": "Reel de mattawa",
+          "plays": 26,
+          "meter": "2/2",
+          "key": "E Dorian",
+          "composer": "Richard Forest",
+          "link": "https://youtu.be/oQZoJBs1RA0"
+        },
+        {
+          "tune": "Reel d'issoudun",
+          "plays": 26,
+          "meter": "4/4",
+          "key": "A",
+          "composer": "Joseph Couture",
+          "link": "https://youtu.be/RkFqgrBI8nU"
+        },
+        {
+          "tune": "Cache tes fesses",
+          "plays": 25,
+          "meter": "2/2",
+          "key": "D",
+          "composer": "trad",
+          "link": "https://youtu.be/AYxv7qw7u1g?si=uCCwh6O4LOod1RNE"
+        }
+      ]
+    },
+    "couth_buzzard_irish": {
+      "sheet": "Couth Buzzard Irish Tunes (Saturday session)",
+      "rank_method": "Times Played column, top 25",
+      "candidates": [
+        {
+          "tune": "Island of Woods",
+          "plays": 31,
+          "type": "air",
+          "key": "A",
+          "origin": "Liz Carroll",
+          "link": "https://youtu.be/eIliPo9F5FI?si=5ZcpNoHMz_uV1hQ3"
+        },
+        {
+          "tune": "Micho Russell's Slide",
+          "plays": 28,
+          "type": "slide",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/SgBfd46E-N8?si=V1CTszB2x2QV5ogg"
+        },
+        {
+          "tune": "O'Keeffe's Slide",
+          "plays": 28,
+          "type": "slide",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/put8ljeZDpA?si=tO68LQ7yDP75yOQA"
+        },
+        {
+          "tune": "Brosna Slide",
+          "plays": 24,
+          "type": "slide",
+          "key": "G",
+          "origin": "trad",
+          "link": "https://youtu.be/uG1YALFC4SI?si=F2F-SJygwMNRJ5ZW"
+        },
+        {
+          "tune": "Farewell to Whalley Range",
+          "plays": 24,
+          "type": "slip jig",
+          "key": "F#m",
+          "origin": "Michael McGoldrick",
+          "link": "https://youtu.be/YO2EGuKbIIc?si=OHU1ku25MWpFNviM"
+        },
+        {
+          "tune": "O'Sullivan's March",
+          "plays": 24,
+          "type": "slide",
+          "key": "G",
+          "origin": "trad",
+          "link": "O'Sullivan's March"
+        },
+        {
+          "tune": "Banish Misfortune",
+          "plays": 23,
+          "type": "jig",
+          "key": "D mix",
+          "origin": "trad",
+          "link": "https://youtu.be/0V291iuiqlc?si=fiCJFkIojlMaJEA3"
+        },
+        {
+          "tune": "Lark in the Morning",
+          "plays": 23,
+          "type": "jig",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/hbtV97MTiuA?si=RCTvDvJts2vZIdBC"
+        },
+        {
+          "tune": "March of the Kings of Laois",
+          "plays": 22,
+          "type": "march",
+          "key": "D mix",
+          "origin": "trad",
+          "link": "https://youtu.be/i8xWPSYCZdI?si=N0aAWfg8g8iXVNg9"
+        },
+        {
+          "tune": "Cordal Jig",
+          "plays": 21,
+          "type": "jig",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/t4Gc-vKRvxY?si=fQe0dkynHkOpaC8I"
+        },
+        {
+          "tune": "Humours of Trim",
+          "plays": 21,
+          "type": "jig",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/ARLYclDUvt4?si=u3uuYcrHbfk2CJ1F"
+        },
+        {
+          "tune": "Kilfenora Jig",
+          "plays": 20,
+          "type": "jig",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/6CK3Wofgx-o?si=_-s3WWF14biate1j"
+        },
+        {
+          "tune": "Merry Blacksmith",
+          "plays": 19,
+          "type": "reel",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/aHJ7pCEiXDY?si=thvoKmeCSQzLLmUe"
+        },
+        {
+          "tune": "Star Above the Garter",
+          "plays": 19,
+          "type": "slide",
+          "key": "G",
+          "origin": "trad",
+          "link": "https://youtu.be/efkzv1TggHU?si=ikNxsRKBkU5YZNcL"
+        },
+        {
+          "tune": "Connaughtman's Rambles",
+          "plays": 17,
+          "type": "jig",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/0Ox7EvQpsjE?si=qCYs5OLujj4wNG8Q"
+        },
+        {
+          "tune": "Palm Sunday",
+          "plays": 17,
+          "type": "jig",
+          "key": "Am",
+          "origin": "trad",
+          "link": "https://youtu.be/UfjMsl0tdSA?si=Cb1FCa-npgeqLsm2"
+        },
+        {
+          "tune": "Earl's Chair",
+          "plays": 16,
+          "type": "reel",
+          "key": "Bm",
+          "origin": "Packie Maloney",
+          "link": "https://youtu.be/fEkCYtm9s10?si=MQB24cBQ-nIXlPRi"
+        },
+        {
+          "tune": "Humours of Kiltyclogher",
+          "plays": 16,
+          "type": "jig",
+          "key": "D mix",
+          "origin": "trad",
+          "link": "https://youtu.be/t4Gc-vKRvxY?si=fQe0dkynHkOpaC8I"
+        },
+        {
+          "tune": "Sligo Maid",
+          "plays": 16,
+          "type": "reel",
+          "key": "A dorian",
+          "origin": "trad",
+          "link": "https://youtu.be/anzONmIJAic?si=H2yOtPnTQ80Lqshu"
+        },
+        {
+          "tune": "Torn Jacket",
+          "plays": 16,
+          "type": "reel",
+          "key": "D",
+          "origin": "Connie O'Connell",
+          "link": "https://youtu.be/xUJTjttI988?si=X2OYu1G75JL--zG2"
+        },
+        {
+          "tune": "Blarney Pilgrim",
+          "plays": 15,
+          "type": "jig",
+          "key": "D mix",
+          "origin": "trad",
+          "link": "https://youtu.be/lR4AV7-w_F8?si=uhDZbx6t2wKuzMrW"
+        },
+        {
+          "tune": "Maid Behind the Bar",
+          "plays": 15,
+          "type": "reel",
+          "key": "D",
+          "origin": "trad",
+          "link": "https://youtu.be/PB8jjzbGaYc?si=W2tdBNVj87YLlcpS"
+        },
+        {
+          "tune": "Out on the Ocean",
+          "plays": 14,
+          "type": "jig",
+          "key": "G",
+          "origin": "trad",
+          "link": "https://youtu.be/RV1QqGxuD9Y?si=FCYNEuGWDshjX4z7"
+        }
+      ]
+    },
+    "nw_scottish_fiddlers": {
+      "sheet": "NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (club's curated core repertoire, revised 2024, not play-count ranked)",
+      "rank_method": "entire club-curated list treated as 'top' since NWSF already selected it as their core repertoire",
+      "candidates": [
+        {"tune": "Josephine's Waltz", "type_hint": "waltz"},
+        {"tune": "Maggie West's Waltz", "type_hint": "waltz"},
+        {"tune": "My Cape Breton Home", "type_hint": "air"},
+        {"tune": "Da Slockit Light", "type_hint": "air"},
+        {"tune": "Coilsfield House", "type_hint": "air"},
+        {"tune": "Far Over Struy", "type_hint": "march"},
+        {"tune": "Bloody Fields of Flanders/Freedom Come All Ye'", "type_hint": "march"},
+        {"tune": "Caledonian March", "type_hint": "march"},
+        {"tune": "Dan Rory MacDougal", "type_hint": "march"},
+        {"tune": "Grand Etang (The)", "type_hint": "march"},
+        {"tune": "Leslie's March", "type_hint": "march"},
+        {"tune": "Andy Dejarlis", "type_hint": "jig"},
+        {"tune": "Arthur Darley's", "type_hint": "jig"},
+        {"tune": "Athole Highlanders", "type_hint": "jig"},
+        {"tune": "Calliope House", "type_hint": "jig"},
+        {"tune": "Fairly Shot at Her", "type_hint": "jig"},
+        {"tune": "Igonish", "type_hint": "jig"},
+        {"tune": "Jig of Slurs", "type_hint": "jig"},
+        {"tune": "Jig Runrig", "type_hint": "jig"},
+        {"tune": "Kerfuntin", "type_hint": "jig"},
+        {"tune": "Off She Goes", "type_hint": "jig"},
+        {"tune": "Paddy's Leather Britches", "type_hint": "jig"},
+        {"tune": "Sandy M'Gaff", "type_hint": "jig"},
+        {"tune": "Scotty's Favorite", "type_hint": "jig"},
+        {"tune": "Stan Chapman", "type_hint": "jig"},
+        {"tune": "Braes O' Mar", "type_hint": "strathspey"},
+        {"tune": "Braighe Bhanh", "type_hint": "strathspey"},
+        {"tune": "Cameron's Got His Wife Again", "type_hint": "strathspey"},
+        {"tune": "Duke of Gordon's Birthday", "type_hint": "strathspey"},
+        {"tune": "Ewie with the Crooked Horn", "type_hint": "strathspey"},
+        {"tune": "Fir Tree (The)", "type_hint": "strathspey"},
+        {"tune": "King George the IV", "type_hint": "strathspey"},
+        {"tune": "John McAlpin", "type_hint": "strathspey"},
+        {"tune": "Barrowburn", "type_hint": "reel"},
+        {"tune": "Da Mirrie Boys of Greenland", "type_hint": "reel"},
+        {"tune": "Deil Amang the Tailors", "type_hint": "reel"},
+        {"tune": "Drowsy Maggy", "type_hint": "reel"},
+        {"tune": "Homeward Bound", "type_hint": "reel"},
+        {"tune": "Jenny Dang the Weaver", "type_hint": "reel"},
+        {"tune": "King's Reel", "type_hint": "reel"},
+        {"tune": "Largo's Fairy Dance", "type_hint": "reel"},
+        {"tune": "Le Chat Noir", "type_hint": "reel"},
+        {"tune": "Maggie's Pancakes", "type_hint": "reel"},
+        {"tune": "Mason's Apron", "type_hint": "reel"},
+        {"tune": "Miss Lyall", "type_hint": "reel"},
+        {"tune": "Miss Susan Cooper", "type_hint": "reel"},
+        {"tune": "Mortgage Burn", "type_hint": "reel"},
+        {"tune": "My Kindly Sweetheart", "type_hint": "reel"},
+        {"tune": "Old Grey Cat", "type_hint": "reel"},
+        {"tune": "Reconciliation", "type_hint": "reel"},
+        {"tune": "Sleepy Maggie", "type_hint": "reel"},
+        {"tune": "Tam Lin", "type_hint": "reel"}
+      ]
+    }
+  }
+}
