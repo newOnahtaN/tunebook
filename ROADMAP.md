@@ -98,6 +98,9 @@ Nate's rubric for the top recording:
 - Waiting for Nate's ear: Martin Hayes, "Kilfenora Jig" on Under the Moon (1995,
   https://www.youtube.com/watch?v=4Cc9P-mkjLs, second tune in the track). The Traditional Tune Archive says it's The
   Old Favourite, but irishtune.info files it as a slide, so it may be a different tune. Add it once Nate confirms.
+- Streaming link preference (Nate, Sep 27 2026): when a track isn't on YouTube or direct audio, link Tidal before
+  Spotify or Apple Music. Retrofit the 3 Spotify-only pass-1 links and the Step Around Johnny Apple Music link to
+  Tidal equivalents when a future pass touches those tunes.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -110,9 +113,10 @@ Nate's rubric for the top recording:
    recording), style (a master fiddler in the tune's own tradition, fiddle-led), band (only if influential),
    teaching (optional). A slot can stay empty; an obscure recording picked because it was easy to link is worse
    than none.
-3. **Prefer links that play on the site:** embeddable YouTube or direct audio, then official streams (Spotify,
-   Bandcamp, Folkways pages). Prefer label, archive, artist and auto-generated "Topic" uploads over fan uploads; a
-   fan transfer of a 78 is fine when a discography confirms the details.
+3. **Prefer links that play on the site:** embeddable YouTube or direct audio, then official streams — Tidal before
+   Spotify or Apple Music (Nate, Sep 27 2026), then Bandcamp, Folkways pages. Prefer label, archive, artist and
+   auto-generated "Topic" uploads over fan uploads; a fan transfer of a 78 is fine when a discography confirms the
+   details.
 4. **Verify every ref before import:**
    - V1 link works: YouTube oEmbed returns 200 (401 means embedding is off, so it won't play here); direct audio
      loads on nategrimwood.com with a sensible duration.
@@ -290,3 +294,5 @@ for now (Sep 26 2026).
   import (5 of 7 needed fixes). Method, checks and critique are in A3; added F8 (Nate's verdict on recordings).
 - 2026-09-27: Recordings pass 2: 9 refs for 12 of the most-heard tunes (old-time, Scottish, Shetland), picked by
   two parallel agents and audited before import. Added checks V6 (instrument) and V7 (tune identity) to the method.
+- 2026-09-27: Nate asked to prefer Tidal over Spotify/Apple Music for streaming links going forward; added to the
+  CLAUDE.md checklist and the A3 method (step 3). Existing Spotify/Apple Music refs flagged for retrofit.
