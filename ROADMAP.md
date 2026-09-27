@@ -91,9 +91,13 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 27 2026): 9 tunes have outside recordings. Pass 1 (pilot, 6 tunes): Step Around Johnny, Angeline the
-  Baker, Old Joe Clark, Frank's Reel, Cliffs of Moher, La Bastringue. Only one style model outside Nate's own
-  recordings (Kevin Burke); no old-time, Scottish, Shetland or Cape Breton style models yet.
+- Coverage (Sep 27 2026, after pass 2): 14 tunes have outside recordings (18 refs), 7 with a style model. Done so
+  far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
+  Fly Around My Pretty Little Miss, Five Miles from Town) and Frank's Reel, Cliffs of Moher, La Bastringue,
+  Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin'.
+- Waiting for Nate's ear: Martin Hayes, "Kilfenora Jig" on Under the Moon (1995,
+  https://www.youtube.com/watch?v=4Cc9P-mkjLs, second tune in the track). The Traditional Tune Archive says it's The
+  Old Favourite, but irishtune.info files it as a slide, so it may be a different tune. Add it once Nate confirms.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -118,6 +122,9 @@ Nate's rubric for the top recording:
    - V4 year: the original recording year (Discogs, label, archive), not a streaming reissue date. Write "date
      unknown" rather than leaving it blank.
    - V5 note: every claim traces to a source. No inferred superlatives ("first", "official").
+   - V6 instrument and lineup: check who plays what on that track (a famous fiddler may be on banjo).
+   - V7 tune identity: when a title is ambiguous (numbered variants like "Kilfenora Jig (1)–(4)", or references
+     disagree on the type), hold the pick for Nate to confirm by ear instead of importing it.
 5. **Independent audit before import:** a separate agent re-checks each new ref against sources without seeing the
    picker's reasoning, and gives OK / FIX / REJECT. Apply the fixes, then import.
 6. **Nate's ear is the last check.** Claude can't hear the playing, so "style model" quality is inferred from
@@ -134,6 +141,17 @@ Nate's rubric for the top recording:
   3 of 7 are Spotify-only; no old-time style models; about 15–20 lookups per tune, so about 6–8 tunes per session
   with the audit. Follow-ups: Hollow Rock String Band (1968) for Angeline the Baker; Red Mountain White Trash
   (1999) for Step Around Johnny; old-time style models (e.g. Tommy Jarrell); Scottish, Shetland and Cape Breton.
+- **Pass 2 (Sep 27 2026), 9 refs, 12 tunes.** Two picker agents ran in parallel (old-time; Scottish, Shetland and
+  Irish), then an independent audit. The audit again found problems in 6 of 10: Samantha Bumgarner's 1924 side is
+  banjo, not fiddle; release years used instead of recording years (Silver Bow 1976 → 1975; a Spotify placeholder
+  2003 → 2002); "source" used for a studio LP; embellished notes ("spread the tune", "the key tradition bearer");
+  and one tune-identity doubt (held above). Dropped a stand-in style model from outside the tune's tradition
+  (Alasdair Fraser for a Shetland tune): an empty slot beats a wrong one. Premises can be wrong too: the Hollow Rock
+  String Band never recorded Angeline the Baker. No findable recording by a master for Spootiskerry (composer Ian
+  Burns never recorded it) or the Step Around Johnny style slot. Access limits: The Session and Tobar an Dualchais
+  refuse automated fetches (403) and the Traditional Tune Archive rate-limits (429), so pace those. Leads to follow:
+  Tommy Jarrell's Ducks on the Millpond (Field Recorders' Collective FRC 211; check that it's fiddle, not banjo);
+  Shetland Fiddlers (Leader LED 2052, 1973) for Sleep Soond; Tobar an Dualchais sets for Mrs. MacLeod.
 - Courtesy: Slippery-Hill MP3s play straight from their server (a donation-supported site). The volume is tiny, but
   keep the page credited in each note.
 
@@ -270,3 +288,5 @@ for now (Sep 26 2026).
   Core research complete went from 40 to 118 of 129; the remaining 11 need Nate's knowledge.
 - 2026-09-27: Recordings method v1 and pass 1 (pilot): 7 refs for 6 tunes, audited by a separate agent before
   import (5 of 7 needed fixes). Method, checks and critique are in A3; added F8 (Nate's verdict on recordings).
+- 2026-09-27: Recordings pass 2: 9 refs for 12 of the most-heard tunes (old-time, Scottish, Shetland), picked by
+  two parallel agents and audited before import. Added checks V6 (instrument) and V7 (tune identity) to the method.
