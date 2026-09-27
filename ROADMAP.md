@@ -91,8 +91,51 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage: 2 tunes have outside recordings (Bonaparte's Retreat, Willow on the Lake).
-- Next best step: one style-model recording per tune, most-heard tunes first.
+- Coverage (Sep 27 2026): 9 tunes have outside recordings. Pass 1 (pilot, 6 tunes): Step Around Johnny, Angeline the
+  Baker, Old Joe Clark, Frank's Reel, Cliffs of Moher, La Bastringue. Only one style model outside Nate's own
+  recordings (Kevin Burke); no old-time, Scottish, Shetland or Cape Breton style models yet.
+
+#### How to pick recordings (method v1, Sep 27 2026)
+
+1. **Start from authority, not search rank.** Web search mostly surfaces lessons and amateur covers. Pick the
+   performer from a discography or archive first, then search only to find that specific track:
+   irishtune.info (dated discography, earliest first), The Session's recordings tab, Traditional Tune Archive
+   annotations, Slippery-Hill (field recordings as direct MP3s that play inline), Smithsonian Folkways, Discogs, and
+   for modern tunes the composer's own recording.
+2. **Fill slots per tune:** source (composer's own, the earliest important recording, or the source player's field
+   recording), style (a master fiddler in the tune's own tradition, fiddle-led), band (only if influential),
+   teaching (optional). A slot can stay empty; an obscure recording picked because it was easy to link is worse
+   than none.
+3. **Prefer links that play on the site:** embeddable YouTube or direct audio, then official streams (Spotify,
+   Bandcamp, Folkways pages). Prefer label, archive, artist and auto-generated "Topic" uploads over fan uploads; a
+   fan transfer of a 78 is fine when a discography confirms the details.
+4. **Verify every ref before import:**
+   - V1 link works: YouTube oEmbed returns 200 (401 means embedding is off, so it won't play here); direct audio
+     loads on nategrimwood.com with a sensible duration.
+   - V2 right tune: the title or track list names the tune or a known alias; for medleys, say where it falls.
+   - V3 performer: who played it, not who composed it, confirmed by a discography or archive, never only by the
+     upload's title or channel name.
+   - V4 year: the original recording year (Discogs, label, archive), not a streaming reissue date. Write "date
+     unknown" rather than leaving it blank.
+   - V5 note: every claim traces to a source. No inferred superlatives ("first", "official").
+5. **Independent audit before import:** a separate agent re-checks each new ref against sources without seeing the
+   picker's reasoning, and gives OK / FIX / REJECT. Apply the fixes, then import.
+6. **Nate's ear is the last check.** Claude can't hear the playing, so "style model" quality is inferred from
+   reputation. A top pick is only truly reviewed once Nate has listened (see F8).
+
+#### Pass log
+
+- **Pass 1 (pilot, Sep 27 2026), 7 refs, 6 tunes.** The audit found problems in 5 of 7 before import: streaming
+  dates that were reissue years (Carignan 1975 → 1960), "source" stretched to mean "old" (a 1961 folk-revival track
+  swapped for La Bolduc's 1930 78), invented claims ("first solo album", "official label upload"), a Topic channel
+  crediting the wrong accompanist, and one convenience pick (an obscure 1966 Galax band, replaced by Fiddlin'
+  Powers & Family, Victor 1924). What worked: authority-first found landmark recordings quickly; Slippery-Hill gives
+  field recordings that play inline; the oEmbed and audio-duration checks make link checks mechanical. What's weak:
+  3 of 7 are Spotify-only; no old-time style models; about 15–20 lookups per tune, so about 6–8 tunes per session
+  with the audit. Follow-ups: Hollow Rock String Band (1968) for Angeline the Baker; Red Mountain White Trash
+  (1999) for Step Around Johnny; old-time style models (e.g. Tommy Jarrell); Scottish, Shetland and Cape Breton.
+- Courtesy: Slippery-Hill MP3s play straight from their server (a donation-supported site). The volume is tiny, but
+  keep the page credited in each note.
 
 ### A4. Where and when each tune was heard — S whenever Nate reports (formerly S4)
 
@@ -181,6 +224,12 @@ and a tappable count for each check (no type, no traditions, no tags, labels mis
 fact or sources, low confidence, unconfirmed key or form, no hearing, no recordings, no history). Possible extras:
 link each tune to its card on the main page; include session-sheet tunes once A5 lands.
 
+### F8. Nate's verdict on recordings — `idea` · S
+
+A quick way for Nate to mark a recording after listening (keeper / not useful, maybe a one-line reason), shown on
+the ref and counted on the gaps page. It's the one check Claude can't do, and the verdicts would show which picking
+habits work.
+
 ### F7. Scheduled enrichment runs — `idea` · M
 
 A weekly scheduled session that checks /fiddle/gaps and fills core gaps without Nate asking. Needs a way for an
@@ -219,3 +268,5 @@ for now (Sep 26 2026).
   the genre families, type definitions and tag vocabulary into `public/fiddle/vocab.js`, shared by both pages.
 - 2026-09-26: Core-gap pass (A1): filled region for 82 tunes and traditions for 15, and a tag for Stumptown Stomp.
   Core research complete went from 40 to 118 of 129; the remaining 11 need Nate's knowledge.
+- 2026-09-27: Recordings method v1 and pass 1 (pilot): 7 refs for 6 tunes, audited by a separate agent before
+  import (5 of 7 needed fixes). Method, checks and critique are in A3; added F8 (Nate's verdict on recordings).
