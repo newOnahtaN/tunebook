@@ -26,6 +26,10 @@ Feature statuses: `idea` → `designing` → `building` → `shipped`.
 - **How Nate works:** he mostly uses the site on his phone and asks Claude in chat to change data rather than editing
   on the site. Propose designs before building anything big, and ask him about gaps instead of guessing. Don't
   re-open decisions he has already made.
+- **PCC tunes are all from Sarah Comer (Nate, Sep 27 2026):** every tune with `source` starting with "PCC" (a
+  Portland Country Dance Community session sheet) was taught by Sarah Comer, a Pacific Northwest old-time fiddler.
+  When a PCC-sourced tune's origin comes back low-confidence or unverified, she's a real, askable source — Nate can
+  check with her directly rather than the answer staying a guess.
 
 ---
 
