@@ -60,8 +60,10 @@ filtering by a broad genre surfaces its relatives without false positives.
   of Drones, Pacific Sunrise) — these need Nate's own knowledge of the tune type. Bea's Waltz, Back Home, Habas para
   una Amiga, Roland White's and Texas Sandy Hill now have a research pass on file too, even though several came
   back low-confidence or unidentified rather than a firm answer.
-- Next best step: ask Nate the rhythm of each camp composition; add "crooked" and "cross-tuned" checks from
-  Slippery-Hill and the Traditional Tune Archive; label tunes added since.
+- Next best step: the six VOM camp compositions' keys and types are in the 7.7 MB VOM tune packet in Drive (per
+  Working notes) — this session now has a Drive connection that reads as Nate, so try reading the packet directly
+  instead of waiting for a smaller exported PDF; add "crooked" and "cross-tuned" checks from Slippery-Hill and the
+  Traditional Tune Archive; label tunes added since.
 - Proposals waiting for Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes under
   their real traditions; consider making Campbell's Farewell to Red Gap primarily Scottish.
 
@@ -107,6 +109,9 @@ Nate's rubric for the top recording:
 - Streaming link preference (Nate, Sep 27 2026): when a track isn't on YouTube or direct audio, link Tidal before
   Spotify or Apple Music. Retrofit the 3 Spotify-only pass-1 links and the Step Around Johnny Apple Music link to
   Tidal equivalents when a future pass touches those tunes.
+- Next passes: widen out from old-time — Irish, Scottish and Québécois are thin on outside recordings. Make V7
+  (tune identity) a hard stop rather than a judgment call: it was the top failure mode across all three passes
+  (Forked Deer, Little Liza Jane, Spotted Pony, Buffalo Gals) and, outside this project, Bea's Waltz.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -211,7 +216,8 @@ Sources (linked from Nate's "Fiddle Tune Learning" Google Doc, id `1nDN5qlES0aV-
   marker on tunes created from a sheet, never written into Nate's fields. Match names carefully ("Abbey Reel, The",
   "Andy Dejarlis") with the name/aka matcher plus a manual alias list.
 - The sheets are shared with Nate, not with the site's service account, so syncing needs his Drive sign-in or an
-  import run from chat.
+  import run from chat. (Sep 27 2026: this session now has a Google Drive connection that reads as Nate, which may
+  unblock the sync from chat — worth trying before assuming it still needs a manual sign-in.)
 - Status: not started. Coverage: share of sheet tunes matched, and last sync date per sheet.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
@@ -234,18 +240,30 @@ Safe Home, Health to the Company, The Wild Rover.
 
 ### F3. Flashcard-style learning and retention mode — `idea` · L
 
-An Anki-style mode for learning new tunes and keeping learned ones fresh. State management is central. Parts:
+An Anki-style mode for learning new tunes and keeping learned ones fresh. State management is central.
 
-1. **Recommendation algorithm:** suggests what to work on next, weighing genre, local popularity (hearings, A5 data,
-   commonality) and his prescribed learning path.
-2. **Practice log:** every time a tune was served for practice, and what happened.
+1. **Recommendation algorithm**, in priority order (Nate, Sep 27 2026):
+   1. Tunes from Hayden not yet memorized.
+   2. Tunes from Sarah / PCC not yet memorized.
+   3. Tunes with a note flagging special importance (e.g. "this tune is important to Heidi") — needs a way to mark
+      a note as this kind of callout, distinct from an ordinary free-text note (see open questions).
+   4. Tunes heard at Ritz's old-time jam not yet memorized or played.
+   5. Tunes broadly popular across all local sessions (old-time, Québécois, Scottish, Irish) — uses F4's popularity
+      overhaul, so needs A5 (session data) and F4 built first.
+   Separately: already-memorized tunes need their own way to stay in rotation so they don't go stale while this
+   list keeps attention on new material — see the staleness survey below; the two may end up as one system.
+2. **Practice log:** a lightweight per-session record — "played it", free-text notes for that session, and a
+   recording of that session (reusing the Drive/media pipeline). No again/hard/good/easy scoring for now (Nate,
+   Sep 27 2026).
 3. **Active-learning set:** the tunes currently being learned, with a configurable cap.
 4. **Staleness survey:** memorized tunes he hasn't touched in a while.
 5. **Accompaniment:** backing like Strum Machine (chord-chart playback at adjustable tempo, styles per genre).
+   **Punted, low priority for now (Nate, Sep 27 2026)** — still wanted eventually, just not designed yet.
 
-Open questions: What is the "prescribed learning path" (a list, per-genre weights, something else)? How should a
-practice session be scored (again / hard / good / easy, or just "played it")? Which Strum Machine features matter
-most, and where do chord charts come from?
+Open questions: how a "callout" note should be flagged and stored (a boolean, a tag, a free-text convention?); how
+much weight the staleness survey gets relative to new-tune priority; where chord charts would come from if/when
+accompaniment happens. Needs F4 + A5 for priority tier 5, and F9 (a "learned from" field) to drive tiers 1-2
+without text-matching on `source`.
 
 ### F4. Popularity overhaul and session-only tunes — `idea` · L (needs A5)
 
@@ -266,13 +284,36 @@ type.
 /fiddle/gaps, linked from the main page's footer when signed in. Shows how many tunes have complete core research
 and a tappable count for each check (no type, no traditions, no tags, labels missing from `vocab.js`, no region,
 fact or sources, low confidence, unconfirmed key or form, no hearing, no recordings, no history). Possible extras:
-link each tune to its card on the main page; include session-sheet tunes once A5 lands.
+link each tune to its card on the main page; include session-sheet tunes once A5 lands; flag a tune that has a
+lesson hearing but is still marked "Not played yet" (how Frank's Reel went stale, Sep 27 2026).
 
 ### F8. Nate's verdict on recordings — `idea` · S
 
 A quick way for Nate to mark a recording after listening (keeper / not useful, maybe a one-line reason), shown on
 the ref and counted on the gaps page. It's the one check Claude can't do, and the verdicts would show which picking
 habits work.
+
+### F9. "Learned from" field — `idea` · S (new, Sep 27 2026)
+
+A dedicated teacher/source-person field on each tune, separate from `source` (the occasion/session name). Right now
+telling "taught by Hayden" from "taught by Sarah" needs text-matching on `source` or reading notes by hand — that's
+why it took Nate explicitly saying so to learn all PCC tunes are Sarah's. A real field would:
+
+- Make F3's Hayden/Sarah priority tiers a filter instead of a guess.
+- Let A3's recording rubric auto-prefer a teacher's own recording as the top pick when one exists (the rubric
+  already names Sarah's and Hayden's recordings as gold-standard examples).
+
+Open question: should it backfill automatically from what's inferable (PCC → Sarah, `source` starting with "Fiddle
+  lesson" → Hayden) and then stay editable, or only fill in from what Nate confirms tune-by-tune? Auto-backfill is
+  faster but risks another wrong-until-corrected guess like Bea's Waltz's composer credit — ask Nate before building.
+
+### F10. A single "Needs Nate" queue — `idea` · S (new, Sep 27 2026)
+
+Questions only Nate can answer currently live in three separate places: ROADMAP's "Open data questions", the site's
+Working notes, and low-confidence `research.summary` text. That spread is itself a source of staleness (see the
+Sep 27 sweep in the log). A single list on the gaps page — grouped by what kind of answer it needs (listen and
+confirm by ear; ask Sarah or Hayden directly; check a file or notation he has) — would put everything in one place
+he can clear from his phone, instead of it living in notes he'd have to already know to look for.
 
 ### F7. Scheduled enrichment runs — `idea` · M
 
@@ -331,3 +372,9 @@ for now (Sep 26 2026).
 - 2026-09-27: Recordings pass 3: 13 refs for 10 old-time standards, picked by two parallel agents and audited
   before import (audit rejected 1 of 14 outright, fixed 5 more). 22 tunes now have outside recordings (30 refs), 13
   with a style model.
+- 2026-09-27: Roadmap review. Added F9 (a "learned from" field, to stop guessing who taught a tune) and F10 (a
+  single "Needs Nate" queue on the gaps page, replacing questions scattered across this file, Working notes and
+  research summaries). Filled in F3 with Nate's actual priority order (Hayden > Sarah/PCC > callout-flagged tunes >
+  Ritz jam tunes > broadly popular) and practice-log shape (played it + notes + a recording, no scoring); punted
+  accompaniment. Noted next steps for A1 (read the VOM packet via Drive), A3 (widen past old-time, harden V7) and A5
+  (try the sync now that a Drive connection is available).
