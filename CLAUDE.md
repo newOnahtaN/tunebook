@@ -25,6 +25,7 @@ it before finishing the turn, so every filter works for it. Import through `POST
    session standard...). Add new tags sparingly.
 4. `region`, `summary` (one notable sourced fact), `sources` (URLs) and `confidence`.
 5. If a good style-model recording is easy to find, add it to `refs` too (see ROADMAP A3 for the rubric).
+6. For a streaming link, prefer Tidal over Spotify or Apple Music (Tidal tends to embed better and Nate prefers it).
 
 Then check /fiddle/gaps: the tune should have no "Core research" gaps. That page is the single place that shows
 what's missing; don't put gap information on the main tune book.
