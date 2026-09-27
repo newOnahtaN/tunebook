@@ -9,6 +9,10 @@
   `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on. Recordings, working notes,
   occasion details and hearing notes are editor-only; keep them out of anything public.
 
+- **Never play audio or video in the browser pane.** It comes out of Nate's speakers. To check a recording, load
+  metadata only (a muted `Audio` with `preload = 'metadata'`, never `.play()`), use YouTube's oEmbed for links, and
+  never click Play buttons on the site.
+
 ## Every new tune gets fully enriched, in the same turn
 
 Whenever a tune is added (from chat, a hearing import, promoting an unidentified tune, or a session sheet), research
