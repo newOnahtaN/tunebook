@@ -200,25 +200,46 @@ toward times heard (Nate's decision, Sep 26 2026).
 **Major goal (Nate, Sep 26 2026).** Community members keep spreadsheets of every tune played at Seattle-area sessions.
 Keep the tune book in sync with them. This item is the data sync; F4 below is the feature that uses it.
 
-Sources (linked from Nate's "Fiddle Tune Learning" Google Doc, id `1nDN5qlES0aV-cpu9H1R9DhIL8-BpX_8Bl0MMTytl1a4`):
+**Progress (Sep 27 2026):** the Google Drive connection does unblock this — all sources below were read directly as
+Nate, no manual export needed. Pass 1 pulled each sheet's "top" tunes and diffed them against the 129-tune book; the
+candidate lists (tunes worth adding) are saved at `data/session-tunes/candidates_pass1.json` rather than inlined here.
 
-| Sheet | Maintainer | What it has |
-|---|---|---|
-| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. Count rows per tune to get times played. |
-| PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played. |
-| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played. |
-| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty. No play counts. |
+Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
+`1nDN5qlES0aV-cpu9H1R9DhIL8-BpX_8Bl0MMTytl1a4`; NWSF added Sep 27 2026 at Nate's request):
+
+| Sheet | Maintainer | What it has | "Top" means (Nate, Sep 27 2026: be thoughtful per-source, cap at 25) |
+|---|---|---|---|
+| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. | Frequency of the tune name across all logged dates. **Caveat:** a plain CSV export of this sheet only returns 41 rows spanning two August 2026 dates, not the full 2022-2026 history advertised in the title — it looks like the export API is only returning the sheet's current/active tab. Needs a follow-up read that targets each year's tab (or asks Nate to export it) before "top" here means anything. Not yet ranked. |
+| PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played (388 tunes). | The sheet's own "Times Played" column, top 25. Real play counts, so this is a direct measure. Only 1 of the top 25 (La fée des dents) is already in the book. |
+| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played (527 tunes on the main "Session tunes" tab). | Same: "Times Played" column, top 25. 2 of the top 25 (Cliffs of Moher, Father Kelly's) already in the book. The sheet also has a second tab, "Copy of Session tunes" (517 rows, adds a 1-2 "interest tier" column), that looks like a stale duplicate snapshot of the main tab — not used for ranking; still needs resolving whether it has anything the main tab doesn't. |
+| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty (~30 tunes). No play counts. | No ranking signal exists, so the whole list counts as "top" — it's already a short, hand-picked share list, not a full log. |
+| NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (Nate, Sep 27 2026) | NWSF club | The club's own curated "top tunes for sessions" reference, revised 2024, ~64 tunes across waltzes/airs/marches/jigs/strathspeys/reels, marked whether it's in their own library. Not a session Nate attends — it's a standing repertoire list. | The club already curated this as "top," so the whole list counts, same reasoning as Old Time Buddies. 12 of 64 are already in the book (all already heard at least once); 52 are new candidates. |
 
 - Nate's rules: local play counts beat broad internet sentiment; every sheet tune should appear in the tune book;
   and it must stay obvious which tunes Nate has actually heard. Community data is a third provenance, distinct from
-  both Nate's own data and research.
+  both Nate's own data and research. He only wants the top 25 per session at most, and "top" should be defined
+  per-source rather than forced into one formula (see table above).
+- **New tunes added from this data need a clear "local favorite, not yet heard" marker** (Nate, Sep 27 2026): when a
+  candidate from this list gets imported as a real tune record, set its `notes` to say it's a local favorite from
+  session X that Nate hasn't heard live yet (with the play count / rank), rather than inventing a new tag — the tag
+  vocabulary in `vocab.js` is for a tune's own character, not Nate's relationship to it. Status should start as
+  "Not played yet." None of pass 1's matches against the existing book needed this (every match already had at least
+  one hearing), but most of the candidates in `candidates_pass1.json` are brand new to the book and should get it
+  when they're imported.
 - Likely shape: a `session_counts` table (tune_id, sheet, times_played, first_played, last_played, synced_at) and a
   marker on tunes created from a sheet, never written into Nate's fields. Match names carefully ("Abbey Reel, The",
-  "Andy Dejarlis") with the name/aka matcher plus a manual alias list.
-- The sheets are shared with Nate, not with the site's service account, so syncing needs his Drive sign-in or an
-  import run from chat. (Sep 27 2026: this session now has a Google Drive connection that reads as Nate, which may
-  unblock the sync from chat — worth trying before assuming it still needs a manual sign-in.)
-- Status: not started. Coverage: share of sheet tunes matched, and last sync date per sheet.
+  "Andy Dejarlis") with the name/aka matcher plus a manual alias list. Pass 1's matching (strip accents, drop
+  parentheticals, move a trailing ", La/Le/Les/The" to the front) found only 3 of ~72 top-25 candidates already in the
+  book — most of what's "popular locally" isn't in Nate's book at all yet, which matters more than the sync
+  mechanism itself right now.
+- The sheets are shared with Nate, not with the site's service account, but the Google Drive connection in this
+  session reads them fine as Nate — confirmed working, no manual export needed.
+- Status: candidate lists gathered for all 5 sources (pass 1, Sep 27 2026), not yet imported as tune records — each
+  candidate still needs the full enrichment pass (CLAUDE.md's checklist) before it can become a real tune, which is
+  a bigger job than this pass. Old Time Buddies' 30 tunes haven't been diffed against the book yet either. Next: (1)
+  get real multi-year counts for Columbia City Jam, (2) resolve the Couth Buzzard duplicate tab, (3) diff Old Time
+  Buddies, (4) start importing candidates in small batches with full research + the "not yet heard" note, (5) design
+  the actual `session_counts` sync once enough candidates exist to make it worth automating.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -333,6 +354,13 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-27: A5 pass 1. Confirmed the Drive connection reads the community sheets as Nate. Pulled top-25-by-plays
+  from the Quebecois and Couth Buzzard sheets, the whole (small, uncounted) Old Time Buddies list, and — new source,
+  Nate's request — NW Scottish Fiddlers' own curated top-tunes reference. Diffed all of it against the 129-tune book:
+  only 3 tunes overlapped, saved the rest (~99 candidates) to `data/session-tunes/candidates_pass1.json` for future
+  import passes. Flagged that Columbia City Jam's CSV export only returns a two-date fragment, not its full
+  2022-2026 history, and that Couth Buzzard's "Copy of Session tunes" tab looks like a stale duplicate. Designed the
+  "local favorite, not yet heard" marking (a `notes` line, not a new tag) for when these candidates get imported.
 - 2026-09-26: Created this roadmap. Added the hearing log (21 occasions, 146 hearings), merged the three Peg Ryan's
   polka rows, added Andy De Jarlis to the unidentified list, and added Bonaparte's Retreat (W.H. Stepp, 1937).
 - 2026-09-26: Unidentified-titles pass. Identified Andy De Jarlis as Andy De Jarlis' Jig (Métis composer, a Cape
