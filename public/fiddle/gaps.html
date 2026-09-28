@@ -110,7 +110,7 @@ const CHECKS = [
   { id:"key", group:"basics", label:"Key missing or unconfirmed", test: c => !c.t.key || c.t.key.includes("?") },
   { id:"form", group:"basics", label:"Form missing or unconfirmed", test: c => !c.t.form || c.t.form.includes("?") },
   { id:"origin", group:"basics", label:"No origin", test: c => !c.t.origin },
-  { id:"heard", group:"basics", label:"No hearing logged", test: c => !c.heard },
+  { id:"heard", group:"basics", label:"No encounter logged", test: c => !c.encountered },
   { id:"rec", group:"deeper", label:"No recording at all", test: c => !c.drive && !c.refRecs.length },
   { id:"outrec", group:"deeper", label:"No outside recording", test: c => !c.refRecs.length },
   { id:"style", group:"deeper", label:"No style-model recording", test: c => !c.refRecs.some(f => f.category === "style") },
@@ -118,7 +118,7 @@ const CHECKS = [
 ];
 const GROUPS = [
   ["core", "Core research", "What the genre, type and tag filters depend on. Every tune should have all of these."],
-  ["basics", "Tune basics", "Nate's own fields and hearing log."],
+  ["basics", "Tune basics", "Nate's own fields and encounter log, including lessons and classes."],
   ["deeper", "Deeper enrichment", "Longer-term goals: recordings and full histories. These are never really finished."],
 ];
 
@@ -131,12 +131,12 @@ async function load(){
   const R = new Map((data.research || []).map(x => [x.tune_id, x]));
   const refs = new Map();
   for (const f of data.refs || []) (refs.get(f.tune_id) || refs.set(f.tune_id, []).get(f.tune_id)).push(f);
-  const heard = new Set((data.hearings || []).filter(h => h.tune_id != null).map(h => h.tune_id));
+  const encountered = new Set((data.hearings || []).filter(h => h.tune_id != null).map(h => h.tune_id));
   const media = new Map((data.media || []).map(m => [m.id, m]));
   const drive = new Set();
   for (const [mid, tid] of data.links || []){ const m = media.get(mid); if (m && !m.ignored && (m.kind === "audio" || m.kind === "video")) drive.add(tid); }
   results = data.tunes.map(t => {
-    const c = { t, r: R.get(t.id) || {}, heard: heard.has(t.id), drive: drive.has(t.id),
+    const c = { t, r: R.get(t.id) || {}, encountered: encountered.has(t.id), drive: drive.has(t.id),
       refRecs: (refs.get(t.id) || []).filter(f => f.kind === "recording") };
     const gaps = [];
     for (const ch of CHECKS){

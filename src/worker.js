@@ -5,6 +5,7 @@ import seed from './seed.json';
 import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, verifyRs256Jwt, SUPPORTED_ALGS } from './auth.js';
 import { kindOf, serveType, buildIndex, matchFile } from './media.js';
 import { serviceAccount, listTree, fetchMedia, oauthConfig, exchangeCode, writerToken, whoAmI, ensureFolder, uploadFile, WRITE_SCOPE } from './drive.js';
+import { countsAsHeard } from '../public/fiddle/hearings.js';
 
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
@@ -441,7 +442,7 @@ const OCCASION_KINDS = ['lesson', 'class', 'jam', 'session', 'camp', 'other'];
 const PRECISIONS = ['day', 'month', 'season', 'event'];
 const isoDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) ? String(v) : '';
 
-// "From" (tunes.source) is the first occasion a tune was heard at, whenever it has any hearings.
+// "From" (tunes.source) is the first logged encounter, including lessons and classes.
 async function refreshSources(env) {
   const rows = (await env.DB.prepare(`SELECT h.tune_id, o.* FROM hearings h JOIN occasions o ON o.id = h.occasion_id
     WHERE h.tune_id IS NOT NULL ORDER BY o.start, o.id`).all()).results;
@@ -885,8 +886,12 @@ function toMarkdown(d) {
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
   });
   const counts = [0, 1, 2].map(i => d.tunes.filter(t => t.status === i).length);
+  const occasions = new Map((d.occasions || []).map(o => [o.id, o]));
   const heard = new Map();
-  for (const h of d.hearings || []) if (h.tune_id != null) heard.set(h.tune_id, (heard.get(h.tune_id) || new Set()).add(h.occasion_id));
+  for (const h of d.hearings || []) {
+    if (h.tune_id == null || !countsAsHeard(occasions.get(h.occasion_id))) continue;
+    heard.set(h.tune_id, (heard.get(h.tune_id) || new Set()).add(h.occasion_id));
+  }
   const out = [
     "# Nate's tune book", '',
     `Exported from nategrimwood.com/fiddle on ${d.exported_at.slice(0, 10)}.`, '',
@@ -894,7 +899,8 @@ function toMarkdown(d) {
     '- **Common**: rough 1-10 guess at how widely players of that genre know the tune. Blank means unrated.',
     "- **Also**: other genres the tune fits, besides the section it's grouped under.",
     '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet.',
-    '- **From**: where Nate first heard the tune. **Heard**: how many separate occasions (lessons, classes, jams, sessions, camps) he has heard it at.',
+    '- **From**: the first logged encounter with the tune, including lessons and classes.',
+    '- **Heard**: separate non-teaching occasions (jams, sessions, camps and other encounters). Lessons and classes are logged but do not count here.',
     '- A `?` in Key, Form, or Origin means unconfirmed, not absent.', '',
     '## Totals', '',
     `- ${d.tunes.length} tunes traced`, `- ${counts[0]} memorized`, `- ${counts[1]} played, still learning`,

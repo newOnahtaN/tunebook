@@ -7,6 +7,9 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   for each tune (no type, no traditions, no region, no recordings, and so on). Gap information is kept off the main
   page on purpose. `public/fiddle/vocab.js` holds the shared genre tree, tune-type definitions and style-tag
   vocabulary used by both pages.
+- `public/fiddle/hearings.js` shares the "heard" rule between the main page and Markdown exports: lessons and
+  classes are logged, but only non-teaching encounters count as heard. "First encounter"/"From" and the gaps
+  page's "No encounter logged" check still include lessons and classes; the JSON export retains the complete log.
 - `src/worker.js` is a Cloudflare Worker that serves the page, redirects `/` and `www` to `/fiddle`, and runs a small JSON API under `/fiddle/api/`.
 - Data lives in a Cloudflare D1 database (binding `DB`). The Worker creates its tables on first run and fills them from `src/seed.json` once, when the database is empty. After that the database is the source of truth; `seed.json` is never re-applied.
 - Editing: sign in with Google or a passkey. Every edit saves immediately and is logged in the `edits` table, which powers "Recent changes" and undo.
