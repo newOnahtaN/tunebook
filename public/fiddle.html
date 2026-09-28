@@ -7,26 +7,31 @@
 <meta name="description" content="Nate's fiddle tune book: old-time, Irish, Scottish, Québécois and more, with keys, forms and where each tune came from.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#EDEFE9; --surface:#F7F8F4; --line:#CFD5CC;
-  --ink:#1B241F; --muted:#5C6A62;
-  --claret:#7A2E3A; --pine:#2E6355; --sun:#B8813A; --warn:#9A3B1F;
-  --radius:3px;
+  /* Daytime journal: aged cream parchment, sepia ink, a little candlelight amber even in daylight. */
+  --paper:#F1E7D2; --surface:#F8F0DE; --line:#D9C7A2;
+  --ink:#2C2013; --muted:#7C6C50;
+  --claret:#7C3138; --pine:#3E6B4A; --sun:#BD8A34; --warn:#9C4A22;
+  --glow:#E8C078; --glow-strength:.10;
+  --radius:5px;
   color-scheme:light dark;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --paper:#141917; --surface:#1B211E; --line:#333C37;
-    --ink:#E7EAE3; --muted:#9AA79F;
-    --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B;
+    /* The pub at night: dim wood-dark room, warm candlelight doing the work. */
+    --paper:#18120B; --surface:#241B10; --line:#42311D;
+    --ink:#EBDCBB; --muted:#AB967A;
+    --claret:#E08A6B; --pine:#8FBE93; --sun:#E7B75B; --warn:#E39A6B;
+    --glow:#E7B75B; --glow-strength:.22;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#141917; --surface:#1B211E; --line:#333C37;
-  --ink:#E7EAE3; --muted:#9AA79F;
-  --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B;
+  --paper:#18120B; --surface:#241B10; --line:#42311D;
+  --ink:#EBDCBB; --muted:#AB967A;
+  --claret:#E08A6B; --pine:#8FBE93; --sun:#E7B75B; --warn:#E39A6B;
+  --glow:#E7B75B; --glow-strength:.22;
 }
 *,*::before,*::after{box-sizing:border-box}
 body{
@@ -34,14 +39,31 @@ body{
   font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   font-size:15px; line-height:1.45; -webkit-text-size-adjust:100%;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  position:relative;
 }
-.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px}
+/* Paper grain: a tiled fractal-noise SVG, no image request, barely-there in daylight, a bit more felt by candlelight. */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) body::before{opacity:.09; mix-blend-mode:overlay} }
+:root[data-theme="dark"] body::before{opacity:.09; mix-blend-mode:overlay}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 64px;position:relative;z-index:1}
+header{position:relative}
+/* A candle's worth of warm light behind the title. */
+header::before{
+  content:""; position:absolute; top:-60px; left:-40px; width:340px; height:280px; z-index:-1;
+  background:radial-gradient(ellipse at center, var(--glow) 0%, transparent 70%);
+  opacity:var(--glow-strength); filter:blur(30px); pointer-events:none;
+}
 header h1{
   font-family:Fraunces,Georgia,"Times New Roman",serif;
   font-weight:600; font-size:clamp(30px,7vw,50px);
   letter-spacing:-0.015em; line-height:1.03; margin:0 0 6px;
 }
-header p{margin:0;color:var(--muted);max-width:60ch}
+header p{margin:0;color:var(--muted);max-width:60ch;font-style:italic}
 .counts{display:flex;flex-wrap:wrap;gap:6px 18px;margin:16px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
 .counts b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .savestate{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-top:10px;min-height:18px}
@@ -117,17 +139,29 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 [contenteditable]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.7;font-style:italic}
 .hidden{display:none !important}
 /* -------- tune cards -------- */
-.tcard{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:10px}
+.tcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;margin-bottom:10px;
+  box-shadow:0 1px 2px rgba(20,15,5,.06), 0 3px 10px rgba(20,15,5,.04);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tcard{box-shadow:0 1px 2px rgba(0,0,0,.35), 0 0 22px rgba(231,183,91,.035)} }
+:root[data-theme="dark"] .tcard{box-shadow:0 1px 2px rgba(0,0,0,.35), 0 0 22px rgba(231,183,91,.035)}
 .tcard-top{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;cursor:pointer}
 .tcard-top:hover{background:color-mix(in srgb, var(--surface) 85%, var(--ink))}
 .tcard-main{flex:1;min-width:0}
 .tcard-name-row{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.tcard-name{font-weight:600;font-size:16px}
+.tcard-name{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:16.5px}
 .tcard-key{font-variant-numeric:tabular-nums;color:var(--pine);font-weight:500;font-size:13px}
-.tcard-meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:3px;font-size:13px;color:var(--muted);align-items:baseline}
+.tcard-meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:4px;font-size:13px;color:var(--muted);align-items:center;row-gap:6px}
 .tcard-genre{color:var(--muted)}
 .tcard-bottom{margin-top:8px}
 .tcard-side{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+/* Session-list badge: a little ticket stub noting a tune's local-jam pedigree. */
+.srcbadge{
+  font-size:11px;font-weight:600;letter-spacing:.02em;white-space:nowrap;line-height:17px;padding:0 7px 0 6px;
+  border:1px solid var(--sun);border-radius:9px;color:var(--sun);background:color-mix(in srgb, var(--sun) 10%, transparent);
+}
+.srcbadge::before{content:"♪ ";opacity:.8}
+.srcbadge.fave{border-color:var(--claret);color:var(--claret);background:color-mix(in srgb, var(--claret) 10%, transparent)}
 .playbtn{border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;background:var(--pine);border-color:var(--pine);color:var(--paper)}
 .chev{color:var(--muted);font-size:11px;transition:transform .15s}
 .tcard[data-open="true"] .chev{transform:rotate(180deg)}
@@ -158,6 +192,15 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .rblock li.ref{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)}
 .rblock .rsrc{margin-top:8px;font-size:12px;overflow-wrap:anywhere}
 .rblock .rsrc a{color:var(--muted)}
+/* Community session-list data: a separate provenance from Nate's own and from research, styled like a pinned note. */
+.sblock{margin-top:16px;padding:10px 12px;border:1px solid var(--sun);border-radius:6px;background:color-mix(in srgb, var(--sun) 7%, var(--surface));font-size:13px}
+.sblock h5{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--sun)}
+.sblock ul{list-style:none;padding:0;margin:0}
+.sblock li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--sun) 30%, transparent)}
+.sblock li:first-child{border-top:0}
+.sblock .sname{flex:1 1 200px;min-width:0;color:var(--ink)}
+.sblock .sstat{color:var(--muted);font-size:12px;white-space:nowrap}
+.sblock .snote{display:block;margin-top:6px;color:var(--claret);font-size:12.5px;font-style:italic}
 .rcat{font-size:11px;border:1px solid var(--line);border-radius:9px;padding:0 6px;white-space:nowrap}
 .rcat[data-c="style"]{border-color:var(--pine);color:var(--pine)}
 .refname{flex:1 1 200px;min-width:0;color:var(--ink);opacity:.9}
@@ -270,6 +313,10 @@ a.btn:hover{border-color:var(--muted)}
     <button type="button" class="mselbtn" id="fTagBtn" aria-haspopup="true" aria-expanded="false">All tags</button>
     <div class="mselpanel hidden" id="fTagPanel" role="group" aria-label="Filter by style tag"></div>
   </div>
+  <div class="msel">
+    <button type="button" class="mselbtn" id="fSessionBtn" aria-haspopup="true" aria-expanded="false">Session lists</button>
+    <div class="mselpanel hidden" id="fSessionPanel" role="group" aria-label="Filter by community session list"></div>
+  </div>
   <select id="sort" aria-label="Sort">
     <option value="genre">Sort: genre</option>
     <option value="common">Sort: most common first</option>
@@ -366,7 +413,7 @@ let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[],
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
-const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set();
+const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set(), filterSession = new Set();
 
 // Genre families, tune types and tags are defined in /fiddle/vocab.js (shared with the data gaps page).
 const { GENRE_TREE, GENRE_ROOTS } = window.TUNE_VOCAB;
@@ -472,6 +519,20 @@ const heardOf = t => heardByTune.get(t.id) || [];
 function heardMatches(t){
   const hs = heardOf(t);
   return [...filterHeard].some(v => v === "none" ? !hs.length : v === "heard" ? hs.length > 0 : hs.some(h => h.o.kind === v));
+}
+// Community session lists (Columbia City Jam, Couth Buzzard, etc.) -- a third provenance, like research but
+// from other players' own logs rather than Claude's research. "fave" = on a list and never heard live.
+const FAVE = "fave";
+const sessionFilter = multiSelect($("fSessionBtn"), $("fSessionPanel"), () => {
+  const keys = [...new Set((state.session_sources || []).map(s => s.sheet_key))];
+  return keys.length ? ["any", FAVE, ...keys] : [];
+}, filterSession, { allLabel: "Session lists", name: "Session list",
+  labelOf: v => v === "any" ? "On any session list" : v === FAVE ? "Local favorite, not yet heard" : sheetNameOf(v) });
+function sessionMatches(t){
+  const rows = sessionByTune.get(t.id) || [];
+  return [...filterSession].some(v => v === "any" ? rows.length > 0
+    : v === FAVE ? rows.length > 0 && !heardOf(t).length
+    : rows.some(r => r.sheet_key === v));
 }
 
 async function call(method, path, body){
@@ -621,6 +682,7 @@ function fillFilters(){
   heardFilter.build();
   typeFilter.build();
   tagFilter.build();
+  sessionFilter.build();
   $("genreList").innerHTML = genreList().map(x => `<option value="${esc(x)}">`).join("");
 }
 
@@ -636,11 +698,13 @@ function render(){
     if (filterTags.size && !splitList(r.tags).some(x => filterTags.has(x))) return false;
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
     if (filterHeard.size && !heardMatches(t)) return false;
+    if (filterSession.size && !sessionMatches(t)) return false;
     if (term){
       const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
         ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" ")),
         ...(r => r ? [r.type, r.genres, r.tags, r.region, r.summary, r.history] : [])(researchByTune.get(t.id)),
-        ...(refsByTune.get(t.id) || []).map(f => refLabel(f))].join(" ").toLowerCase();
+        ...(refsByTune.get(t.id) || []).map(f => refLabel(f)),
+        ...(sessionByTune.get(t.id) || []).map(s => s.sheet_name)].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
     }
     return true;
@@ -679,7 +743,7 @@ function render(){
             ${ed("tunes", t.id, "key", t.key, "tcard-key", "Key")}
           </div>
           <div class="tcard-meta">
-            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t, by)}
+            ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t, by)}${sessionBadges(t)}
             ${status}
           </div>
           <div class="tcard-bottom">${bars(t.common, t.id)}</div>
@@ -704,6 +768,7 @@ function detailHtml(t, E){
     ${E ? mediaPanel(t) : ""}
     ${myLinks(t)}
     ${researchBlock(t, E)}
+    ${sessionBlock(t)}
     ${E ? `<div class="ddel"><button type="button" class="${confirmingDelete.has(t.id) ? "confirm" : ""}" data-del="${t.id}">${confirmingDelete.has(t.id) ? "Tap again to delete" : "Delete tune"}</button></div>` : ""}
   </div>`;
 }
@@ -838,6 +903,37 @@ function researchBlock(t, E){
     ${sources}</div>`;
 }
 
+// ------------------------------------------------------------ community session lists
+let sessionByTune = new Map(), sheetNames = new Map();
+function indexSessionSources(){
+  sessionByTune = new Map(); sheetNames = new Map();
+  for (const s of state.session_sources || []){
+    if (!sessionByTune.has(s.tune_id)) sessionByTune.set(s.tune_id, []);
+    sessionByTune.get(s.tune_id).push(s);
+    if (s.sheet_name) sheetNames.set(s.sheet_key, s.sheet_name);
+  }
+  for (const l of sessionByTune.values()) l.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+}
+const sheetNameOf = key => sheetNames.get(key) || key;
+function sessionBadges(t){
+  const rows = sessionByTune.get(t.id) || [];
+  if (!rows.length) return "";
+  const fave = !heardOf(t).length;
+  return rows.map(r => {
+    const label = r.rank && r.stat ? `${r.sheet_name} #${r.rank}` : r.sheet_name;
+    const title = [r.stat, "From a community session list, not Nate's own data"].filter(Boolean).join(" · ");
+    return `<span class="srcbadge${fave ? " fave" : ""}" title="${esc(title)}">${esc(label)}</span>`;
+  }).join("");
+}
+function sessionBlock(t){
+  const rows = sessionByTune.get(t.id) || [];
+  if (!rows.length) return "";
+  const fave = !heardOf(t).length;
+  const items = rows.map(r => `<li><span class="sname">${esc(r.sheet_name)}</span><span class="sstat">${esc([r.rank ? "#" + r.rank : "", r.stat].filter(Boolean).join(" · "))}</span></li>`).join("");
+  return `<div class="sblock"><h5>From community session lists</h5><ul>${items}</ul>
+    ${fave ? `<span class="snote">Local favorite — you haven’t heard this one live yet.</span>` : ""}</div>`;
+}
+
 // ------------------------------------------------------------ tune type legend
 const TYPE_INFO = window.TUNE_VOCAB.TYPE_INFO;
 function openTypes(focus){
@@ -857,7 +953,7 @@ $("typeList").addEventListener("click", e => {
   filterTypes.clear(); filterTypes.add(b.dataset.showtype); typeFilter.build(); render(); $("typeDlg").close();
 });
 
-function renderAll(){ indexMedia(); indexHearings(); indexResearch(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
+function renderAll(){ indexMedia(); indexHearings(); indexResearch(); indexSessionSources(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
 
 async function reload(){
   const d = await call("GET", "data");
