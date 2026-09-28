@@ -360,6 +360,14 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-28: Production authentication check: **unblocked**. The initial push failed because the app's work
+  account is an Enterprise Managed User, which cannot collaborate on this personal repository. Nate made the
+  repository private and authorized `newOnahtaN` for project-local access. On this workstation, `git personal`
+  runs Git commands and `git gh` runs GitHub CLI commands using an isolated CLI configuration and the Windows
+  keyring; other projects and work-account defaults are unchanged. These aliases and credential settings are
+  local, not committed credentials. Changed the main page's browser/bookmark title to "Nate's Fiddle Tune Book"
+  as a small deployment smoke test, without changing the API or tune data.
+
 - 2026-09-28: Built the community-session-lists site feature before importing any candidates, per request — a
   `session_sources` D1 table, a `POST /session-sources/import` endpoint (name-matching, mirrors `importResearch`),
   and on the front end a `srcbadge` per card (shows sheet name + rank only when both rank and a play-count stat
