@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-28 (pass 2 adds Old Time Buddies)",
+  "generated": "2026-09-28 (pass 2 adds Old Time Buddies; pass 3 adds Columbia City Jam full-history resolution)",
   "note": "Candidate tunes from local session data not yet in Nate's tune book, ranked as described in ROADMAP.md A5. 'plays' is the sheet's own times-played count where available.",
   "sources": {
     "quebecois_pnw": {
@@ -834,6 +834,163 @@
           "difficulty": "1 - Easy"
         }
       ]
+    },
+    "columbia_city_jam": {
+      "sheet": "Columbia City Jam - Tunes 2022-2026 (Seattle, WA)",
+      "rank_method": "Real play-count top 25, computed from the full 'All, by Date' tab (3084 logged plays, 3/31/2022-8/14/2026) -- NOT the 'Most Recent' tab, which is only a ~41-row fragment of the same log and was the source of an earlier data-completeness concern now resolved. Titles normalized (case/punctuation/parenthetical-insensitive) and counted; 701 distinct tunes logged, this is the top 25 by raw times-played.",
+      "candidates": [
+        {
+          "tune": "Sail Away Ladies - W.S. Collins",
+          "plays": 73,
+          "key": "G",
+          "source": "Luther Davis"
+        },
+        {
+          "tune": "Tater Roll",
+          "plays": 45,
+          "key": "D",
+          "source": "Harvey Taylor, Dear Old Illinois"
+        },
+        {
+          "tune": "Chattanooga (Old)",
+          "plays": 35,
+          "key": "G",
+          "source": "Blaine Smith"
+        },
+        {
+          "tune": "Cumberland Gap",
+          "plays": 34,
+          "key": "D",
+          "source": "via Greg Canote"
+        },
+        {
+          "tune": "Johnny Will You Marry Me?",
+          "plays": 33,
+          "key": "G",
+          "source": "Peter Honig (He Old-Timeified this tune from the Isles)"
+        },
+        {
+          "tune": "Lazy Kate",
+          "plays": 31,
+          "key": "D",
+          "source": "Leake County Revelers"
+        },
+        {
+          "tune": "Asked That Pretty Girl to be My Wife",
+          "plays": 30,
+          "key": "G",
+          "source": "Asked that pretty girl to be my wife;She wouldn't do it to save my life; Asked that pretty girl to be my wife; She run at me with a carving knife - Thede Book\nAudio: Clyde Davenport"
+        },
+        {
+          "tune": "Green Willis",
+          "plays": 28,
+          "key": "D",
+          "source": "Henry Reed (Audio: Alan Jabbour)"
+        },
+        {
+          "tune": "Jenny Won't You Drink Some Good Ol' Cider?",
+          "plays": 27,
+          "key": "D",
+          "source": "via Bruce Greene via Greg Canote (Audio: Bruce Greene | Rhys Jones | Greg Canote)"
+        },
+        {
+          "tune": "Baby Ben",
+          "plays": 27,
+          "key": "G",
+          "source": "James Bryan (Video)"
+        },
+        {
+          "tune": "Brierpicker Brown",
+          "plays": 25,
+          "key": "D",
+          "source": "Buddy Thomas"
+        },
+        {
+          "tune": "Going Back to Fielden",
+          "plays": 25,
+          "key": "G",
+          "source": "Dirk Powell"
+        },
+        {
+          "tune": "Bound to Have a Little Fun",
+          "plays": 25,
+          "key": "G",
+          "source": "Gusty Wallace"
+        },
+        {
+          "tune": "Old Beech Leaves",
+          "plays": 24,
+          "key": "G",
+          "source": "Sid Hudnall via Bruce Greene"
+        },
+        {
+          "tune": "Liza Jane - Marion Reese",
+          "plays": 23,
+          "key": "G",
+          "source": "Marion Reece, 1936 recording"
+        },
+        {
+          "tune": "Fair Morning Hornpipe",
+          "plays": 23,
+          "key": "D",
+          "source": "Wilson Douglas"
+        },
+        {
+          "tune": "Dandy Lusk's Tune",
+          "plays": 22,
+          "key": "G",
+          "source": "Ferdinand Lusk"
+        },
+        {
+          "tune": "Sam and Elsie",
+          "plays": 22,
+          "key": "D",
+          "source": "Bray family, as in local banjo hero Harley Bray"
+        },
+        {
+          "tune": "Old Piss",
+          "plays": 22,
+          "key": "D",
+          "source": "I learned this from English fiddler Emily Waddilove and it seems to trace back to the (U.S.) Civil war and the fife and drum tradition. T.M.  (Video: Clare and Walt)"
+        },
+        {
+          "tune": "Robinson County",
+          "plays": 22,
+          "key": "D",
+          "source": "Birkhead and Lane"
+        },
+        {
+          "tune": "Bacon Rind",
+          "plays": 21,
+          "key": "G",
+          "source": "Everett Kays"
+        },
+        {
+          "tune": "Crockett's Honeymoon",
+          "plays": 20,
+          "key": "G",
+          "source": "Crockett’s Kentucky Mountainiers, Video \"The Onlies\""
+        },
+        {
+          "tune": "Run Down Boot",
+          "plays": 20,
+          "key": "D",
+          "source": "Pete Priest"
+        },
+        {
+          "tune": "Cowboy Waltz",
+          "plays": 20,
+          "key": "D",
+          "source": "Tilman Pyeatt (Audio: Mike Seeger)"
+        },
+        {
+          "tune": "Lowery's Quadrille",
+          "plays": 19,
+          "key": "D",
+          "source": "John Summers, via Armin Barnett"
+        }
+      ],
+      "note": "Only 2 of 25 (Cumberland Gap, Bound to Have a Little Fun) are already in the book, and both already have exactly 1 hearing recorded, so neither is a 'local favorite, not yet heard' case. The other 23 are new-to-the-book candidates for future import."
     }
   }
 }
