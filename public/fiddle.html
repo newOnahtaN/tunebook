@@ -512,7 +512,8 @@ const HEARD_KINDS = ["lesson", "class", "jam", "session", "camp", "other"];
 const HEARD_LABEL = { heard:"Heard in real life", none:"Not heard yet", lesson:"…at a lesson", class:"…in a class",
   jam:"…at a jam", session:"…at a session", camp:"…at a camp", other:"…somewhere else" };
 const heardFilter = multiSelect($("fHeardBtn"), $("fHeardPanel"), () => {
-  const kinds = new Set((state.occasions || []).map(o => o.kind));
+  // Only kinds that actually made it into heardByTune (i.e. not lesson/class) ever show up as filter options.
+  const kinds = new Set([...heardByTune.values()].flatMap(hs => hs.map(h => h.o.kind)));
   return ["heard", ...HEARD_KINDS.filter(k => kinds.has(k)), "none"];
 }, filterHeard, { allLabel: "Heard or not", name: "Heard", labelOf: v => HEARD_LABEL[v] || v, depthOf: v => HEARD_KINDS.includes(v) ? 1 : 0 });
 const heardOf = t => heardByTune.get(t.id) || [];
@@ -806,12 +807,17 @@ function applyMode(){
 
 // ------------------------------------------------------------ where each tune was heard
 let occById = new Map(), heardByTune = new Map();
+// "Heard" means encountered live in the wild -- jams, sessions, camps -- not material being actively taught to
+// Nate. Lessons (with Hayden Stern) and classes (PCC, taught by Sarah Comer) are still tracked as occasions, but
+// don't count toward "heard": being taught a tune isn't the same as having heard it out at a jam.
+const UNCOUNTED_HEARD_KINDS = new Set(["lesson", "class"]);
 function indexHearings(){
   occById = new Map((state.occasions || []).map(o => [o.id, o]));
   heardByTune = new Map();
   for (const h of state.hearings || []){
     const o = occById.get(h.occasion_id);
     if (!o || h.tune_id == null) continue;
+    if (UNCOUNTED_HEARD_KINDS.has(o.kind)) continue;
     if (!heardByTune.has(h.tune_id)) heardByTune.set(h.tune_id, []);
     heardByTune.get(h.tune_id).push({ o, note:h.note || "" });
   }
