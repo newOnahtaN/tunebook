@@ -212,7 +212,7 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
 | Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. | Frequency of the tune name across all logged dates. **Caveat:** a plain CSV export of this sheet only returns 41 rows spanning two August 2026 dates, not the full 2022-2026 history advertised in the title — it looks like the export API is only returning the sheet's current/active tab. Needs a follow-up read that targets each year's tab (or asks Nate to export it) before "top" here means anything. Not yet ranked. |
 | PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played (388 tunes). | The sheet's own "Times Played" column, top 25. Real play counts, so this is a direct measure. Only 1 of the top 25 (La fée des dents) is already in the book. |
 | Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played (527 tunes on the main "Session tunes" tab). | Same: "Times Played" column, top 25. 2 of the top 25 (Cliffs of Moher, Father Kelly's) already in the book. The sheet also has a second tab, "Copy of Session tunes" (517 rows, adds a 1-2 "interest tier" column), that looks like a stale duplicate snapshot of the main tab — not used for ranking; still needs resolving whether it has anything the main tab doesn't. |
-| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty (~30 tunes). No play counts. | No ranking signal exists, so the whole list counts as "top" — it's already a short, hand-picked share list, not a full log. |
+| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty (~30 tunes). No play counts. | No ranking signal exists, so the whole list counts as "top" — it's already a short, hand-picked share list, not a full log. Diffed Sep 28 2026: only 2 of 30 (Red Haired Boy, Cherokee Shuffle) already in the book — both matter for F3 tier 4 (Ritz jam tunes not yet memorized/played). The other 28 are in `candidates_pass1.json`. |
 | NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (Nate, Sep 27 2026) | NWSF club | The club's own curated "top tunes for sessions" reference, revised 2024, ~64 tunes across waltzes/airs/marches/jigs/strathspeys/reels, marked whether it's in their own library. Not a session Nate attends — it's a standing repertoire list. | The club already curated this as "top," so the whole list counts, same reasoning as Old Time Buddies. 12 of 64 are already in the book (all already heard at least once); 52 are new candidates. |
 
 - Nate's rules: local play counts beat broad internet sentiment; every sheet tune should appear in the tune book;
@@ -234,12 +234,14 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
   mechanism itself right now.
 - The sheets are shared with Nate, not with the site's service account, but the Google Drive connection in this
   session reads them fine as Nate — confirmed working, no manual export needed.
-- Status: candidate lists gathered for all 5 sources (pass 1, Sep 27 2026), not yet imported as tune records — each
-  candidate still needs the full enrichment pass (CLAUDE.md's checklist) before it can become a real tune, which is
-  a bigger job than this pass. Old Time Buddies' 30 tunes haven't been diffed against the book yet either. Next: (1)
-  get real multi-year counts for Columbia City Jam, (2) resolve the Couth Buzzard duplicate tab, (3) diff Old Time
-  Buddies, (4) start importing candidates in small batches with full research + the "not yet heard" note, (5) design
-  the actual `session_counts` sync once enough candidates exist to make it worth automating.
+- Status: candidate lists gathered for all 5 sources (pass 1-2, Sep 27-28 2026) — 127 candidates total across the 5
+  sheets, none yet imported as tune records. Each candidate still needs the full enrichment pass (CLAUDE.md's
+  checklist) before it can become a real tune, which is a bigger job than gathering the list, so imports haven't
+  started. Next: (1) get real multi-year counts for Columbia City Jam (its export is still just a two-date
+  fragment), (2) resolve the Couth Buzzard duplicate tab, (3) start importing candidates in small batches with full
+  research + the "not yet heard" note — Red Haired Boy and Cherokee Shuffle are already in the book and match F3
+  tier 4, so they're a natural first pair to fully research and prioritize, (4) design the actual `session_counts`
+  sync once enough candidates exist to make it worth automating.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -354,6 +356,10 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-28: A5 pass 2. Diffed Old Time Buddies (Ritz's jam) against the book: only Red Haired Boy and Cherokee
+  Shuffle already there, both relevant to F3 tier 4. Added its other 28 tunes to `candidates_pass1.json` (now 127
+  candidates across all 5 sources). Columbia City Jam's full history and the Couth Buzzard duplicate tab are still
+  open.
 - 2026-09-27: A5 pass 1. Confirmed the Drive connection reads the community sheets as Nate. Pulled top-25-by-plays
   from the Quebecois and Couth Buzzard sheets, the whole (small, uncounted) Old Time Buddies list, and — new source,
   Nate's request — NW Scottish Fiddlers' own curated top-tunes reference. Diffed all of it against the 129-tune book:
