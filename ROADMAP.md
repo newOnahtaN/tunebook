@@ -209,9 +209,9 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
 
 | Sheet | Maintainer | What it has | "Top" means (Nate, Sep 27 2026: be thoughtful per-source, cap at 25) |
 |---|---|---|---|
-| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. | Frequency of the tune name across all logged dates. **Caveat:** a plain CSV export of this sheet only returns 41 rows spanning two August 2026 dates, not the full 2022-2026 history advertised in the title — it looks like the export API is only returning the sheet's current/active tab. Needs a follow-up read that targets each year's tab (or asks Nate to export it) before "top" here means anything. Not yet ranked. |
+| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. Six tabs total; the sheet actually has a separate "All, by Date" tab (A1:H3085, the true full 2022-2026 log) — "Most Recent"/"Less Recent" are partial views of it, and "G/D/A xA/C Tunes" are key-filtered slices of the same data, not new tunes. | **Resolved Sep 28 2026:** the earlier "41-row fragment" problem was `download_file_content` only ever exporting the sheet's default tab ("Most Recent"). Pulled the full "All, by Date" tab directly via its gviz CSV export (614,436 chars, verified byte-exact, 3084 data rows, 701 distinct tune titles after normalization) and counted real per-tune frequency across the whole 3/31/2022-8/14/2026 span. Top 25 by raw play count — only 2 of 25 (Cumberland Gap, Bound to Have a Little Fun) already in the book, both with 1 hearing already, so no "not yet heard" cases from this source. |
 | PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played (388 tunes). | The sheet's own "Times Played" column, top 25. Real play counts, so this is a direct measure. Only 1 of the top 25 (La fée des dents) is already in the book. |
-| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played (527 tunes on the main "Session tunes" tab). | Same: "Times Played" column, top 25. 2 of the top 25 (Cliffs of Moher, Father Kelly's) already in the book. The sheet also has a second tab, "Copy of Session tunes" (517 rows, adds a 1-2 "interest tier" column), that looks like a stale duplicate snapshot of the main tab — not used for ranking; still needs resolving whether it has anything the main tab doesn't. |
+| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played (527 tunes on the main "Session tunes" tab). | Same: "Times Played" column, top 25. 2 of the top 25 (Cliffs of Moher, Father Kelly's) already in the book. The sheet also has a second tab, "Copy of Session tunes" (517 rows, adds a 1-2 "interest tier" column, called "Some Interesting"). **Resolved Sep 28 2026:** confirmed via a full per-tab read that it's a stale duplicate of "Session tunes" — same tune identities, but its play counts occasionally lag the main tab (e.g. Black Rogue 6 vs 7, Banish Misfortune 22 vs 23), meaning it was copied at an earlier point and never kept in sync. "Session tunes" is canonical for ranking; "Copy of Session tunes", the empty "Temp" tab, and "Scale modes" (a music-theory reference table, not tune data) are all excluded from any future sync. |
 | Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty (~30 tunes). No play counts. | No ranking signal exists, so the whole list counts as "top" — it's already a short, hand-picked share list, not a full log. Diffed Sep 28 2026: only 2 of 30 (Red Haired Boy, Cherokee Shuffle) already in the book — both matter for F3 tier 4 (Ritz jam tunes not yet memorized/played). The other 28 are in `candidates_pass1.json`. |
 | NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (Nate, Sep 27 2026) | NWSF club | The club's own curated "top tunes for sessions" reference, revised 2024, ~64 tunes across waltzes/airs/marches/jigs/strathspeys/reels, marked whether it's in their own library. Not a session Nate attends — it's a standing repertoire list. | The club already curated this as "top," so the whole list counts, same reasoning as Old Time Buddies. 12 of 64 are already in the book (all already heard at least once); 52 are new candidates. |
 
@@ -234,14 +234,14 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
   mechanism itself right now.
 - The sheets are shared with Nate, not with the site's service account, but the Google Drive connection in this
   session reads them fine as Nate — confirmed working, no manual export needed.
-- Status: candidate lists gathered for all 5 sources (pass 1-2, Sep 27-28 2026) — 127 candidates total across the 5
-  sheets, none yet imported as tune records. Each candidate still needs the full enrichment pass (CLAUDE.md's
-  checklist) before it can become a real tune, which is a bigger job than gathering the list, so imports haven't
-  started. Next: (1) get real multi-year counts for Columbia City Jam (its export is still just a two-date
-  fragment), (2) resolve the Couth Buzzard duplicate tab, (3) start importing candidates in small batches with full
-  research + the "not yet heard" note — Red Haired Boy and Cherokee Shuffle are already in the book and match F3
-  tier 4, so they're a natural first pair to fully research and prioritize, (4) design the actual `session_counts`
-  sync once enough candidates exist to make it worth automating.
+- Status: candidate lists gathered and fully resolved for all 5 sources (pass 1-3, Sep 27-28 2026) — 152 candidates
+  total across the 5 sheets, none yet imported as tune records. Both data-quality issues flagged in pass 1 (Columbia
+  City Jam's fragmentary export, Couth Buzzard's duplicate tab) are now resolved — see the table above. Each
+  candidate still needs the full enrichment pass (CLAUDE.md's checklist) before it can become a real tune, which is
+  a bigger job than gathering the list, so imports haven't started. Next: (1) start importing candidates in small
+  batches with full research + the "not yet heard" note — Red Haired Boy and Cherokee Shuffle are already in the
+  book and match F3 tier 4, so they're a natural first pair to fully research and prioritize, (2) design the actual
+  `session_counts` sync once enough candidates exist to make it worth automating.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -356,6 +356,14 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-28: A5 pass 3. Resolved both open A5 data-quality issues. Columbia City Jam: found via a per-tab Drive
+  read that the sheet has six tabs, not one — the true full history lives in "All, by Date" (3085 rows), while the
+  CSV export Nate's link pointed at only ever returned the default "Most Recent" tab. Pulled the full tab's data via
+  its gviz CSV endpoint in the browser (614,436 chars, verified length-exact against the fetch, 3084 data rows),
+  computed real per-tune play counts across the full 3/31/2022-8/14/2026 span, and added a top-25 `columbia_city_jam`
+  source to `candidates_pass1.json` (152 candidates total now across 5 sources). Couth Buzzard: confirmed "Copy of
+  Session tunes" is a stale, occasionally-lagging duplicate of the canonical "Session tunes" tab and should be
+  excluded from any sync, along with the empty "Temp" tab and the non-tune "Scale modes" reference tab.
 - 2026-09-28: A5 pass 2. Diffed Old Time Buddies (Ritz's jam) against the book: only Red Haired Boy and Cherokee
   Shuffle already there, both relevant to F3 tier 4. Added its other 28 tunes to `candidates_pass1.json` (now 127
   candidates across all 5 sources). Columbia City Jam's full history and the Couth Buzzard duplicate tab are still
