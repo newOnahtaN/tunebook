@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-27",
+  "generated": "2026-09-28 (pass 2 adds Old Time Buddies)",
   "note": "Candidate tunes from local session data not yet in Nate's tune book, ranked as described in ROADMAP.md A5. 'plays' is the sheet's own times-played count where available.",
   "sources": {
     "quebecois_pnw": {
@@ -394,58 +394,445 @@
       "sheet": "NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (club's curated core repertoire, revised 2024, not play-count ranked)",
       "rank_method": "entire club-curated list treated as 'top' since NWSF already selected it as their core repertoire",
       "candidates": [
-        {"tune": "Josephine's Waltz", "type_hint": "waltz"},
-        {"tune": "Maggie West's Waltz", "type_hint": "waltz"},
-        {"tune": "My Cape Breton Home", "type_hint": "air"},
-        {"tune": "Da Slockit Light", "type_hint": "air"},
-        {"tune": "Coilsfield House", "type_hint": "air"},
-        {"tune": "Far Over Struy", "type_hint": "march"},
-        {"tune": "Bloody Fields of Flanders/Freedom Come All Ye'", "type_hint": "march"},
-        {"tune": "Caledonian March", "type_hint": "march"},
-        {"tune": "Dan Rory MacDougal", "type_hint": "march"},
-        {"tune": "Grand Etang (The)", "type_hint": "march"},
-        {"tune": "Leslie's March", "type_hint": "march"},
-        {"tune": "Andy Dejarlis", "type_hint": "jig"},
-        {"tune": "Arthur Darley's", "type_hint": "jig"},
-        {"tune": "Athole Highlanders", "type_hint": "jig"},
-        {"tune": "Calliope House", "type_hint": "jig"},
-        {"tune": "Fairly Shot at Her", "type_hint": "jig"},
-        {"tune": "Igonish", "type_hint": "jig"},
-        {"tune": "Jig of Slurs", "type_hint": "jig"},
-        {"tune": "Jig Runrig", "type_hint": "jig"},
-        {"tune": "Kerfuntin", "type_hint": "jig"},
-        {"tune": "Off She Goes", "type_hint": "jig"},
-        {"tune": "Paddy's Leather Britches", "type_hint": "jig"},
-        {"tune": "Sandy M'Gaff", "type_hint": "jig"},
-        {"tune": "Scotty's Favorite", "type_hint": "jig"},
-        {"tune": "Stan Chapman", "type_hint": "jig"},
-        {"tune": "Braes O' Mar", "type_hint": "strathspey"},
-        {"tune": "Braighe Bhanh", "type_hint": "strathspey"},
-        {"tune": "Cameron's Got His Wife Again", "type_hint": "strathspey"},
-        {"tune": "Duke of Gordon's Birthday", "type_hint": "strathspey"},
-        {"tune": "Ewie with the Crooked Horn", "type_hint": "strathspey"},
-        {"tune": "Fir Tree (The)", "type_hint": "strathspey"},
-        {"tune": "King George the IV", "type_hint": "strathspey"},
-        {"tune": "John McAlpin", "type_hint": "strathspey"},
-        {"tune": "Barrowburn", "type_hint": "reel"},
-        {"tune": "Da Mirrie Boys of Greenland", "type_hint": "reel"},
-        {"tune": "Deil Amang the Tailors", "type_hint": "reel"},
-        {"tune": "Drowsy Maggy", "type_hint": "reel"},
-        {"tune": "Homeward Bound", "type_hint": "reel"},
-        {"tune": "Jenny Dang the Weaver", "type_hint": "reel"},
-        {"tune": "King's Reel", "type_hint": "reel"},
-        {"tune": "Largo's Fairy Dance", "type_hint": "reel"},
-        {"tune": "Le Chat Noir", "type_hint": "reel"},
-        {"tune": "Maggie's Pancakes", "type_hint": "reel"},
-        {"tune": "Mason's Apron", "type_hint": "reel"},
-        {"tune": "Miss Lyall", "type_hint": "reel"},
-        {"tune": "Miss Susan Cooper", "type_hint": "reel"},
-        {"tune": "Mortgage Burn", "type_hint": "reel"},
-        {"tune": "My Kindly Sweetheart", "type_hint": "reel"},
-        {"tune": "Old Grey Cat", "type_hint": "reel"},
-        {"tune": "Reconciliation", "type_hint": "reel"},
-        {"tune": "Sleepy Maggie", "type_hint": "reel"},
-        {"tune": "Tam Lin", "type_hint": "reel"}
+        {
+          "tune": "Josephine's Waltz",
+          "type_hint": "waltz"
+        },
+        {
+          "tune": "Maggie West's Waltz",
+          "type_hint": "waltz"
+        },
+        {
+          "tune": "My Cape Breton Home",
+          "type_hint": "air"
+        },
+        {
+          "tune": "Da Slockit Light",
+          "type_hint": "air"
+        },
+        {
+          "tune": "Coilsfield House",
+          "type_hint": "air"
+        },
+        {
+          "tune": "Far Over Struy",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Bloody Fields of Flanders/Freedom Come All Ye'",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Caledonian March",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Dan Rory MacDougal",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Grand Etang (The)",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Leslie's March",
+          "type_hint": "march"
+        },
+        {
+          "tune": "Andy Dejarlis",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Arthur Darley's",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Athole Highlanders",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Calliope House",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Fairly Shot at Her",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Igonish",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Jig of Slurs",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Jig Runrig",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Kerfuntin",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Off She Goes",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Paddy's Leather Britches",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Sandy M'Gaff",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Scotty's Favorite",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Stan Chapman",
+          "type_hint": "jig"
+        },
+        {
+          "tune": "Braes O' Mar",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Braighe Bhanh",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Cameron's Got His Wife Again",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Duke of Gordon's Birthday",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Ewie with the Crooked Horn",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Fir Tree (The)",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "King George the IV",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "John McAlpin",
+          "type_hint": "strathspey"
+        },
+        {
+          "tune": "Barrowburn",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Da Mirrie Boys of Greenland",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Deil Amang the Tailors",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Drowsy Maggy",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Homeward Bound",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Jenny Dang the Weaver",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "King's Reel",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Largo's Fairy Dance",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Le Chat Noir",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Maggie's Pancakes",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Mason's Apron",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Miss Lyall",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Miss Susan Cooper",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Mortgage Burn",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "My Kindly Sweetheart",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Old Grey Cat",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Reconciliation",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Sleepy Maggie",
+          "type_hint": "reel"
+        },
+        {
+          "tune": "Tam Lin",
+          "type_hint": "reel"
+        }
+      ]
+    },
+    "old_time_buddies_ritz": {
+      "sheet": "Seattle's Old Time Buddies - Tune Share (Ritz's jam)",
+      "rank_method": "whole list counts as 'top' — it's already a short hand-picked share list, not a full log",
+      "note": "Red Haired Boy and Cherokee Shuffle are the only 2 of 30 already in the book (both heard once, from recordings research, not live at Ritz's jam) -- relevant to F3 priority tier 4 (Ritz jam tunes not yet memorized/played).",
+      "candidates": [
+        {
+          "tune": "Bully of the Town",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Cold Frosty Morning",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/Ep3oLlP_PE0?si=VDH87IS4voqDvcJI",
+          "difficulty": ""
+        },
+        {
+          "tune": "Cruisin Timber",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/ZqeP9yh80lY?si=WIohZL44i1vcd5ez",
+          "difficulty": ""
+        },
+        {
+          "tune": "East Tennessee Blues",
+          "key": "C",
+          "artist": "III Tyme Out",
+          "album": "Back to the Mac",
+          "link": "https://youtu.be/9-mFMWic_jU?si=cFR1ncI5ucIVAgA_",
+          "difficulty": "1 - Easy"
+        },
+        {
+          "tune": "Elzic's Farewell",
+          "key": "Am",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/6m1pS-_65eY?si=fIrGIdXpKDrKGVxD",
+          "difficulty": "4"
+        },
+        {
+          "tune": "Farewell Blues",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/n4mVZbzXbYQ?si=TYuAsFsbRKPPRs2",
+          "difficulty": "3"
+        },
+        {
+          "tune": "Garfield's Blackberry Blossom",
+          "key": "G",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/rVQEsfvBBmQ?si=r6Q862C8vFzwjZMp",
+          "difficulty": "3"
+        },
+        {
+          "tune": "Come Hither to Go Yonder",
+          "key": "",
+          "artist": "Bill Monroe",
+          "album": "",
+          "link": "https://youtu.be/E7MJ--dcbSs?si=Q9hsZz7xA6TWC5C4",
+          "difficulty": "1 - Easy"
+        },
+        {
+          "tune": "Hartford’s Reel",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/-2RYC8hNxH0?si=VPWiLfzb5ej_E4bR",
+          "difficulty": ""
+        },
+        {
+          "tune": "Hawk is a Mule",
+          "key": "G",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/aAa4Ae2HEoo?si=IFyouz71BrVTzaZc",
+          "difficulty": "4"
+        },
+        {
+          "tune": "Huckleberry Hornpipe",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/mWt3bFvKXgk?si=xKbm8RlAhSrvfrlp",
+          "difficulty": ""
+        },
+        {
+          "tune": "Itzben Reel",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/DA07icmBS4A?si=zJKDb1XoB1coQcJO",
+          "difficulty": ""
+        },
+        {
+          "tune": "June Apple",
+          "key": "D",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/pdv7f-7DvqA?si=P2YgbLeFNSi_xZgI",
+          "difficulty": "1 - Easy"
+        },
+        {
+          "tune": "Lost Indian",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/MF3tF_5YSQs?si=-wxC7UMUJleMAVYW",
+          "difficulty": ""
+        },
+        {
+          "tune": "Margaret’s Waltz",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/oW8heicLOvg?si=BTHdO4WrV56dMh8C",
+          "difficulty": ""
+        },
+        {
+          "tune": "Midnight on the Water",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/B-CPbYZ-ey0?si=4UfeWlV5EZVW-iMk",
+          "difficulty": ""
+        },
+        {
+          "tune": "Red Prarie Dawn",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "https://youtu.be/xF90s_DehPQ?si=AJDLjSEtR_4jpbXL",
+          "difficulty": ""
+        },
+        {
+          "tune": "Salt Spring",
+          "key": "A",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": "2"
+        },
+        {
+          "tune": "Texas Gales",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Suzanne's Journey",
+          "key": "G",
+          "artist": "John Reischman",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Crossing the Cumberlands",
+          "key": "Gm",
+          "artist": "Good Ol' Persons",
+          "album": "Part of a Story",
+          "link": "https://music.youtube.com/playlist?list=OLAK5uy_mE_vPetorm-8QPr6sVG3-det-ar3TA64o",
+          "difficulty": "3"
+        },
+        {
+          "tune": "clinch mountain backstep",
+          "key": "D",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Maiden's Prayer",
+          "key": "A",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": "1 - Easy"
+        },
+        {
+          "tune": "Billy in the Lowground",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Big Sciota",
+          "key": "G",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Saint Anne's Reel",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Cherokee Trail",
+          "key": "",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": ""
+        },
+        {
+          "tune": "Sally Goodin",
+          "key": "A",
+          "artist": "",
+          "album": "",
+          "link": "",
+          "difficulty": "1 - Easy"
+        }
       ]
     }
   }
