@@ -235,13 +235,17 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
 - The sheets are shared with Nate, not with the site's service account, but the Google Drive connection in this
   session reads them fine as Nate — confirmed working, no manual export needed.
 - Status: candidate lists gathered and fully resolved for all 5 sources (pass 1-3, Sep 27-28 2026) — 152 candidates
-  total across the 5 sheets, none yet imported as tune records. Both data-quality issues flagged in pass 1 (Columbia
-  City Jam's fragmentary export, Couth Buzzard's duplicate tab) are now resolved — see the table above. Each
-  candidate still needs the full enrichment pass (CLAUDE.md's checklist) before it can become a real tune, which is
-  a bigger job than gathering the list, so imports haven't started. Next: (1) start importing candidates in small
-  batches with full research + the "not yet heard" note — Red Haired Boy and Cherokee Shuffle are already in the
-  book and match F3 tier 4, so they're a natural first pair to fully research and prioritize, (2) design the actual
-  `session_counts` sync once enough candidates exist to make it worth automating.
+  total across the 5 sheets. The site now has a feature for this (Sep 28 2026, before any import): a `session_sources`
+  table, a `POST /session-sources/import` endpoint, and on the front end a `srcbadge` on each card (e.g. "Columbia
+  City Jam #4"), a session-list detail block, and a `Session lists` filter — alongside a full parchment/candlelight
+  visual reskin (daytime journal / pub-at-night dark mode). All 152 candidates were imported via the new endpoint;
+  3 matched existing tune records (Cumberland Gap, and two others) and now show their badge live — the other 149
+  stay unmatched and tracked in `data/session-tunes/candidates_pass1.json` until each gets the full enrichment pass
+  (CLAUDE.md's checklist) and becomes a real tune record, which is a bigger job than gathering the list. Next: (1)
+  start importing candidates as full tune records in small batches with full research + the "not yet heard" note
+  (now auto-derived from hearings data rather than hand-written) — Red Haired Boy and Cherokee Shuffle are already
+  in the book and match F3 tier 4, so they're a natural first pair to fully research and prioritize, (2) design the
+  actual `session_counts` sync once enough candidates exist to make it worth automating.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -355,6 +359,16 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-28: Built the community-session-lists site feature before importing any candidates, per request — a
+  `session_sources` D1 table, a `POST /session-sources/import` endpoint (name-matching, mirrors `importResearch`),
+  and on the front end a `srcbadge` per card (shows sheet name + rank only when both rank and a play-count stat
+  exist, so curated non-ranked lists like NW Scottish Fiddlers just show the name), a `.sblock` detail panel, and a
+  `Session lists` multiSelect filter. "Local favorite, not yet heard" is derived at render time from existing
+  hearings data rather than a hand-written note. Also reskinned the whole site as an aged-parchment journal, with a
+  genuinely different "pub at night" dark mode (dim wood-dark room, stronger candlelight) rather than just a dimmed
+  daytime palette. Then imported all 152 pass-1–3 candidates through the new endpoint: 3 matched existing tune
+  records and now show live badges; the other 149 stay tracked in candidates_pass1.json pending full research.
 
 - 2026-09-28: A5 pass 3. Resolved both open A5 data-quality issues. Columbia City Jam: found via a per-tab Drive
   read that the sheet has six tabs, not one — the true full history lives in "All, by Date" (3085 rows), while the
