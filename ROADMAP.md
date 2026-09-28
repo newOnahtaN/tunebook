@@ -360,6 +360,10 @@ for now (Sep 26 2026).
   Shuffle already there, both relevant to F3 tier 4. Added its other 28 tunes to `candidates_pass1.json` (now 127
   candidates across all 5 sources). Columbia City Jam's full history and the Couth Buzzard duplicate tab are still
   open.
+- 2026-09-28: While diffing Old Time Buddies, found Red Haired Boy was missing a hearing at the Ritz jam occasion
+  (`ritz-2026-08-27`) even though it's on that jam's own tune-share sheet — it only had a hearing from Fiddle Tunes
+  camp. Added the missing hearing via `/hearings/import`. Cherokee Shuffle already had its Ritz jam hearing correctly
+  recorded.
 - 2026-09-27: A5 pass 1. Confirmed the Drive connection reads the community sheets as Nate. Pulled top-25-by-plays
   from the Quebecois and Couth Buzzard sheets, the whole (small, uncounted) Old Time Buddies list, and — new source,
   Nate's request — NW Scottish Fiddlers' own curated top-tunes reference. Diffed all of it against the 129-tune book:
