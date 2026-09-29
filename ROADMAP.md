@@ -55,11 +55,12 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
   the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
   and "Alabama" were added under Old-time.
-- Coverage: 123 of 129 tunes have complete core research (Sep 27 2026). The remaining 6 are all VOM camp
-  compositions with no findable source online (Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game
-  of Drones, Pacific Sunrise) — these need Nate's own knowledge of the tune type. Bea's Waltz, Back Home, Habas para
-  una Amiga, Roland White's and Texas Sandy Hill now have a research pass on file too, even though several came
-  back low-confidence or unidentified rather than a firm answer.
+- Coverage: 118 of 129 tunes have complete core research (live gaps checks, Sep 28 2026). Eleven have
+  low-confidence research; overlapping gaps include 6 missing types, 2 missing sources, 1 missing traditions and
+  1 missing tags. The six missing types are the VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too
+  Soon, Dragon Slayer, Game of Drones, Pacific Sunrise), which need Nate's own knowledge or the tune packet.
+  Bea's Waltz, Back Home, Habas para una Amiga, Roland White's and Texas Sandy Hill have a research pass on file
+  too, even though several came back low-confidence or unidentified rather than a firm answer.
 - Next best step: the six VOM camp compositions' keys and types are in the 7.7 MB VOM tune packet in Drive (per
   Working notes) — this session now has a Drive connection that reads as Nate, so try reading the packet directly
   instead of waiting for a smaller exported PDF; add "crooked" and "cross-tuned" checks from Slippery-Hill and the
@@ -75,7 +76,8 @@ where it's still played, the recordings and players that made it popular, other 
 - Cite sources (The Traditional Tune Archive, The Session, irishtune.info, Slippery-Hill, the Lomax archive, liner
   notes...). Say where sources disagree instead of quietly picking one.
 - Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
-- Coverage: all 129 tunes have a one-fact summary with sources (Sep 26 2026); none has a full history yet.
+- Coverage: all 129 tunes have a one-fact summary, 127 have source URLs, and 10 have history text
+  (live data, Sep 28 2026). Having text is not a separate check of its factual quality.
 - Next best step: full histories for the most-heard tunes first.
 
 ### A3. Recordings for every tune, and a well-chosen top recording — M per pass (formerly S3)
@@ -111,7 +113,8 @@ Nate's rubric for the top recording:
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
 - Coverage (Sep 29 2026, after the quality pilot; research-origin recordings only): 22 tunes have outside
-  recordings (33 refs), 14 with a style-model candidate. Done so
+  recordings (33 refs), 14 with a style-model candidate. Including personal refs, the editor-visible totals
+  are 34 recordings across 23 tunes, 15 with a style model. Done so
   far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
   Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
   Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
@@ -139,8 +142,9 @@ Nate's rubric for the top recording:
   The gaps page has no core or outside/style-recording gaps for this tune. No audio/video was played.
   The reviewed payload, before/after snapshots and evidence ledger remain in the Recording quality session.
 - **Visibility clarified (Nate, Sep 28, 2026):** research refs may be public; Nate's personal refs and Drive
-  recordings remain editor-only. The Worker fix on the recording-quality branch filters signed-out refs by
-  `origin = 'research'`, while retaining all refs for editors and authenticated JSON backups. Not deployed yet.
+  recordings remain editor-only. The Worker fix filters signed-out refs by `origin = 'research'`, while
+  retaining all refs for editors and authenticated JSON backups. Integrated with current main for delivery;
+  production deployment verification is pending.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -228,10 +232,13 @@ Nate's rubric for the top recording:
 
 Log every occasion Nate hears a tune (lessons, classes, jams, sessions, camps). This drives prioritization and the
 "heard" filters and sorts. Nate reports occasions in chat; log them with `POST /fiddle/api/hearings/import` (upserts
-an occasion by `key` and replaces its tune list; payload format in `src/worker.js`). Lessons and classes count
-toward times heard (Nate's decision, Sep 26 2026).
+an occasion by `key` and replaces its tune list; payload format in `src/worker.js`). "Heard" excludes lessons
+and classes; the main page and Markdown export share that rule in `public/fiddle/hearings.js` (Sep 28 2026).
+All encounters remain in the database and JSON export. "First encounter"/"From"
+and the gaps page's "No encounter logged" check include lessons and classes.
 
-- Coverage: 128 of 129 tunes have at least one hearing (Bonaparte's Retreat was added from research).
+- Coverage (live data, Sep 28 2026): 123 of 129 tunes have any hearing logged; 92 have a hearing outside lessons
+  and classes.
 
 ### A5. Local session data from community tune lists — M per sync (formerly S5)
 
@@ -284,6 +291,10 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
   (now auto-derived from hearings data rather than hand-written) — Red Haired Boy and Cherokee Shuffle are already
   in the book and match F3 tier 4, so they're a natural first pair to fully research and prioritize, (2) design the
   actual `session_counts` sync once enough candidates exist to make it worth automating.
+- Live coverage check (Sep 28 2026): only 3 tunes have session-list links (2 Columbia City Jam, 1 NW Scottish
+  Fiddlers); the other three sources have no linked tunes. Before adding new candidates, reconcile the existing
+  book matches already listed in the source table above. Importing only the candidate lists leaves those known
+  matches out of the feature.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -295,8 +306,9 @@ Work through "Open data questions" below and the site's Working notes (editor-on
 
 ### F1. Sort and filter by hearings — `shipped` (Sep 26 2026) · S
 
-Sorts: most heard, recently heard, first heard. Filter: heard in real life (any, or at a lesson, class, jam,
-session or camp) versus not heard yet. Possible extras: a "heard in the last N months" filter.
+Sorts: most heard, recently heard, first heard. Filter: heard in real life (any, or at a jam, session, camp or
+other counted occasion) versus not heard yet. Lessons and classes are excluded from this view as of Sep 28 2026.
+Possible extras: a "heard in the last N months" filter.
 
 ### F2. Sung songs, tracked separately from tunes — `idea` · M
 
@@ -402,6 +414,13 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-29: Nate authorized direct-to-main delivery as the standing default for this single-contributor,
+  low-risk personal project, including automatic resolution of ordinary concurrent-session conflicts. Added
+  root AGENTS.md guidance, linked it from CLAUDE.md and README, and replaced the feature-branch-only delivery
+  note. Integrated main's hearing-consistency changes with this session's privacy fix and recording skill.
+  Resolved roadmap conflicts by retaining both logs and reconciling research-only versus all-reference
+  coverage against live totals. Validation and main-push/deployment verification are pending.
+
 - 2026-09-29: Clarified delivery at Nate's request: this session has pushed directly to the GitHub repository's
   `naowen-microsoft-recording-quality` feature branch, not to `main`. The curation skill, documentation and
   privacy fix are not merged into `main`; the privacy fix is not deployed. The recording data is independently
@@ -437,6 +456,23 @@ for now (Sep 26 2026).
   approved a small privacy fix: the public API now filters personal/unknown-origin refs in the branch code,
   while editor responses and authenticated exports retain them. Added synthetic Worker API regression
   coverage. Code/skill changes are separate from the still-pending live data import; deployment is pending.
+
+- 2026-09-28: Hearing consistency fix; Nate approved direct deployment to `main` instead of a PR after the
+  app's PR action used its work-account credentials. Shared the non-teaching encounter rule
+  between the main page and Markdown export, clarified the first-encounter labels, and renamed the
+  gaps check to "No encounter logged" without changing which records satisfy it. Included the evaluation's
+  corrected coverage figures. Nate deferred test infrastructure and recovery fixes; community-list population
+  is a separate next task. No tune data, import behavior, undo behavior or deployment configuration changed.
+
+- 2026-09-28: Project evaluation against the live public API and current code. Updated stale research, recording
+  and hearing coverage above; the book has 129 tunes (36 memorized, 17 learning, 76 not played yet). Production
+  deployment works, and the sampled public response excludes private notes and Drive media. Engineering
+  follow-ups before larger imports/features: add real regression tests and CI (`npm test` currently discovers
+  zero tests despite README's claim); include `session_sources` in exports and establish a documented restore
+  procedure; repair promotion undo, which restores the unidentified title but leaves hearings pointing to the
+  deleted tune; align the markdown export's "Heard" semantics with the main page. The latter three issues were
+  reproduced locally with synthetic data, not by modifying production. Editor-only Drive coverage, signed-in
+  browser flows and Cloudflare recovery settings were not evaluated. No application code changed in this review.
 
 - 2026-09-28: Production authentication check: **unblocked**. The initial push failed because the app's work
   account is an Enterprise Managed User, which cannot collaborate on this personal repository. Nate made the

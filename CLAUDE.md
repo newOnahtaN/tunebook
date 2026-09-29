@@ -1,5 +1,9 @@
 # Notes for Claude
 
+- Follow `AGENTS.md` for delivery. Nate's standing preference is to validate completed work and push directly
+  to `origin/main` without an extra PR or approval step. Fetch and integrate concurrent work, resolve ordinary
+  conflicts automatically while preserving both sides' intent, and retry non-forced pushes when main advances.
+  Stay in the session's own worktree; do not edit the shared main checkout.
 - Nate's long-running goals for this site live in `ROADMAP.md`, written as a menu of projects. Read it at the start
   of any session on this repo, and update its statuses and log before you finish.
 - For recording-focused enrichment, also read `.github/skills/recording-curation/SKILL.md`.
@@ -7,8 +11,8 @@
   page (`public/fiddle/gaps.html`, at /fiddle/gaps) and the shared vocabulary (`public/fiddle/vocab.js`: genre
   families, tune type definitions, style tags). Pushes to `main` deploy automatically.
 - Delivery reports must name the pushed branch and distinguish pushed, merged, deployed and live data changes.
-  A feature-branch push does not mean the changes reached `main` or production. Keep any delivery-status note
-  in `README.md` current.
+  A feature-branch push alone is not the default finish line and does not mean changes reached production.
+  Keep any delivery-status note in `README.md` current.
 - Data changes go through the editor API while signed in: `PATCH /fiddle/api/tunes/:id`, `POST /fiddle/api/tunes`,
   `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on.
   Public research references (`origin = 'research'`) may be public.

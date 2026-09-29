@@ -403,7 +403,9 @@ a.btn:hover{border-color:var(--muted)}
 <datalist id="mediaList"></datalist>
 
 <script src="/fiddle/vocab.js"></script>
-<script>
+<script type="module">
+import { countsAsHeard } from "/fiddle/hearings.js";
+
 const KNOW = ["Memorized","Played, still learning","Not played yet"];
 const GENRE_ORDER = ["Old-time","Contra","English","Irish","Québécois","Gaspé","Scottish","Shetland","Cape Breton","Waltz","Castilian","Camp composition"];
 const API = "/fiddle/api/";
@@ -807,17 +809,12 @@ function applyMode(){
 
 // ------------------------------------------------------------ where each tune was heard
 let occById = new Map(), heardByTune = new Map();
-// "Heard" means encountered live in the wild -- jams, sessions, camps -- not material being actively taught to
-// Nate. Lessons (with Hayden Stern) and classes (PCC, taught by Sarah Comer) are still tracked as occasions, but
-// don't count toward "heard": being taught a tune isn't the same as having heard it out at a jam.
-const UNCOUNTED_HEARD_KINDS = new Set(["lesson", "class"]);
 function indexHearings(){
   occById = new Map((state.occasions || []).map(o => [o.id, o]));
   heardByTune = new Map();
   for (const h of state.hearings || []){
     const o = occById.get(h.occasion_id);
-    if (!o || h.tune_id == null) continue;
-    if (UNCOUNTED_HEARD_KINDS.has(o.kind)) continue;
+    if (h.tune_id == null || !countsAsHeard(o)) continue;
     if (!heardByTune.has(h.tune_id)) heardByTune.set(h.tune_id, []);
     heardByTune.get(h.tune_id).push({ o, note:h.note || "" });
   }
@@ -842,7 +839,7 @@ function heardChip(t, by){
 }
 function heardField(t, E){
   const list = heardByTune.get(t.id) || [];
-  if (!list.length) return `<div class="dfield"><span class="lbl">Where you heard it</span>${ed("tunes", t.id, "source", t.source, "", "Where you heard it")}</div>`;
+  if (!list.length) return `<div class="dfield"><span class="lbl">First encounter</span>${ed("tunes", t.id, "source", t.source, "", "Where you first encountered it")}</div>`;
   const sum = list.length > 1 ? `<div class="heardsum">${list.length} times · first ${esc(occWhen(list[0].o))} · last ${esc(occWhen(list[list.length - 1].o))}</div>` : "";
   const items = list.map(({ o, note }) => {
     const extra = [E ? o.detail : "", E ? note : ""].filter(Boolean).join(" · ");
