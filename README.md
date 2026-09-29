@@ -3,6 +3,8 @@
 Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
 
 - `public/fiddle.html` is the page. Visitors get a read-only view with notes hidden.
+- Research references are public. Personal references (`origin = 'mine'`) and Drive recordings are only
+  included for signed-in editors; authenticated JSON backups retain all references.
 - `public/fiddle/gaps.html` (at `/fiddle/gaps`) is a separate, editor-only-linked page showing what data is missing
   for each tune (no type, no traditions, no region, no recordings, and so on). Gap information is kept off the main
   page on purpose. `public/fiddle/vocab.js` holds the shared genre tree, tune-type definitions and style-tag
@@ -20,6 +22,10 @@ Pushing to `main` redeploys automatically through Cloudflare Workers Builds.
 
 The Worker runs on zone routes for `nategrimwood.com/*` and `www.nategrimwood.com/*`, so the zone needs proxied (orange-cloud) DNS records for `@` and `www`. What they point at doesn't matter, because the Worker answers every request.
 
-Tests: `npm test` runs the unit tests for Google token and passkey checks.
+Tests: `npm test` runs recording-visibility regression tests against the Worker API using synthetic D1
+results, including signed-out, signed-in, invalid/expired-session and JSON-backup behavior.
+
+Recording enrichment: use [the recording-curation skill](.github/skills/recording-curation/SKILL.md) alongside
+ROADMAP A3. It separates factual verification, evidence-based selection and Nate's listening verdict.
 
 Local development: `npm install`, then `npm run dev` (it passes `--local-upstream localhost:8787` so the Worker sees `localhost` rather than the real domain, which passkeys need). Real Google sign-in only works on the live site; locally, set `GOOGLE_CERTS_URL` in `.dev.vars` to a test key set and mint your own tokens.

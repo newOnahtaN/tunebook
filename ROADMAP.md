@@ -82,6 +82,11 @@ where it's still played, the recordings and players that made it popular, other 
 
 Collect every useful recording of each tune and pick a top recording that best teaches **style**.
 
+**Current method:** use [the recording-curation skill](.github/skills/recording-curation/SKILL.md)
+(Sep 28, 2026) for future runs. It adds comparison-based selection, track-level evidence, explicit listening
+unknowns, and a hard hold when an audit's evidence does not satisfy tune identity. Method v1 below remains the
+historical checklist.
+
 Nate's rubric for the top recording:
 
 1. **Gold standard:** a single fiddle, played by a master who demonstrates the genre's defining ornamentation or
@@ -112,6 +117,20 @@ Nate's rubric for the top recording:
 - Next passes: widen out from old-time — Irish, Scottish and Québécois are thin on outside recordings. Make V7
   (tune identity) a hard stop rather than a judgment call: it was the top failure mode across all three passes
   (Forked Deer, Little Liza Jane, Spotted Pony, Buffalo Gals) and, outside this project, Bea's Waltz.
+- **One-tune quality pilot (Sep 28, 2026): researched, import pending.** Angeline the Baker (commonness 10)
+  still has only its existing Norman Edmonds ref. Prepared three additions: Brad Leftwich with Brett Riggs
+  (1990, provisional old-time style candidate, not solo); George Jackson's Old Time 100 overhead-camera
+  performance (a five-piece band and explicitly Pyeatt-derived variant); and Casey Willis's public performance/
+  lesson excerpt (teaching, not the full paid course). Also prepared a correction to Edmonds's unsupported
+  recording year and stale Hollow Rock attribution. An independent audit checked the shortlist, but its
+  unresolved Franklin George tune-identity/linkage caveat overrode its overall OK: that lead stays held.
+  No verified unaccompanied-master pick and no listening-quality verdict yet. Authenticated editor access
+  was unavailable (the shared browser page became readable but remained signed out), so no recording writes
+  or top-selection changes were made. The guarded import and evidence ledger are retained in the Recording
+  quality session's artifacts. Counts above have not been increased.
+- **Visibility clarified (Nate, Sep 28, 2026):** research refs may be public; Nate's personal refs and Drive
+  recordings remain editor-only. The Worker fix on the recording-quality branch filters signed-out refs by
+  `origin = 'research'`, while retaining all refs for editors and authenticated JSON backups. Not deployed yet.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -147,6 +166,13 @@ Nate's rubric for the top recording:
 
 #### Pass log
 
+- **Quality pilot (Sep 28, 2026), one tune, no live import yet.** Focused on Angeline the Baker rather than
+  increasing coverage. The useful improvement was to evaluate actual takes: search synthesis supplied
+  mismatched video URLs/channel credits; an overhead fiddle camera concealed a full-band lineup; original
+  sleeve credits resolved track instrumentation that album-level credits could not. An audit's OK still
+  contained a V7 uncertainty, so that recording was held. Found the prior Hollow Rock correction had never
+  reached the stored Edmonds note. Saved the reusable method in the skill linked above. Three additions and
+  one existing-ref correction are prepared, not applied; audible quality remains for Nate to judge.
 - **Pass 1 (pilot, Sep 27 2026), 7 refs, 6 tunes.** The audit found problems in 5 of 7 before import: streaming
   dates that were reissue years (Carignan 1975 → 1960), "source" stretched to mean "old" (a 1961 folk-revival track
   swapped for La Bolduc's 1930 78), invented claims ("first solo album", "official label upload"), a Topic channel
@@ -359,6 +385,15 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-28: One-tune recording-quality run for Angeline the Baker. Prepared three complementary recordings
+  and an Edmonds metadata correction; held the Franklin George lead on unresolved identity/linkage.
+  No data import occurred because authenticated editor access was unavailable. Added
+  `.github/skills/recording-curation/SKILL.md` with the evidence and selection lessons, and linked it from the
+  agent instructions and README. Nate clarified public research refs versus private personal refs and
+  approved a small privacy fix: the public API now filters personal/unknown-origin refs in the branch code,
+  while editor responses and authenticated exports retain them. Added synthetic Worker API regression
+  coverage. Code/skill changes are separate from the still-pending live data import; deployment is pending.
 
 - 2026-09-28: Production authentication check: **unblocked**. The initial push failed because the app's work
   account is an Enterprise Managed User, which cannot collaborate on this personal repository. Nate made the

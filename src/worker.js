@@ -1,7 +1,7 @@
 // Tune book: static page + small JSON API backed by D1.
 // Visitors read. The editor signs in with Google (accounts listed in EDITOR_EMAILS) or with a passkey
 // they added after a Google sign-in. Sessions are signed with a random key kept in the database.
-import seed from './seed.json';
+import seed from './seed.json' with { type: 'json' };
 import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, verifyAssertion, verifyRs256Jwt, SUPPORTED_ALGS } from './auth.js';
 import { kindOf, serveType, buildIndex, matchFile } from './media.js';
 import { serviceAccount, listTree, fetchMedia, oauthConfig, exchangeCode, writerToken, whoAmI, ensureFolder, uploadFile, WRITE_SCOPE } from './drive.js';
@@ -578,12 +578,13 @@ async function importSessionSources(env, body) {
   return { ok: true, matched, unmatched };
 }
 
-async function researchData(env) {
+async function researchData(env, editor = false) {
   const [research, refs] = await Promise.all([
     env.DB.prepare(`SELECT * FROM research ORDER BY tune_id`).all(),
     env.DB.prepare(`SELECT * FROM refs ORDER BY tune_id, id`).all(),
   ]);
-  return { research: research.results.map(r => ({ ...r, sources: JSON.parse(r.sources || '[]') })), refs: refs.results };
+  return { research: research.results.map(r => ({ ...r, sources: JSON.parse(r.sources || '[]') })),
+    refs: editor ? refs.results : refs.results.filter(r => r.origin === 'research') };
 }
 
 async function sessionSourceData(env) {
@@ -626,7 +627,7 @@ async function api(request, env, url) {
     const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(editor
       ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
-          ...(await hearingData(env, true)), ...(await researchData(env)), ...(await sessionSourceData(env)), ...(await mediaForEditor(ctx)) }
+          ...(await hearingData(env, true)), ...(await researchData(env, true)), ...(await sessionSourceData(env)), ...(await mediaForEditor(ctx)) }
       : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
           open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env)), ...(await sessionSourceData(env)) },
       200, { cookies });
@@ -874,7 +875,7 @@ async function exportData(env) {
   const media = await env.DB.prepare(`SELECT m.id, m.name, m.path, m.kind, m.url, group_concat(l.tune_id) AS tunes FROM media m
     JOIN media_links l ON l.media_id = m.id AND l.state = 1 WHERE m.gone = 0 GROUP BY m.id ORDER BY m.path, m.name`).all();
   return { exported_at: new Date().toISOString(), tunes: tunes.results, open: open.results, working_notes: notes || '',
-    ...(await hearingData(env, true)), ...(await researchData(env)),
+    ...(await hearingData(env, true)), ...(await researchData(env, true)),
     media: media.results.map(x => ({ ...x, tunes: String(x.tunes || '').split(',').map(Number) })) };
 }
 

@@ -2,12 +2,15 @@
 
 - Nate's long-running goals for this site live in `ROADMAP.md`, written as a menu of projects. Read it at the start
   of any session on this repo, and update its statuses and log before you finish.
+- For recording-focused enrichment, also read `.github/skills/recording-curation/SKILL.md`.
 - The site is a Cloudflare Worker (`src/worker.js`) with D1, plus the main page (`public/fiddle.html`), the data gaps
   page (`public/fiddle/gaps.html`, at /fiddle/gaps) and the shared vocabulary (`public/fiddle/vocab.js`: genre
   families, tune type definitions, style tags). Pushes to `main` deploy automatically.
 - Data changes go through the editor API while signed in: `PATCH /fiddle/api/tunes/:id`, `POST /fiddle/api/tunes`,
-  `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on. Recordings, working notes,
-  occasion details and hearing notes are editor-only; keep them out of anything public.
+  `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on.
+  Public research references (`origin = 'research'`) may be public.
+  Nate's own links (`origin = 'mine'`), Drive recordings, working notes, occasion details and hearing notes are
+  editor-only; keep them out of anything public.
 
 - **Never play audio or video in the browser pane.** It comes out of Nate's speakers. To check a recording, load
   metadata only (a muted `Audio` with `preload = 'metadata'`, never `.play()`), use YouTube's oEmbed for links, and
