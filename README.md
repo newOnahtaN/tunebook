@@ -20,6 +20,13 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
 
 Pushing to `main` redeploys automatically through Cloudflare Workers Builds.
 
+**Recording-quality delivery status (Sep 29, 2026):** this session pushes directly to the GitHub repository's
+`naowen-microsoft-recording-quality` feature branch, **not to `main`**. The curation skill, documentation and
+personal-reference privacy fix are pushed there but have not been merged into `main`; the privacy fix is not
+deployed. The Angeline the Baker recording additions are already live because they were imported separately
+through the signed-in editor API. A feature-branch push is not a production deployment. Update this note when
+the branch is merged or its deployment status changes.
+
 The Worker runs on zone routes for `nategrimwood.com/*` and `www.nategrimwood.com/*`, so the zone needs proxied (orange-cloud) DNS records for `@` and `www`. What they point at doesn't matter, because the Worker answers every request.
 
 Tests: `npm test` runs recording-visibility regression tests against the Worker API using synthetic D1

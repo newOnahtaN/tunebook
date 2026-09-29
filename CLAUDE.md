@@ -6,6 +6,9 @@
 - The site is a Cloudflare Worker (`src/worker.js`) with D1, plus the main page (`public/fiddle.html`), the data gaps
   page (`public/fiddle/gaps.html`, at /fiddle/gaps) and the shared vocabulary (`public/fiddle/vocab.js`: genre
   families, tune type definitions, style tags). Pushes to `main` deploy automatically.
+- Delivery reports must name the pushed branch and distinguish pushed, merged, deployed and live data changes.
+  A feature-branch push does not mean the changes reached `main` or production. Keep any delivery-status note
+  in `README.md` current.
 - Data changes go through the editor API while signed in: `PATCH /fiddle/api/tunes/:id`, `POST /fiddle/api/tunes`,
   `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on.
   Public research references (`origin = 'research'`) may be public.

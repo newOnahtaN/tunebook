@@ -402,6 +402,11 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-29: Clarified delivery at Nate's request: this session has pushed directly to the GitHub repository's
+  `naowen-microsoft-recording-quality` feature branch, not to `main`. The curation skill, documentation and
+  privacy fix are not merged into `main`; the privacy fix is not deployed. The recording data is independently
+  live through the editor API. Added the explicit status to README and a delivery-reporting rule to CLAUDE.md.
+
 - 2026-09-29: Nate's feedback on the Angeline pilot: George Jackson's YouTube performance was his favorite,
   and the other selections were good too. Updated the recording-curation skill and A3 to actively search
   accomplished musicians' YouTube performances, and to distinguish a solo-fiddle teaching ideal from an
