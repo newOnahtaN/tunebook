@@ -9,6 +9,13 @@ The goal is a recording Nate will actually want to learn style from, not more li
 or a filled gap counter. Read `ROADMAP.md` A3 and `CLAUDE.md` first. Keep the scope
 to the requested tune(s); a deep one-tune run is not permission to import a batch.
 
+**Nate's preference (Sep 29, 2026):** accomplished musicians playing the tune on
+YouTube are often especially interesting to him. He preferred George Jackson's
+Angeline the Baker video from this pilot and said the other selections were good
+too. Actively seek this kind of performance; do not automatically rank it below
+an archive recording or a solo fiddle just because it has a band. This is a
+positive search signal, not permission to skip identity or personnel checks.
+
 ## Non-negotiables
 
 - Never play audio or video in the browser, even muted. Use page/track metadata,
@@ -50,13 +57,15 @@ is a hold, not a low-confidence import.
 
 Search along three complementary routes:
 
-1. **Tradition and lineage:** authoritative tune annotations, discographies,
+1. **Accomplished musicians on YouTube:** search respected players' names with
+   the tune and its aliases, their own channels, and documented concert or
+   studio performances. Include full-band performances and full-speed
+   demonstrations, not just solo examples or lessons. Check the actual take
+   and corroborate the musician's credentials. George Jackson's Old Time 100
+   performance is a listener-approved example, not the only artist to seek.
+2. **Tradition and lineage:** authoritative tune annotations, discographies,
    archive catalogues, label tracklists, and original sleeves establish source
    players and recordings worth seeking.
-2. **Living style models:** respected fiddlers' own catalogues, concert archives,
-   artist-published performances, and teacher-curated full-speed demonstrations.
-   Prefer a single exposed fiddle in the target tradition, then sparse
-   accompaniment. Check the actual track, not just the performer's reputation.
 3. **Learning-oriented production:** artist-made tune collections, performance
    videos paired with lessons, close-up camera editions, and basic/advanced
    demonstrations. These can be valuable without earning the style-model slot.
@@ -88,11 +97,16 @@ Use separate criteria; do not hide unknowns behind a numerical quality score.
 | Production/access | Artist's recording context, usable public link, documented runtime, embedding metadata | Technical availability is not good sound or good music |
 | Additional value | A distinct source, tradition, variation, or learning purpose | Age, fame, or search rank alone |
 
-The preferred style candidate remains a master playing an exposed single fiddle
-in the tune's tradition. Sparse accompaniment can qualify as `style`, but label
-it honestly; it is not the unaccompanied gold standard. A full band belongs in
-`band`, even if the camera only shows the fiddler. A pedagogical excerpt belongs
-in `teaching` unless the performance independently warrants a different role.
+Separate the ideal for isolating fiddle technique from the overall listening
+recommendation. An exposed master fiddle remains valuable for style study, but
+solo instrumentation is not a quality score or a prerequisite for Nate's
+favorite. His explicit feedback outranks that heuristic.
+
+Keep format and preference separate: a full band remains `band`, even if the
+camera only shows the fiddler or Nate likes it most. Sparse accompaniment can
+qualify as `style`, but is not unaccompanied. A pedagogical excerpt belongs in
+`teaching` unless the performance independently warrants a different role.
+These categories are not an order of musical merit.
 
 `source` means a documented source player/lineage or an important original
 recording, not simply "old." Do not call an old commercial LP the tune's first,
@@ -164,6 +178,12 @@ manual top recording unless requested or confirmed. The site's automatic order
 already prefers personal recordings; adding `style` can change the research
 fallback, so the style designation must be defensible.
 
+When Nate gives feedback, record his stated preference separately from the
+research facts and update this skill's selection guidance. Do not invent why
+he liked a take, convert a research ref to `mine`, publish his personal verdict
+in a research note, remove other approved selections, or treat "I liked this
+most" as an instruction to overwrite the site's top-recording setting.
+
 Require HTTP success, `ok: true`, and an empty `unmatched` list. The response's
 `refs` count is input count, not proof of inserted rows. Re-fetch data and compare
 all intended fields, confirm no duplicates/unintended changes, and check gaps.
@@ -195,8 +215,9 @@ briefly; do not turn the handoff into a catalogue of rejected links.
   to Brett Riggs. Primary metadata changed the decision, not just the citation.
 - George Jackson's "Overhead Fiddle Cam" sounded like a solo-video lead on paper.
   Artist credits instead identify five instruments; the description explains a
-  Tilman Pyeatt-derived variation. It is a useful **band/visual-learning**
-  comparison, not an unaccompanied default style pick.
+  Tilman Pyeatt-derived variation. Correctly label it **band/visual-learning**,
+  but do not confuse that label with a lower recommendation: Nate subsequently
+  named it his favorite of the selections.
 - Franklin George's sleeve assigns fiddle and banjo by track, unlike album-level
   credits. That resolved instrumentation but not every tune-identity/linkage
   question. The independent audit said OK while admitting uncertainty; the final
@@ -207,8 +228,11 @@ briefly; do not turn the handoff into a catalogue of rejected links.
 - The roadmap had already rejected a Hollow Rock lineage claim, but the live
   Norman Edmonds ref still repeated it. Check and correct the stored record.
 - Artist/teacher production intent and documented instrumentation made the
-  shortlist more defensible. Whether the picks are genuinely better for Nate
-  remains a listening question, not a conclusion this metadata-only run proved.
+  shortlist more defensible; they did not establish what Nate would like most.
+  His subsequent feedback favored the accomplished-musician YouTube performance
+  and approved the other selections too. Seek more candidates of that kind
+  without abandoning the complementary source and teaching recordings, or
+  inferring that he specifically liked the camera angle, variant, or production.
 - The completed import added Leftwich/Riggs (provisional style), Jackson's
   full-band variant, and Willis's lesson excerpt, and corrected the existing
   Edmonds reference. Exact field comparisons and independent D1 reads confirmed

@@ -83,9 +83,10 @@ where it's still played, the recordings and players that made it popular, other 
 Collect every useful recording of each tune and pick a top recording that best teaches **style**.
 
 **Current method:** use [the recording-curation skill](.github/skills/recording-curation/SKILL.md)
-(Sep 28, 2026) for future runs. It adds comparison-based selection, track-level evidence, explicit listening
-unknowns, and a hard hold when an audit's evidence does not satisfy tune identity. Method v1 below remains the
-historical checklist.
+(updated Sep 29, 2026) for future runs. It adds comparison-based selection, track-level evidence, explicit
+listening unknowns, and a hard hold when an audit's evidence does not satisfy tune identity. Nate's listening
+feedback now makes accomplished-musician YouTube performances an explicit search priority. Method v1 below
+remains the historical checklist.
 
 Nate's rubric for the top recording:
 
@@ -94,10 +95,16 @@ Nate's rubric for the top recording:
    recordings, and W.H. Stepp's *Bonaparte's Retreat* (for how Stepp uses double stops).
 2. **Source and original recordings:** always include them for their history, but they're usually not the top pick
    unless the playing is also the clearest model of the style. Stepp is the counterexample.
-3. **Band recordings:** include them, especially important, well-known or exciting takes. Rarely the top pick
-   because the fiddle's style isn't centered.
+3. **Band recordings:** include them, especially important, well-known or exciting takes. They can be less
+   useful for isolating fiddle technique, but do not automatically rank them lower as listening recommendations.
+   Nate preferred George Jackson's full-band YouTube performance in the Angeline pilot (Sep 29, 2026).
 4. Learning aids (slowed versions, teaching videos) are welcome as extras.
 
+- **Listening preference (Nate, Sep 29, 2026):** an accomplished musician playing the tune on YouTube is often
+  something he is interested in. Search that route deliberately alongside archives and sources, rather than
+  making solo fiddle a gate. For Angeline the Baker, George Jackson's
+  https://www.youtube.com/watch?v=9bnD-scYPyc was his favorite; the other selections were good too. Keep the
+  complementary picks and accurate category labels. No specific reason for the preference was given.
 - Each recording records who plays, the year, the link, its category (style / source / band / teaching) and a short
   note on why it's worth hearing. Outside recordings live in `refs` (`origin` mine / research). YouTube links and
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
@@ -125,7 +132,8 @@ Nate's rubric for the top recording:
   lesson excerpt (teaching, not the full paid course). Corrected Edmonds's unsupported recording year and
   removed the stale Hollow Rock attribution. An independent audit checked the shortlist, but its
   unresolved Franklin George tune-identity/linkage caveat overrode its overall OK: that lead stays held.
-  No verified unaccompanied-master pick and no listening-quality verdict yet. After owner sign-in, imported
+  No verified unaccompanied-master pick; Nate subsequently preferred Jackson and liked the other selections
+  too. After owner sign-in, imported
   through the editor API (new refs 35-37, existing ref 4 corrected); authenticated read-back and independent
   D1 reads confirmed the intended records, with personal data, core research and top selection unchanged.
   The gaps page has no core or outside/style-recording gaps for this tune. No audio/video was played.
@@ -174,8 +182,9 @@ Nate's rubric for the top recording:
   sleeve credits resolved track instrumentation that album-level credits could not. An audit's OK still
   contained a V7 uncertainty, so that recording was held. Found the prior Hollow Rock correction had never
   reached the stored Edmonds note. Saved the reusable method in the skill linked above. Completed the
-  signed-in editor-API import on Sep 29 and confirmed persistence independently through D1. Audible quality
-  remains for Nate to judge; personal recordings and the top selection were not replaced.
+  signed-in editor-API import on Sep 29 and confirmed persistence independently through D1. Nate's subsequent
+  listening verdict favored Jackson while approving the other selections too; personal recordings and the
+  top selection were not replaced.
 - **Pass 1 (pilot, Sep 27 2026), 7 refs, 6 tunes.** The audit found problems in 5 of 7 before import: streaming
   dates that were reissue years (Carignan 1975 → 1960), "source" stretched to mean "old" (a 1961 folk-revival track
   swapped for La Bolduc's 1930 78), invented claims ("first solo album", "official label upload"), a Topic channel
@@ -349,6 +358,10 @@ A quick way for Nate to mark a recording after listening (keeper / not useful, m
 the ref and counted on the gaps page. It's the one check Claude can't do, and the verdicts would show which picking
 habits work.
 
+First explicit feedback example (Sep 29, 2026): George Jackson was Nate's favorite among the Angeline pilot
+recordings, and the other selections were good too. Preserve listener preference separately from research
+provenance, category and the manual top-recording setting; this feedback did not request a top-setting change.
+
 ### F9. "Learned from" field — `idea` · S (new, Sep 27 2026)
 
 A dedicated teacher/source-person field on each tune, separate from `source` (the occasion/session name). Right now
@@ -388,6 +401,12 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-29: Nate's feedback on the Angeline pilot: George Jackson's YouTube performance was his favorite,
+  and the other selections were good too. Updated the recording-curation skill and A3 to actively search
+  accomplished musicians' YouTube performances, and to distinguish a solo-fiddle teaching ideal from an
+  overall listening recommendation. Full-band accompaniment is not an automatic downgrade. Recorded the
+  verdict privately with the evidence; no live refs, provenance, personal data or top selection changed.
 
 - 2026-09-29: Completed the Angeline the Baker recording import after owner sign-in. Added Brad Leftwich/
   Brett Riggs (style candidate), George Jackson's Old Time 100 variant (band), and Casey Willis's lesson
