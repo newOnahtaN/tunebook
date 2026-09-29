@@ -103,7 +103,8 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 27 2026, after pass 3): 22 tunes have outside recordings (30 refs), 13 with a style model. Done so
+- Coverage (Sep 29 2026, after the quality pilot; research-origin recordings only): 22 tunes have outside
+  recordings (33 refs), 14 with a style-model candidate. Done so
   far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
   Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
   Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
@@ -117,19 +118,18 @@ Nate's rubric for the top recording:
 - Next passes: widen out from old-time — Irish, Scottish and Québécois are thin on outside recordings. Make V7
   (tune identity) a hard stop rather than a judgment call: it was the top failure mode across all three passes
   (Forked Deer, Little Liza Jane, Spotted Pony, Buffalo Gals) and, outside this project, Bea's Waltz.
-- **One-tune quality pilot (Sep 28, 2026): researched, import pending.** Angeline the Baker (commonness 10)
-  still has only its existing Norman Edmonds ref. Prepared three additions: Brad Leftwich with Brett Riggs
+- **One-tune quality pilot (Sep 28-29, 2026): imported and verified.** Angeline the Baker (commonness 10)
+  now has four research recordings. Added Brad Leftwich with Brett Riggs
   (1990, provisional old-time style candidate, not solo); George Jackson's Old Time 100 overhead-camera
   performance (a five-piece band and explicitly Pyeatt-derived variant); and Casey Willis's public performance/
-  lesson excerpt (teaching, not the full paid course). Also prepared a correction to Edmonds's unsupported
-  recording year and stale Hollow Rock attribution. An independent audit checked the shortlist, but its
+  lesson excerpt (teaching, not the full paid course). Corrected Edmonds's unsupported recording year and
+  removed the stale Hollow Rock attribution. An independent audit checked the shortlist, but its
   unresolved Franklin George tune-identity/linkage caveat overrode its overall OK: that lead stays held.
-  No verified unaccompanied-master pick and no listening-quality verdict yet. Authenticated editor access
-  was unavailable (the shared browser page became readable but remained signed out), so no recording writes
-  or top-selection changes were made. The guarded import and evidence ledger are retained in the Recording
-  quality session's artifacts. Counts above have not been increased.
-  Direct D1 access was subsequently authorized on Sep 29 and confirmed with a read-only query; that setup
-  did not apply the pending editor-API import or change any recording data.
+  No verified unaccompanied-master pick and no listening-quality verdict yet. After owner sign-in, imported
+  through the editor API (new refs 35-37, existing ref 4 corrected); authenticated read-back and independent
+  D1 reads confirmed the intended records, with personal data, core research and top selection unchanged.
+  The gaps page has no core or outside/style-recording gaps for this tune. No audio/video was played.
+  The reviewed payload, before/after snapshots and evidence ledger remain in the Recording quality session.
 - **Visibility clarified (Nate, Sep 28, 2026):** research refs may be public; Nate's personal refs and Drive
   recordings remain editor-only. The Worker fix on the recording-quality branch filters signed-out refs by
   `origin = 'research'`, while retaining all refs for editors and authenticated JSON backups. Not deployed yet.
@@ -168,13 +168,14 @@ Nate's rubric for the top recording:
 
 #### Pass log
 
-- **Quality pilot (Sep 28, 2026), one tune, no live import yet.** Focused on Angeline the Baker rather than
+- **Quality pilot (Sep 28-29, 2026), one tune, three additions and one correction.** Focused on Angeline the Baker rather than
   increasing coverage. The useful improvement was to evaluate actual takes: search synthesis supplied
   mismatched video URLs/channel credits; an overhead fiddle camera concealed a full-band lineup; original
   sleeve credits resolved track instrumentation that album-level credits could not. An audit's OK still
   contained a V7 uncertainty, so that recording was held. Found the prior Hollow Rock correction had never
-  reached the stored Edmonds note. Saved the reusable method in the skill linked above. Three additions and
-  one existing-ref correction are prepared, not applied; audible quality remains for Nate to judge.
+  reached the stored Edmonds note. Saved the reusable method in the skill linked above. Completed the
+  signed-in editor-API import on Sep 29 and confirmed persistence independently through D1. Audible quality
+  remains for Nate to judge; personal recordings and the top selection were not replaced.
 - **Pass 1 (pilot, Sep 27 2026), 7 refs, 6 tunes.** The audit found problems in 5 of 7 before import: streaming
   dates that were reissue years (Carignan 1975 → 1960), "source" stretched to mean "old" (a 1961 folk-revival track
   swapped for La Bolduc's 1930 78), invented claims ("first solo album", "official label upload"), a Topic channel
@@ -388,12 +389,21 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-09-29: Completed the Angeline the Baker recording import after owner sign-in. Added Brad Leftwich/
+  Brett Riggs (style candidate), George Jackson's Old Time 100 variant (band), and Casey Willis's lesson
+  excerpt (teaching); corrected Norman Edmonds's unsupported date and Hollow Rock lineage note. Four refs
+  now persist for the tune, all with research provenance. Checked every stored field, preserved the existing
+  source-ref ID and all private/core/top-selection data, and independently confirmed rows through read-only
+  D1 access. The tune has no core or outside/style-recording gaps. Research-only coverage is now 33 recordings
+  across 22 tunes, with 14 style-model candidates. Updated the curation skill with the completed result and
+  the distinction between database authorization and owner API sign-in. No media playback or deployment.
+
 - 2026-09-29: Authorized direct access to the existing `tunebook` D1 database through Wrangler's device
   OAuth flow, with account/user lookup and D1 permissions only. Installed the missing Windows keyring
   support; credentials are protected by Windows Credential Manager, not committed. Used npm-cached Node 22
   and available Wrangler 4.136.3 rather than changing the system Node or the unavailable package pin.
-  A read-only query returned Angeline the Baker (ID 1), with zero rows written. The pending recording import
-  and privacy-fix deployment remain separate, unfinished steps; the branch's Worker dry-run build succeeded.
+  A read-only query returned Angeline the Baker (ID 1), with zero rows written. At that point the recording
+  import and privacy-fix deployment were still pending; the branch's Worker dry-run build succeeded.
 
 - 2026-09-28: One-tune recording-quality run for Angeline the Baker. Prepared three complementary recordings
   and an Edmonds metadata correction; held the Franklin George lead on unresolved identity/linkage.

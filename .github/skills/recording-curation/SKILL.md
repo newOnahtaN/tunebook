@@ -29,9 +29,11 @@ to the requested tune(s); a deep one-tune run is not permission to import a batc
 
 Start on `/fiddle/gaps`, then read current `/fiddle/api/data`. Use an existing tune
 ID when possible. Record its name, aliases, tradition, key/form, research, existing
-refs, and current top selection. Read private fields only through authorized
-editor access. Never replace a teacher's or Nate's own recording just because a
-public recording is easier to find.
+refs, and current top selection. Use authorized editor access for private data;
+if direct D1 access has also been authorized, narrowly scoped read-only queries
+can independently verify persistence and protected-field values. Never replace
+a teacher's or Nate's own recording just because a public recording is easier
+to find.
 
 For a "very common tune" request, use a high current commonness score or documented
 session frequency; do not choose an obscure tune merely because its archive is
@@ -167,6 +169,14 @@ Require HTTP success, `ok: true`, and an empty `unmatched` list. The response's
 all intended fields, confirm no duplicates/unintended changes, and check gaps.
 Run core-gap checks even when they should be unchanged.
 
+Cloudflare/Wrangler authorization and the tune book's owner sign-in are separate.
+Check the API's `editor` flag early, before a long research run. If false, open the
+site's existing sign-in dialog and let Nate approve a passkey or Google sign-in;
+do not ask him to run a console script when working browser automation is available.
+Direct D1 access is useful for independent read-back, not for minting an owner
+session or bypassing the editor import. Ask for the missing authorization once,
+then complete the import rather than stopping at another prepared payload.
+
 If usable signed-in automation is absent, prepare a guarded, reviewable import
 artifact and say **prepared, not imported**. A browser panel opening successfully
 does not prove authenticated automation exists. Never invent a page handle or
@@ -177,7 +187,7 @@ add the run to the roadmap log, and preserve factual corrections in the actual
 stored refs, not only in the roadmap. Report the shortlist and limitations
 briefly; do not turn the handoff into a catalogue of rejected links.
 
-## Lessons from the Angeline the Baker pilot (Sep 28, 2026)
+## Lessons from the Angeline the Baker pilot (Sep 28-29, 2026)
 
 - Search synthesis attributed a convention recording to the fiddler's own channel
   and supplied a different video ID from its citation. oEmbed and the recordist's
@@ -199,3 +209,9 @@ briefly; do not turn the handoff into a catalogue of rejected links.
 - Artist/teacher production intent and documented instrumentation made the
   shortlist more defensible. Whether the picks are genuinely better for Nate
   remains a listening question, not a conclusion this metadata-only run proved.
+- The completed import added Leftwich/Riggs (provisional style), Jackson's
+  full-band variant, and Willis's lesson excerpt, and corrected the existing
+  Edmonds reference. Exact field comparisons and independent D1 reads confirmed
+  four persisted refs; private data and the top selection stayed unchanged.
+  The source MP3 loaded metadata from the site with a 142.16-second duration,
+  without playback. Core and outside/style-recording gap checks passed.
