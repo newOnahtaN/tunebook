@@ -28,4 +28,16 @@ results, including signed-out, signed-in, invalid/expired-session and JSON-backu
 Recording enrichment: use [the recording-curation skill](.github/skills/recording-curation/SKILL.md) alongside
 ROADMAP A3. It separates factual verification, evidence-based selection and Nate's listening verdict.
 
+Direct D1 diagnostics on Nate's Windows workstation were authorized on Sep 29, 2026 using Wrangler OAuth
+with account/user lookup and D1 permissions, protected by Windows Credential Manager. No token belongs in
+the repository or chat. The workstation's Node 20 is too old for current Wrangler, and the pinned 4.139.0
+was unavailable when checked; this cached-tool invocation works without replacing the system Node:
+
+```powershell
+npx --yes --package=node@22 --package=wrangler@4.136.3 -- wrangler d1 info tunebook
+```
+
+This uses the existing workstation login, not a `--profile` flag. Database diagnostics do not deploy the
+Worker or import recording data; enrichment writes still use the signed-in editor API.
+
 Local development: `npm install`, then `npm run dev` (it passes `--local-upstream localhost:8787` so the Worker sees `localhost` rather than the real domain, which passkeys need). Real Google sign-in only works on the live site; locally, set `GOOGLE_CERTS_URL` in `.dev.vars` to a test key set and mint your own tokens.

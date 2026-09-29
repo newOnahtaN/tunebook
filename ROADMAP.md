@@ -128,6 +128,8 @@ Nate's rubric for the top recording:
   was unavailable (the shared browser page became readable but remained signed out), so no recording writes
   or top-selection changes were made. The guarded import and evidence ledger are retained in the Recording
   quality session's artifacts. Counts above have not been increased.
+  Direct D1 access was subsequently authorized on Sep 29 and confirmed with a read-only query; that setup
+  did not apply the pending editor-API import or change any recording data.
 - **Visibility clarified (Nate, Sep 28, 2026):** research refs may be public; Nate's personal refs and Drive
   recordings remain editor-only. The Worker fix on the recording-quality branch filters signed-out refs by
   `origin = 'research'`, while retaining all refs for editors and authenticated JSON backups. Not deployed yet.
@@ -385,6 +387,13 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-29: Authorized direct access to the existing `tunebook` D1 database through Wrangler's device
+  OAuth flow, with account/user lookup and D1 permissions only. Installed the missing Windows keyring
+  support; credentials are protected by Windows Credential Manager, not committed. Used npm-cached Node 22
+  and available Wrangler 4.136.3 rather than changing the system Node or the unavailable package pin.
+  A read-only query returned Angeline the Baker (ID 1), with zero rows written. The pending recording import
+  and privacy-fix deployment remain separate, unfinished steps; the branch's Worker dry-run build succeeded.
 
 - 2026-09-28: One-tune recording-quality run for Angeline the Baker. Prepared three complementary recordings
   and an Edmonds metadata correction; held the Franklin George lead on unresolved identity/linkage.
