@@ -36,7 +36,7 @@ use the repository's personal GitHub account. For example:
 
 ```powershell
 git personal fetch origin
-git merge origin/main
+git merge --no-commit origin/main
 # Resolve conflicts, validate and commit before pushing.
 git personal push origin HEAD:main
 ```
