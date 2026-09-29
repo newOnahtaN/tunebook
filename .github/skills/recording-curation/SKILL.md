@@ -239,3 +239,16 @@ briefly; do not turn the handoff into a catalogue of rejected links.
   four persisted refs; private data and the top selection stayed unchanged.
   The source MP3 loaded metadata from the site with a 142.16-second duration,
   without playback. Core and outside/style-recording gap checks passed.
+
+## Lessons from the Bonaparte / Harmonium follow-up (Sep 29, 2026)
+
+- Label-distributed metadata is not infallible. The PCO Harmonium Topic upload
+  credits the composer as "Traditional" and mangles instrument roles into
+  "Bassvocalist." The artist's album page and tune index establish Simon Jeffes'
+  authorship. Verify the substantive credits; a label delivery surface alone
+  does not make every field correct.
+- Identifying a public recording's tune family is not the same as matching a
+  teacher's lesson setting. The Alps and Rhine class files had no useful ID3
+  source tags, and several major-key and modal tunes share their titles. Even
+  strong candidates by Ramona Jones or Cooper/Haas stayed held. Keep the teacher
+  recording preferred rather than filling the outside-recording slot by guesswork.

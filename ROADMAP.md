@@ -55,7 +55,7 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
   the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
   and "Alabama" were added under Old-time.
-- Coverage: 120 of 131 tunes have complete core research (live gaps checks, Sep 29 2026). Eleven have
+- Coverage: 121 of 132 tunes have complete core research (live gaps checks, Sep 29 2026). Eleven have
   low-confidence research; overlapping gaps include 6 missing types, 2 missing sources, 1 missing traditions and
   1 missing tags. The six missing types are the VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too
   Soon, Dragon Slayer, Game of Drones, Pacific Sunrise), which need Nate's own knowledge or the tune packet.
@@ -76,7 +76,7 @@ where it's still played, the recordings and players that made it popular, other 
 - Cite sources (The Traditional Tune Archive, The Session, irishtune.info, Slippery-Hill, the Lomax archive, liner
   notes...). Say where sources disagree instead of quietly picking one.
 - Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
-- Coverage: all 131 tunes have a one-fact summary, 129 have source URLs, and 12 have history text
+- Coverage: all 132 tunes have a one-fact summary, 130 have source URLs, and 13 have history text
   (live data, Sep 29 2026). Having text is not a separate check of its factual quality.
 - Next best step: full histories for the most-heard tunes first.
 
@@ -112,16 +112,22 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 29 2026, after the quality pilot; research-origin recordings only): 22 tunes have outside
-  recordings (33 refs), 14 with a style-model candidate. Including personal refs, the editor-visible totals
-  are 34 recordings across 23 tunes, 15 with a style model. Done so
+- Coverage (Sep 29 2026, after the four-tune curation pass; research-origin recordings only): 24 tunes have outside
+  recordings (37 refs), 14 with a style-model candidate. Including personal refs, the editor-visible totals
+  are 38 recordings across 24 tunes, 15 with a style model. Done so
   far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
   Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
   Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
-  Cliffs of Moher, La Bastringue, Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin'.
+  Cliffs of Moher, La Bastringue, Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin',
+  Bonaparte's Retreat and Music for a Found Harmonium.
 - Waiting for Nate's ear: Martin Hayes, "Kilfenora Jig" on Under the Moon (1995,
   https://www.youtube.com/watch?v=4Cc9P-mkjLs, second tune in the track). The Traditional Tune Archive says it's The
   Old Favourite, but irishtune.info files it as a slide, so it may be a different tune. Add it once Nate confirms.
+- Bonaparte Crossing the Alps / Rhine (Sep 29): the class settings still need identifying before outside
+  recordings are attached. Reviewed Ramona Jones and Clyde Blair for Alps, and the Cooper/Haas performance,
+  Fuzzy Mountain String Band and Alfred Bailey for Rhine; all remain held rather than matched by title or key
+  alone. The existing teacher recordings stay linked and preferred. Evidence and candidate URLs are retained
+  privately in the Bonaparte session's `four-tune-curation.json`.
 - Streaming link preference (Nate, Sep 27 2026): when a track isn't on YouTube or direct audio, link Tidal before
   Spotify or Apple Music. Retrofit the 3 Spotify-only pass-1 links and the Step Around Johnny Apple Music link to
   Tidal equivalents when a future pass touches those tunes.
@@ -146,6 +152,17 @@ Nate's rubric for the top recording:
   retaining all refs for editors and authenticated JSON backups. Shipped Sep 29 in main commit `5f0deb0`:
   Workers Builds succeeded, the live public API returned only the 33 research refs, and the personal ref
   remains stored in D1.
+- **Four-tune follow-up (Sep 29, 2026): imported and verified.** Used the recording-curation skill and an
+  independent V1-V7 audit for the three Bonaparte tunes and Music for a Found Harmonium. Added Andy Reiner's
+  artist-identified Stepp version to Retreat, and Celtic Fiddle Festival's 2014 concert, Penguin Cafe
+  Orchestra's original album take in its 2008 remaster, and Patrick Street's Irish Times arrangement to
+  Harmonium (new research refs 39-42). No unverified solo/style designation or recording date was invented.
+  Jeffes' authorship is sourced independently of the PCO upload's erroneous "Traditional" credit. Six leads
+  remain held: the five crossing-tune candidates above and Molsky's two unnamed Retreat versions.
+  Exact field read-back confirmed the four imports; personal refs, teacher links, existing research, learning
+  status and manual top selections were unchanged. Stepp remains Retreat's editor-side top recording.
+  All four tunes have no core research gaps. No audio/video was played; direct-audio checks loaded metadata
+  only. The evidence ledger, independent audit and import receipt remain in session artifacts.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -238,7 +255,7 @@ and classes; the main page and Markdown export share that rule in `public/fiddle
 All encounters remain in the database and JSON export. "First encounter"/"From"
 and the gaps page's "No encounter logged" check include lessons and classes.
 
-- Coverage (live data, Sep 29 2026): 125 of 131 tunes have any hearing logged; 92 have a hearing outside lessons
+- Coverage (live data, Sep 29 2026): 125 of 132 tunes have any hearing logged; 92 have a hearing outside lessons
   and classes.
 
 ### A5. Local session data from community tune lists — M per sync (formerly S5)
@@ -343,12 +360,13 @@ Open questions: how much weight the staleness survey gets relative to new-tune p
 accompaniment happens. Needs F4 + A5 for priority tier 5, and F9 (a "learned from" field) to drive tiers 1-2
 without text-matching on `source`.
 
-### F11. High-interest tunes — `building` (Sep 29 2026) · S
+### F11. High-interest tunes — `shipped` (Sep 29 2026) · S
 
 An explicit star on each tune, independent of learning status, with a "High interest only" filter that combines
 with the existing search and filters. Saved through the editor API, included in edit history/undo and backups,
 and shown read-only to visitors. Existing tunes default to unmarked. This supplies F3's third priority tier;
 the practicing/learning/flashcard recommendation system itself remains a future feature.
+Bonaparte's Retreat and Music for a Found Harmonium are marked high interest; both remain "Not played yet."
 
 ### F4. Popularity overhaul and session-only tunes — `idea` · L (needs A5)
 
@@ -421,6 +439,15 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-29: Shipped high-interest marking and filtering (F11), with a schema-9 default, validated editor
+  updates, undo/history and JSON/Markdown exports. Main commit `6aa8082` passed Workers Builds and the live
+  site serves the new controls. Set F3's future priority order to Hayden, Sarah / PCC, then high-interest
+  tunes, ahead of jam/session popularity. Through the editor API, marked Bonaparte's Retreat high interest
+  and added Music for a Found Harmonium with complete sourced core research and the same mark. Both are
+  "Not played yet"; no encounter was invented for Harmonium. The two crossing tunes remain still learning.
+  Completed the four-tune recording-curation pass described in A3: four audited refs imported, ambiguous
+  variants held, and private recordings and top choices preserved. Updated live coverage counts.
 
 - 2026-09-29: Nate authorized direct-to-main delivery as the standing default for this single-contributor,
   low-risk personal project, including automatic resolution of ordinary concurrent-session conflicts. Added

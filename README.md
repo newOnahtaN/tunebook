@@ -34,8 +34,9 @@ Fetch and merge other sessions' work, resolve ordinary conflicts automatically w
 and retry non-forced pushes if main advances. Keep working in the session's own worktree. Never force-push,
 discard other work, or bypass privacy/data safeguards. See [AGENTS.md](AGENTS.md) for the full workflow.
 
-Git delivery and data imports are separate: Angeline's recording additions are already live through the
-signed-in editor API. A successful main push starts deployment; it is not by itself proof the deployment finished.
+Git delivery and data imports are separate. A successful main push starts deployment; it is not by itself
+proof the deployment finished. Tune and recording additions take effect only after a successful signed-in
+editor API import.
 
 The Worker runs on zone routes for `nategrimwood.com/*` and `www.nategrimwood.com/*`, so the zone needs proxied (orange-cloud) DNS records for `@` and `www`. What they point at doesn't matter, because the Worker answers every request.
 
