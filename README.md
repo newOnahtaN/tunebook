@@ -18,6 +18,11 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   - Google: the page shows a "Sign in with Google" button using the public client ID in `wrangler.jsonc` (`GOOGLE_CLIENT_ID`, Google Cloud project "Tune Book"). The Worker checks Google's signature and only accepts the accounts in `EDITOR_EMAILS`. No client secret is involved.
   - Passkeys: once signed in, "Sign-in and passkeys" (bottom of the page) adds a passkey for this device. Passkeys are stored in the `passkeys` table and checked in `src/auth.js` with WebCrypto (no dependencies).
   - Sessions last 400 days and renew themselves. They're signed with a random key in `meta.session_key`; "Sign out on all other devices" replaces that key.
+- High interest: signed-in editors can toggle a tune's star independently of its learning status. The
+  **High interest only** checkbox combines with the other filters. Marked tunes show a read-only badge to
+  visitors, and the flag is included in JSON and Markdown backups. The editor API accepts
+  `PATCH /fiddle/api/tunes/:id` with `{ "field": "high_interest", "value": 1 }` (or `0` to clear it);
+  creation also accepts `fields.high_interest`. Existing and new tunes default to unmarked.
 - Drive recordings: the Worker reads the Drive "Fiddle" folder (`DRIVE_FOLDER_ID`) read-only through a Google service account whose JSON key is the Worker secret `GOOGLE_SERVICE_ACCOUNT` (the folder is shared with that account as Viewer). A scan (daily cron, or "Rescan Drive now") records audio, PDF and video files in the `media` table and links new files to tunes by name (`src/media.js`; tunes' "Also known as" names count too). Links live in `media_links`; unlinking by hand is remembered, so rescans never undo manual choices. Files are streamed through `/fiddle/api/media/<id>/<signed token>/<name>`, which is what lets Android hand them to another app (Open in app / Share).
 - Backups: when signed in, the page footer has "Download markdown" and "Download JSON".
 
@@ -34,8 +39,8 @@ signed-in editor API. A successful main push starts deployment; it is not by its
 
 The Worker runs on zone routes for `nategrimwood.com/*` and `www.nategrimwood.com/*`, so the zone needs proxied (orange-cloud) DNS records for `@` and `www`. What they point at doesn't matter, because the Worker answers every request.
 
-Tests: `npm test` runs recording-visibility regression tests against the Worker API using synthetic D1
-results, including signed-out, signed-in, invalid/expired-session and JSON-backup behavior.
+Tests: `npm test` runs Worker API regression tests using synthetic D1 results, including recording privacy,
+high-interest migration, validation, persistence, undo and backup behavior.
 
 Recording enrichment: use [the recording-curation skill](.github/skills/recording-curation/SKILL.md) alongside
 ROADMAP A3. It separates factual verification, evidence-based selection and Nate's listening verdict.

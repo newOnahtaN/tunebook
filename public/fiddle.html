@@ -133,6 +133,10 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .status-text[data-k="0"]{color:var(--pine)}
 .status-text[data-k="1"]{color:var(--sun)}
 .status-text[data-k="2"]{color:var(--muted)}
+.interest-toggle{font-size:12px;min-height:36px;padding:5px 9px;color:var(--muted)}
+.interest-toggle[aria-pressed="true"],.interest-mark{color:var(--claret);font-weight:600}
+.interest-toggle[aria-pressed="true"]{border-color:var(--claret)}
+.interest-mark{font-size:12px}
 [contenteditable]{border-radius:2px;outline:none;cursor:text;min-width:2ch;display:inline-block}
 [contenteditable]:hover{box-shadow:0 0 0 1px var(--line)}
 [contenteditable]:focus{box-shadow:0 0 0 2px var(--pine);background:var(--surface)}
@@ -300,6 +304,7 @@ a.btn:hover{border-color:var(--muted)}
     <button type="button" class="mselbtn" id="fKnowBtn" aria-haspopup="true" aria-expanded="false">All statuses</button>
     <div class="mselpanel hidden" id="fKnowPanel" role="group" aria-label="Filter by status"></div>
   </div>
+  <label class="primaryonly"><input type="checkbox" id="highInterestOnly"> High interest only</label>
   <div class="msel">
     <button type="button" class="mselbtn" id="fHeardBtn" aria-haspopup="true" aria-expanded="false">Heard or not</button>
     <div class="mselpanel hidden" id="fHeardPanel" role="group" aria-label="Filter by whether you've heard it in real life"></div>
@@ -414,7 +419,7 @@ const PENDING_KEY = "tunebook.pending.v1";
 let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[], open:[], working_notes:"", media:[], links:[] };
 
 const $ = id => document.getElementById(id);
-const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly");
+const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly"), highInterestOnlyEl = $("highInterestOnly");
 const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set(), filterSession = new Set();
 
 // Genre families, tune types and tags are defined in /fiddle/vocab.js (shared with the data gaps page).
@@ -700,6 +705,7 @@ function render(){
     if (filterTypes.size && !filterTypes.has(r.type)) return false;
     if (filterTags.size && !splitList(r.tags).some(x => filterTags.has(x))) return false;
     if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
+    if (highInterestOnlyEl.checked && t.high_interest !== 1) return false;
     if (filterHeard.size && !heardMatches(t)) return false;
     if (filterSession.size && !sessionMatches(t)) return false;
     if (term){
@@ -733,6 +739,10 @@ function render(){
     const status = E
       ? `<select data-tbl="tunes" data-id="${t.id}" data-field="status" aria-label="Status for ${esc(t.name)}">${KNOW.map((l, i) => `<option value="${i}"${i === t.status ? " selected" : ""}>${l}</option>`).join("")}</select>`
       : `<span class="status-text" data-k="${t.status}">${KNOW[t.status] ?? ""}</span>`;
+    const interested = t.high_interest === 1;
+    const interest = E
+      ? `<button type="button" class="interest-toggle" data-interest="${t.id}" aria-pressed="${interested}" aria-label="High interest for ${esc(t.name)}"><span aria-hidden="true">${interested ? "&#9733;" : "&#9734;"}</span> High interest</button>`
+      : interested ? `<span class="interest-mark"><span aria-hidden="true">&#9733;</span> High interest</span>` : "";
     const top = topRecording(t);
     const playBtn = !top ? "" : top.ref
       ? `<button type="button" class="playbtn" data-playref="${top.ref.id}" aria-label="Play top recording of ${esc(t.name)}" title="Play top recording: ${esc(refLabel(top.ref))}">▶</button>`
@@ -747,7 +757,7 @@ function render(){
           </div>
           <div class="tcard-meta">
             ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t, by)}${sessionBadges(t)}
-            ${status}
+            ${status}${interest}
           </div>
           <div class="tcard-bottom">${bars(t.common, t.id)}</div>
         </div>
@@ -1016,7 +1026,7 @@ $("addTune").addEventListener("click", async () => {
     const defaultGenre = filterGenres.size === 1 ? [...filterGenres][0] : "Old-time";
     const t = await call("POST", "tunes", { fields:{ name:"New tune", genre: defaultGenre, key:"?", form:"?" } });
     state.tunes.push(t);
-    q.value = ""; filterKnow.clear(); sortEl.value = "recent";
+    q.value = ""; filterKnow.clear(); highInterestOnlyEl.checked = false; sortEl.value = "recent";
     fillFilters(); render();
     const el = rowsEl.querySelector(`[data-row="${t.id}"] .tcard-name`);
     if (el){ el.scrollIntoView({ block:"center" }); el.focus(); document.getSelection().selectAllChildren(el); }
@@ -1096,8 +1106,8 @@ async function loadHistory(){
       let what;
       if (x.action === "update" || (x.action === "undo" && x.field)) {
         const trim = s => (s ?? "").length > 40 ? s.slice(0, 40) + "…" : (s ?? "");
-        const fmt = (f, v) => f === "status" ? KNOW[+v] : (v === "" || v == null ? "(blank)" : trim(v));
-        what = `${esc(x.label)} · ${esc(x.field)}: ${esc(fmt(x.field, x.old))} → ${esc(fmt(x.field, x.new))}`;
+        const fmt = (f, v) => f === "status" ? KNOW[+v] : f === "high_interest" ? (+v === 1 ? "Yes" : "No") : (v === "" || v == null ? "(blank)" : trim(v));
+        what = `${esc(x.label)} · ${esc(x.field === "high_interest" ? "High interest" : x.field)}: ${esc(fmt(x.field, x.old))} → ${esc(fmt(x.field, x.new))}`;
       } else {
         const verb = { create:"Added", delete:"Deleted", promote:"Moved to tunes:", undo:"Undid a change to" }[x.action] || x.action;
         what = `${verb} ${esc(x.label)}`;
@@ -1271,6 +1281,21 @@ async function setLink(mediaIds, tuneId, linked){
 }
 
 rowsEl.addEventListener("click", async e => {
+  const interest = e.target.closest("[data-interest]");
+  if (interest && state.editor){
+    const t = state.tunes.find(t => t.id === +interest.dataset.interest);
+    if (!t){ toast("That tune is no longer in the book. Reload to see the latest tunes."); return; }
+    t.high_interest = t.high_interest === 1 ? 0 : 1;
+    queueSave("tunes", t.id, "high_interest", t.high_interest, 0);
+    if (highInterestOnlyEl.checked && !t.high_interest){
+      render(); highInterestOnlyEl.focus();
+    } else {
+      interest.setAttribute("aria-pressed", String(t.high_interest === 1));
+      interest.querySelector("span").textContent = t.high_interest ? "\u2605" : "\u2606";
+      counts();
+    }
+    return;
+  }
   const gb = e.target.closest("[data-genre]");
   if (gb){
     filterGenres.clear(); filterGenres.add(gb.dataset.genre); primaryOnlyEl.checked = false;
@@ -1666,6 +1691,7 @@ function toast(msg, actionLabel, action){
 
 [q, sortEl].forEach(el => el.addEventListener("input", render));
 primaryOnlyEl.addEventListener("change", render);
+highInterestOnlyEl.addEventListener("change", render);
 
 (async function init(){
   loadPending();

@@ -55,7 +55,7 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
   the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
   and "Alabama" were added under Old-time.
-- Coverage: 118 of 129 tunes have complete core research (live gaps checks, Sep 28 2026). Eleven have
+- Coverage: 120 of 131 tunes have complete core research (live gaps checks, Sep 29 2026). Eleven have
   low-confidence research; overlapping gaps include 6 missing types, 2 missing sources, 1 missing traditions and
   1 missing tags. The six missing types are the VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too
   Soon, Dragon Slayer, Game of Drones, Pacific Sunrise), which need Nate's own knowledge or the tune packet.
@@ -76,8 +76,8 @@ where it's still played, the recordings and players that made it popular, other 
 - Cite sources (The Traditional Tune Archive, The Session, irishtune.info, Slippery-Hill, the Lomax archive, liner
   notes...). Say where sources disagree instead of quietly picking one.
 - Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
-- Coverage: all 129 tunes have a one-fact summary, 127 have source URLs, and 10 have history text
-  (live data, Sep 28 2026). Having text is not a separate check of its factual quality.
+- Coverage: all 131 tunes have a one-fact summary, 129 have source URLs, and 12 have history text
+  (live data, Sep 29 2026). Having text is not a separate check of its factual quality.
 - Next best step: full histories for the most-heard tunes first.
 
 ### A3. Recordings for every tune, and a well-chosen top recording — M per pass (formerly S3)
@@ -237,7 +237,7 @@ and classes; the main page and Markdown export share that rule in `public/fiddle
 All encounters remain in the database and JSON export. "First encounter"/"From"
 and the gaps page's "No encounter logged" check include lessons and classes.
 
-- Coverage (live data, Sep 28 2026): 123 of 129 tunes have any hearing logged; 92 have a hearing outside lessons
+- Coverage (live data, Sep 29 2026): 125 of 131 tunes have any hearing logged; 92 have a hearing outside lessons
   and classes.
 
 ### A5. Local session data from community tune lists — M per sync (formerly S5)
@@ -319,11 +319,12 @@ Safe Home, Health to the Company, The Wild Rover.
 
 An Anki-style mode for learning new tunes and keeping learned ones fresh. State management is central.
 
-1. **Recommendation algorithm**, in priority order (Nate, Sep 27 2026):
+1. **Recommendation algorithm**, in priority order (Nate, Sep 27 and Sep 29 2026):
    1. Tunes from Hayden not yet memorized.
    2. Tunes from Sarah / PCC not yet memorized.
-   3. Tunes with a note flagging special importance (e.g. "this tune is important to Heidi") — needs a way to mark
-      a note as this kind of callout, distinct from an ordinary free-text note (see open questions).
+   3. High-interest tunes not yet memorized, using the explicit `tunes.high_interest` flag (F11). These rank
+      immediately behind tunes being learned from Hayden and Sarah / PCC, ahead of jam/session popularity.
+      Use the flag for personally important tunes; a free-text note alone does not set this priority.
    4. Tunes heard at Ritz's old-time jam not yet memorized or played.
    5. Tunes broadly popular across all local sessions (old-time, Québécois, Scottish, Irish) — uses F4's popularity
       overhaul, so needs A5 (session data) and F4 built first.
@@ -337,10 +338,16 @@ An Anki-style mode for learning new tunes and keeping learned ones fresh. State 
 5. **Accompaniment:** backing like Strum Machine (chord-chart playback at adjustable tempo, styles per genre).
    **Punted, low priority for now (Nate, Sep 27 2026)** — still wanted eventually, just not designed yet.
 
-Open questions: how a "callout" note should be flagged and stored (a boolean, a tag, a free-text convention?); how
-much weight the staleness survey gets relative to new-tune priority; where chord charts would come from if/when
+Open questions: how much weight the staleness survey gets relative to new-tune priority; where chord charts would come from if/when
 accompaniment happens. Needs F4 + A5 for priority tier 5, and F9 (a "learned from" field) to drive tiers 1-2
 without text-matching on `source`.
+
+### F11. High-interest tunes — `building` (Sep 29 2026) · S
+
+An explicit star on each tune, independent of learning status, with a "High interest only" filter that combines
+with the existing search and filters. Saved through the editor API, included in edit history/undo and backups,
+and shown read-only to visitors. Existing tunes default to unmarked. This supplies F3's third priority tier;
+the practicing/learning/flashcard recommendation system itself remains a future feature.
 
 ### F4. Popularity overhaul and session-only tunes — `idea` · L (needs A5)
 
@@ -456,6 +463,16 @@ for now (Sep 26 2026).
   approved a small privacy fix: the public API now filters personal/unknown-origin refs in the branch code,
   while editor responses and authenticated exports retain them. Added synthetic Worker API regression
   coverage. Code/skill changes are separate from the still-pending live data import; deployment is pending.
+
+- 2026-09-29: Added Bonaparte Crossing the Alps and Bonaparte Crossing the Rhine through the signed-in editor
+  API, both "Played, still learning"; linked their existing class recordings and added them to the existing
+  PCC Fall 2026 class occasion without losing its nine earlier entries. Bonaparte's Retreat was left unchanged.
+  Both new tunes have sourced core research and history, with medium confidence and no core gaps. Kept the
+  class settings' keys and forms unconfirmed: American major-key settings and an Irish A-Dorian march share
+  Bonaparte titles, so outside recording picks were held rather than matched by title alone. Cloudflare D1
+  access worked for read-only scan lookup and verification; all data changes used the editor API.
+  Separately, an ordinary embedded-browser reload retained sign-in, but navigation to the gaps page lost it;
+  browser-pane session persistence remains unresolved, with no authentication code changed.
 
 - 2026-09-28: Hearing consistency fix; Nate approved direct deployment to `main` instead of a PR after the
   app's PR action used its work-account credentials. Shared the non-teaching encounter rule

@@ -15,7 +15,7 @@ const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
 const CHALLENGE_MINUTES = 5;
-const SCHEMA_VERSION = '8';
+const SCHEMA_VERSION = '9';
 const AUDIO_FOLDER = 'Audio from videos';          // inside the Fiddle folder; audio-only copies of videos
 const JOB_AUDIENCE = 'tunebook-video-audio';        // GitHub Actions OIDC audience for the nightly job
 const MEDIA_TOKEN_HOURS = 24;
@@ -29,7 +29,7 @@ const SEED_AKA = {
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
                       origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text', genres2: 'text',
-                      top_media: 'text' };
+                      top_media: 'text', high_interest: 'int0_1' };
 const OPEN_FIELDS = { title: 'text', source: 'text', notes: 'text' };
 const TABLES = { tunes: TUNE_FIELDS, open: OPEN_FIELDS };
 const TABLE_NAME = { tunes: 'tunes', open: 'open_titles' };
@@ -199,6 +199,10 @@ async function initDb(env) {
     const cols = (await db.prepare(`PRAGMA table_info(research)`).all()).results.map(c => c.name);
     // tags: research-derived style tags (crooked, pipe tune, session standard...), comma-separated
     if (!cols.includes('tags')) await db.prepare(`ALTER TABLE research ADD COLUMN tags TEXT NOT NULL DEFAULT ''`).run();
+  }
+  if (version < 9) {
+    const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
+    if (!cols.includes('high_interest')) await db.prepare(`ALTER TABLE tunes ADD COLUMN high_interest INTEGER NOT NULL DEFAULT 0 CHECK (high_interest IN (0, 1))`).run();
   }
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
@@ -405,7 +409,7 @@ function clean(type, value) {
     return s;
   }
   const n = Number(value);
-  const max = type === 'int0_10' ? 10 : 2;
+  const max = type === 'int0_10' ? 10 : type === 'int0_1' ? 1 : 2;
   if (!Number.isInteger(n) || n < 0 || n > max) throw new HttpError(400, `Must be a whole number from 0 to ${max}.`);
   return n;
 }
@@ -900,20 +904,22 @@ function toMarkdown(d) {
     '- **Common**: rough 1-10 guess at how widely players of that genre know the tune. Blank means unrated.',
     "- **Also**: other genres the tune fits, besides the section it's grouped under.",
     '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet.',
+    '- **High interest**: an explicit learning preference, independent of whether the tune has been played or memorized.',
     '- **From**: the first logged encounter with the tune, including lessons and classes.',
     '- **Heard**: separate non-teaching occasions (jams, sessions, camps and other encounters). Lessons and classes are logged but do not count here.',
     '- A `?` in Key, Form, or Origin means unconfirmed, not absent.', '',
     '## Totals', '',
     `- ${d.tunes.length} tunes traced`, `- ${counts[0]} memorized`, `- ${counts[1]} played, still learning`,
-    `- ${counts[2]} not played yet`, `- ${d.open.length} titles still unidentified`, '',
+    `- ${counts[2]} not played yet`, `- ${d.tunes.filter(t => t.high_interest === 1).length} high interest`,
+    `- ${d.open.length} titles still unidentified`, '',
     '## Tunes', '',
   ];
   for (const g of genres) {
     const rows = d.tunes.filter(t => t.genre === g)
       .sort((a, b) => (b.common ? 1 : 0) - (a.common ? 1 : 0) || b.common - a.common || a.name.localeCompare(b.name));
-    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Also | Origin | Status | From | Heard | Notes |', '|---|---|---|---|---|---|---|---|---|---|');
+    out.push(`### ${g}`, '', '| Tune | Key | Common | Form | Also | Origin | Status | High interest | From | Heard | Notes |', '|---|---|---|---|---|---|---|---|---|---|---|');
     for (const t of rows) {
-      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.genres2)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${cell(t.source)} | ${heard.get(t.id)?.size || ''} | ${cell(t.notes)} |`);
+      out.push(`| ${cell(t.name)} | ${cell(t.key)} | ${t.common || ''} | ${cell(t.form)} | ${cell(t.genres2)} | ${cell(t.origin)} | ${KNOW[t.status]} | ${t.high_interest === 1 ? 'Yes' : ''} | ${cell(t.source)} | ${heard.get(t.id)?.size || ''} | ${cell(t.notes)} |`);
     }
     out.push('');
   }
