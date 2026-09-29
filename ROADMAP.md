@@ -143,8 +143,9 @@ Nate's rubric for the top recording:
   The reviewed payload, before/after snapshots and evidence ledger remain in the Recording quality session.
 - **Visibility clarified (Nate, Sep 28, 2026):** research refs may be public; Nate's personal refs and Drive
   recordings remain editor-only. The Worker fix filters signed-out refs by `origin = 'research'`, while
-  retaining all refs for editors and authenticated JSON backups. Integrated with current main for delivery;
-  production deployment verification is pending.
+  retaining all refs for editors and authenticated JSON backups. Shipped Sep 29 in main commit `5f0deb0`:
+  Workers Builds succeeded, the live public API returned only the 33 research refs, and the personal ref
+  remains stored in D1.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -426,7 +427,10 @@ for now (Sep 26 2026).
   root AGENTS.md guidance, linked it from CLAUDE.md and README, and replaced the feature-branch-only delivery
   note. Integrated main's hearing-consistency changes with this session's privacy fix and recording skill.
   Resolved roadmap conflicts by retaining both logs and reconciling research-only versus all-reference
-  coverage against live totals. Validation and main-push/deployment verification are pending.
+  coverage against live totals. Seven privacy regressions and the Worker dry-run passed. Pushed merge
+  `5f0deb0` directly to main; Workers Builds completed successfully and the live public API now excludes
+  personal refs while retaining all four Angeline recordings. D1 still contains the personal ref, and the
+  deployed hearing helper retains the other session's behavior.
 
 - 2026-09-29: Clarified delivery at Nate's request: this session has pushed directly to the GitHub repository's
   `naowen-microsoft-recording-quality` feature branch, not to `main`. The curation skill, documentation and
