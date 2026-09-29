@@ -193,8 +193,8 @@ Nate's rubric for the top recording:
 Log every occasion Nate hears a tune (lessons, classes, jams, sessions, camps). This drives prioritization and the
 "heard" filters and sorts. Nate reports occasions in chat; log them with `POST /fiddle/api/hearings/import` (upserts
 an occasion by `key` and replaces its tune list; payload format in `src/worker.js`). "Heard" excludes lessons
-and classes; the main page and Markdown export share that rule in `public/fiddle/hearings.js` (consistency fix
-awaiting PR review, Sep 28 2026). All encounters remain in the database and JSON export. "First encounter"/"From"
+and classes; the main page and Markdown export share that rule in `public/fiddle/hearings.js` (Sep 28 2026).
+All encounters remain in the database and JSON export. "First encounter"/"From"
 and the gaps page's "No encounter logged" check include lessons and classes.
 
 - Coverage (live data, Sep 28 2026): 123 of 129 tunes have any hearing logged; 92 have a hearing outside lessons
@@ -370,7 +370,8 @@ for now (Sep 26 2026).
 
 ## Log
 
-- 2026-09-28: Hearing consistency fix implemented, awaiting PR review. Shared the non-teaching encounter rule
+- 2026-09-28: Hearing consistency fix; Nate approved direct deployment to `main` instead of a PR after the
+  app's PR action used its work-account credentials. Shared the non-teaching encounter rule
   between the main page and Markdown export, clarified the first-encounter labels, and renamed the
   gaps check to "No encounter logged" without changing which records satisfy it. Included the evaluation's
   corrected coverage figures. Nate deferred test infrastructure and recovery fixes; community-list population
