@@ -12,6 +12,11 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
 - `public/fiddle/hearings.js` shares the "heard" rule between the main page and Markdown exports: lessons and
   classes are logged, but only non-teaching encounters count as heard. "First encounter"/"From" and the gaps
   page's "No encounter logged" check still include lessons and classes; the JSON export retains the complete log.
+- Community-source badges and the **Session lists** filter are separate from personal encounter data.
+  A list appearance does not mark a tune heard, played or high interest. Count notes can describe a named
+  setting or a shared source row rather than an individual tune's frequency; qualified notes wrap on phones.
+  See [ROADMAP A5](ROADMAP.md#a5-local-session-data-from-community-tune-lists--m-per-sync-formerly-s5)
+  for source coverage, identity holds and safe resync rules.
 - `src/worker.js` is a Cloudflare Worker that serves the page, redirects `/` and `www` to `/fiddle`, and runs a small JSON API under `/fiddle/api/`.
 - Data lives in a Cloudflare D1 database (binding `DB`). The Worker creates its tables on first run and fills them from `src/seed.json` once, when the database is empty. After that the database is the source of truth; `seed.json` is never re-applied.
 - Editing: sign in with Google or a passkey. Every edit saves immediately and is logged in the `edits` table, which powers "Recent changes" and undo.

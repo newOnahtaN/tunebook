@@ -55,15 +55,19 @@ filtering by a broad genre surfaces its relatives without false positives.
 - Tunes that belong to just one tradition store that tradition in `research.genres` (e.g. Dancing Bear → Contra) so
   the gaps page knows they were reviewed. "Pacific Northwest" (Seattle composers like the Canotes and Hank Bradley)
   and "Alabama" were added under Old-time.
-- Coverage: 121 of 132 tunes have complete core research (live gaps checks, Sep 29 2026). Eleven have
+- Coverage: 269 of 280 tunes have complete core research (live data and deployed gaps checks, Sep 30 2026).
+  All 148 entries added in the session-list pass have complete core research. The same eleven older tunes have
   low-confidence research; overlapping gaps include 6 missing types, 2 missing sources, 1 missing traditions and
   1 missing tags. The six missing types are the VOM camp compositions (Cedar Paths, Same Mistakes, Two Months Too
   Soon, Dragon Slayer, Game of Drones, Pacific Sunrise), which need Nate's own knowledge or the tune packet.
   Bea's Waltz, Back Home, Habas para una Amiga, Roland White's and Texas Sandy Hill have a research pass on file
   too, even though several came back low-confidence or unidentified rather than a firm answer.
+- The Sep 30 pass added Acadian, Midwestern, Western swing and Jazz vocabulary, plus definitions for slip jig,
+  triple hornpipe and quadrille. Source-player versions, alternate meters and uncertain composer attributions
+  are stated explicitly rather than forced into a single unsupported claim.
 - Next best step: the six VOM camp compositions' keys and types are in the 7.7 MB VOM tune packet in Drive (per
-  Working notes) — this session now has a Drive connection that reads as Nate, so try reading the packet directly
-  instead of waiting for a smaller exported PDF; add "crooked" and "cross-tuned" checks from Slippery-Hill and the
+  Working notes). An earlier run had an authorized Drive connection; check current access and try reading the
+  packet directly rather than assuming that connection persists. Add "crooked" and "cross-tuned" checks from Slippery-Hill and the
   Traditional Tune Archive; label tunes added since.
 - Proposals waiting for Nate: turn "Waltz" and "Camp composition" from genres into types and move those tunes under
   their real traditions; consider making Campbell's Farewell to Red Gap primarily Scottish.
@@ -76,8 +80,9 @@ where it's still played, the recordings and players that made it popular, other 
 - Cite sources (The Traditional Tune Archive, The Session, irishtune.info, Slippery-Hill, the Lomax archive, liner
   notes...). Say where sources disagree instead of quietly picking one.
 - Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
-- Coverage: all 132 tunes have a one-fact summary, 130 have source URLs, and 13 have history text
-  (live data, Sep 29 2026). Having text is not a separate check of its factual quality.
+- Coverage: all 280 tunes have a one-fact summary, 278 have source URLs, and 35 have history text
+  (live data, Sep 30 2026). Having text is not a separate check of its factual quality. Some new community-only
+  composer credits remain explicitly attributed to the source sheet, with medium confidence.
 - Next best step: full histories for the most-heard tunes first.
 
 ### A3. Recordings for every tune, and a well-chosen top recording — M per pass (formerly S3)
@@ -112,14 +117,15 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 29 2026, after the four-tune curation pass; research-origin recordings only): 24 tunes have outside
-  recordings (37 refs), 14 with a style-model candidate. Including personal refs, the editor-visible totals
-  are 38 recordings across 24 tunes, 15 with a style model. Done so
+- Coverage (Sep 30 2026, after the session-list pass; research-origin recordings only): 29 tunes have outside
+  recordings (42 refs), 15 with a style-model candidate. Including personal refs, the editor-visible totals
+  are 43 recordings across 29 tunes, 16 with a style model. Done so
   far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
   Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
   Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
   Cliffs of Moher, La Bastringue, Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin',
-  Bonaparte's Retreat and Music for a Found Harmonium.
+  Bonaparte's Retreat, Music for a Found Harmonium, Le Coin du balcon, Salt Spring, Itzbin Reel, Hartford's Real
+  and Cache tes fesses.
 - Waiting for Nate's ear: Martin Hayes, "Kilfenora Jig" on Under the Moon (1995,
   https://www.youtube.com/watch?v=4Cc9P-mkjLs, second tune in the track). The Traditional Tune Archive says it's The
   Old Favourite, but irishtune.info files it as a slide, so it may be a different tune. Add it once Nate confirms.
@@ -163,6 +169,14 @@ Nate's rubric for the top recording:
   status and manual top selections were unchanged. Stepp remains Retreat's editor-side top recording.
   All four tunes have no core research gaps. No audio/video was played; direct-audio checks loaded metadata
   only. The evidence ledger, independent audit and import receipt remain in session artifacts.
+- **Session-list follow-up (Sep 30, 2026): five references imported and verified.** Added André Brunet's
+  Le Coin du balcon with documented fiddle/feet and guitar as a provisional style candidate; the
+  Reischman/Hargreaves/Tuttle Salt Spring band recording; Reischman's Itzbin Reel with Chris Thile and
+  Mike Barnett; Bush/Grisman's Hartford's Real with its original liner-note personnel; and Brunet's
+  publisher-described Cache tes fesses lesson. The independent V1-V7 audit returned four OK and one FIX:
+  the verified 2017 release year was added to Le Coin's note, without claiming a recording-session date.
+  Its composer attribution remains qualified as the community sheet's claim. New refs are 43-47, all
+  research-origin. Existing refs, private data and manual top selections were unchanged. No playback occurred.
 
 #### How to pick recordings (method v1, Sep 27 2026)
 
@@ -255,76 +269,94 @@ and classes; the main page and Markdown export share that rule in `public/fiddle
 All encounters remain in the database and JSON export. "First encounter"/"From"
 and the gaps page's "No encounter logged" check include lessons and classes.
 
-- Coverage (live data, Sep 29 2026): 125 of 132 tunes have any hearing logged; 92 have a hearing outside lessons
-  and classes.
+- Coverage (live data, Sep 30 2026): 125 of 280 tunes have any hearing logged; 92 have a hearing outside lessons
+  and classes. The community imports added no personal encounters or learning progress.
 
 ### A5. Local session data from community tune lists — M per sync (formerly S5)
 
 **Major goal (Nate, Sep 26 2026).** Community members keep spreadsheets of every tune played at Seattle-area sessions.
 Keep the tune book in sync with them. This item is the data sync; F4 below is the feature that uses it.
 
-**Progress (Sep 27 2026):** the Google Drive connection does unblock this — all sources below were read directly as
-Nate, no manual export needed. Pass 1 pulled each sheet's "top" tunes and diffed them against the 129-tune book; the
-candidate lists (tunes worth adding) are saved at `data/session-tunes/candidates_pass1.json` rather than inlined here.
+**Progress (Sep 30 2026): populated, with three explicit identity holds.** Imported 148 new tune/settings records
+through the signed-in editor API, bringing the book from 132 to 280. Reconciled 28 existing-book matches,
+adding 25 previously missing memberships. There are now 176 linked tune records across the five sources.
+All 148 additions have complete core research, start as "Not played yet," and have no invented hearing.
+`data/session-tunes/candidates_pass1.json` is now a **historical snapshot**, not a pending queue or a safe
+re-import payload.
 
 Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
 `1nDN5qlES0aV-cpu9H1R9DhIL8-BpX_8Bl0MMTytl1a4`; NWSF added Sep 27 2026 at Nate's request):
 
 | Sheet | Maintainer | What it has | "Top" means (Nate, Sep 27 2026: be thoughtful per-source, cap at 25) |
 |---|---|---|---|
-| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | One row per tune per jam date: date, key, tune, source player, links. Six tabs total; the sheet actually has a separate "All, by Date" tab (A1:H3085, the true full 2022-2026 log) — "Most Recent"/"Less Recent" are partial views of it, and "G/D/A xA/C Tunes" are key-filtered slices of the same data, not new tunes. | **Resolved Sep 28 2026:** the earlier "41-row fragment" problem was `download_file_content` only ever exporting the sheet's default tab ("Most Recent"). Pulled the full "All, by Date" tab directly via its gviz CSV export (614,436 chars, verified byte-exact, 3084 data rows, 701 distinct tune titles after normalization) and counted real per-tune frequency across the whole 3/31/2022-8/14/2026 span. Top 25 by raw play count — only 2 of 25 (Cumberland Gap, Bound to Have a Little Fun) already in the book, both with 1 hearing already, so no "not yet heard" cases from this source. |
-| PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer, links, times played, first and last played (388 tunes). | The sheet's own "Times Played" column, top 25. Real play counts, so this is a direct measure. Only 1 of the top 25 (La fée des dents) is already in the book. |
-| Couth Buzzard Irish Tunes (Saturday session), `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link, times played, last played (527 tunes on the main "Session tunes" tab). | Same: "Times Played" column, top 25. 2 of the top 25 (Cliffs of Moher, Father Kelly's) already in the book. The sheet also has a second tab, "Copy of Session tunes" (517 rows, adds a 1-2 "interest tier" column, called "Some Interesting"). **Resolved Sep 28 2026:** confirmed via a full per-tab read that it's a stale duplicate of "Session tunes" — same tune identities, but its play counts occasionally lag the main tab (e.g. Black Rogue 6 vs 7, Banish Misfortune 22 vs 23), meaning it was copied at an earlier point and never kept in sync. "Session tunes" is canonical for ranking; "Copy of Session tunes", the empty "Temp" tab, and "Scale modes" (a music-theory reference table, not tune data) are all excluded from any future sync. |
-| Seattle's Old Time Buddies - Tune Share (Ritz's jam), `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Tune list with key, artist, recording link, difficulty (~30 tunes). No play counts. | No ranking signal exists, so the whole list counts as "top" — it's already a short, hand-picked share list, not a full log. Diffed Sep 28 2026: only 2 of 30 (Red Haired Boy, Cherokee Shuffle) already in the book — both matter for F3 tier 4 (Ritz jam tunes not yet memorized/played). The other 28 are in `candidates_pass1.json`. |
-| NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx (Nate, Sep 27 2026) | NWSF club | The club's own curated "top tunes for sessions" reference, revised 2024, ~64 tunes across waltzes/airs/marches/jigs/strathspeys/reels, marked whether it's in their own library. Not a session Nate attends — it's a standing repertoire list. | The club already curated this as "top," so the whole list counts, same reasoning as Old Time Buddies. 12 of 64 are already in the book (all already heard at least once); 52 are new candidates. |
+| Columbia City Jam - Tunes 2022-2026 (old-time), `1u17fwk_FlBi-WLIxICy0MMA76M7j4yhYgZGuS5EqNs4` | Steve Johnston | Seven tabs; the complete "All, by Date" log has 3,084 data rows. Recent and key-specific tabs are overlapping views, not additional plays. | The previously selected 25-tune cohort is retained. Its old global ranks were withdrawn after discovering that title normalization combined distinct source-player settings. Displayed counts now state their scope; this is not a newly proven global top 25. |
+| PNW Quebecois Tunes, Annotated, `1TYyk_Rh9XSIJ3T1KP6P_Ga8DdJiExfQAXUXQcBwiROo` | Doug Plummer | Tune, meter, key, composer/source credit, links, play count and dates; 388 rows in the Sep 30 snapshot. | Top 25 rows by the sheet's "Times Played" column, with stable sheet order for ties. White Buffalo / Cut Knife Hill names two different melodies, so that row maps to two records; its 38 plays are explicitly a shared-row total, not two individual play counts. |
+| Couth Buzzard Irish Tunes, `17PrThLHRKfPzFQ0vrwHWSXugxHbJLsvFBNr8oKJRi9w` | Doug Plummer | Tune, type, key, origin, link and counts; 528 rows on the canonical "Session tunes" tab in the Sep 30 snapshot. | Top 25 by "Times Played." The previously audited "Copy of Session tunes" is a stale duplicate, while "Temp" and "Scale modes" are not ranking sources. |
+| Seattle's Old Time Buddies - Tune Share, `1MN3yAbPryeJf_YXJdOBh7T9qSDht_VhD-pfU6tdUDeU` | dzank97 | Curated 30-tune share list, with keys and recording suggestions but no frequency signal. | Entire curated list; no invented play counts or numerical ranking. Membership does not establish that Nate heard or played a tune there. |
+| [NW Scottish Fiddlers - TOP-FIDDLE-TUNES.docx](https://www.nwscottishfiddlers.org/wp-content/uploads/2024/09/TOP-FIDDLE-TUNES.docx) | NWSF club | The 2024 curated reference has 64 main entries plus nine distinct additional selections in its set notes. Not a session Nate attends. | Entire curated document: 73 tunes, not just the earlier 64-name extraction. Duplicate set mentions count once, and translated/abbreviated existing-book matches are reused. |
 
 - Nate's rules: local play counts beat broad internet sentiment; every sheet tune should appear in the tune book;
   and it must stay obvious which tunes Nate has actually heard. Community data is a third provenance, distinct from
   both Nate's own data and research. He only wants the top 25 per session at most, and "top" should be defined
   per-source rather than forced into one formula (see table above).
-- **New tunes added from this data need a clear "local favorite, not yet heard" marker** (Nate, Sep 27 2026): when a
-  candidate from this list gets imported as a real tune record, set its `notes` to say it's a local favorite from
-  session X that Nate hasn't heard live yet (with the play count / rank), rather than inventing a new tag — the tag
-  vocabulary in `vocab.js` is for a tune's own character, not Nate's relationship to it. Status should start as
-  "Not played yet." None of pass 1's matches against the existing book needed this (every match already had at least
-  one hearing), but most of the candidates in `candidates_pass1.json` are brand new to the book and should get it
-  when they're imported.
-- Likely shape: a `session_counts` table (tune_id, sheet, times_played, first_played, last_played, synced_at) and a
-  marker on tunes created from a sheet, never written into Nate's fields. Match names carefully ("Abbey Reel, The",
-  "Andy Dejarlis") with the name/aka matcher plus a manual alias list. Pass 1's matching (strip accents, drop
-  parentheticals, move a trailing ", La/Le/Les/The" to the front) found only 3 of ~72 top-25 candidates already in the
-  book — most of what's "popular locally" isn't in Nate's book at all yet, which matters more than the sync
-  mechanism itself right now.
-- The sheets are shared with Nate, not with the site's service account, but the Google Drive connection in this
-  session reads them fine as Nate — confirmed working, no manual export needed.
-- Status: candidate lists gathered and fully resolved for all 5 sources (pass 1-3, Sep 27-28 2026) — 152 candidates
-  total across the 5 sheets. The site now has a feature for this (Sep 28 2026, before any import): a `session_sources`
-  table, a `POST /session-sources/import` endpoint, and on the front end a `srcbadge` on each card (e.g. "Columbia
-  City Jam #4"), a session-list detail block, and a `Session lists` filter — alongside a full parchment/candlelight
-  visual reskin (daytime journal / pub-at-night dark mode). All 152 candidates were imported via the new endpoint;
-  3 matched existing tune records (Cumberland Gap, and two others) and now show their badge live — the other 149
-  stay unmatched and tracked in `data/session-tunes/candidates_pass1.json` until each gets the full enrichment pass
-  (CLAUDE.md's checklist) and becomes a real tune record, which is a bigger job than gathering the list. Next: (1)
-  start importing candidates as full tune records in small batches with full research + the "not yet heard" note
-  (now auto-derived from hearings data rather than hand-written) — Red Haired Boy and Cherokee Shuffle are already
-  in the book and match F3 tier 4, so they're a natural first pair to fully research and prioritize, (2) design the
-  actual `session_counts` sync once enough candidates exist to make it worth automating.
-- Live coverage check (Sep 28 2026): only 3 tunes have session-list links (2 Columbia City Jam, 1 NW Scottish
-  Fiddlers); the other three sources have no linked tunes. Before adding new candidates, reconcile the existing
-  book matches already listed in the source table above. Importing only the candidate lists leaves those known
-  matches out of the feature.
-- **Resume in progress (Sep 30 2026):** recovered the current canonical source sheets and the original 64-tune
-  NWSF document, including previously omitted existing-book matches. Its set notes add nine distinct selections
-  beyond the earlier 64-entry extraction, making 73 named tunes in the full document. Restored 23 missing
-  memberships through the editor API, then imported the first 109 new tunes with sourced core research and
-  source-list badges.
-  Source captions are not treated as verified musical identities: the old Columbia City totals combined
-  different source-player settings, and some community pages have contradictory type/notation labels.
-  The reviewed manifest, source snapshots, identity decisions and exact read-back receipts are kept in the
-  Session tune imports session artifacts, not public assets. Further batches and the final coverage count
-  are still in progress. Added vocabulary support for slip jigs, triple hornpipes, Western swing, Jazz, Acadian and Midwestern
-  repertoire. Source-statistic qualifications wrap on narrow screens rather than overflowing the card.
-  No personal hearing, learning progress, interest mark or recording preference is inferred.
+- **Provenance and status:** the existing UI derives "Local favorite, not yet heard" from community membership
+  and counted hearings. Do not handwrite that statement into personal notes, invent a style tag for it, or turn
+  a sheet appearance into a personal hearing. New records start at "Not played yet"; existing learning status,
+  interest flags, personal references, private notes and manual top selections remain unchanged.
+
+**Live coverage, Sep 30 2026**
+
+| Source | Selected source rows | Resolved rows | Linked tune records |
+|---|---:|---:|---:|
+| Columbia City Jam cohort | 25 | 25 | 25 |
+| PNW Québécois | 25 | 25 | 26 |
+| Couth Buzzard Irish | 25 | 24 | 24 |
+| Old Time Buddies | 30 | 28 | 28 |
+| NW Scottish Fiddlers | 73 | 73 | 73 |
+| **Total** | **178** | **175** | **176** |
+
+The extra record is the White Buffalo / Cut Knife Hill split. There are 148 new records and 28 reused existing
+records, not 176 newly created tunes. Examples of recovered existing matches include Josephine/Josefin's Waltz,
+Kerfuntin/Kerfunten, My Kindly Sweetheart/My Gentle Milkmaid, Barrowburn, Stan Chapman, Reconciliation and
+Chattanooga (Old)/Old Chattanooga.
+
+**Held, not imported or silently matched**
+
+| Source entry | Identified source | Remaining question |
+|---|---|---|
+| Kilfenora Jig, Couth Buzzard D setting | [Perrine's D-jig performance](https://www.youtube.com/watch?v=6CK3Wofgx-o) | Distinguish this setting from the existing G/A Old Favourite and the other D-major Kilfenora jigs. Nate was asked to compare; no confirmation was available. |
+| Cold Frosty Morning, Old Time Buddies | [The Wayfarers, Fire on the Hillside](https://www.youtube.com/watch?v=Ep3oLlP_PE0) | Confirm the melody/source family; do not substitute the common Henry Reed setting solely from the title. |
+| Lost Indian, Old Time Buddies | [Michael Cleveland, Flame Keeper](https://www.youtube.com/watch?v=MF3tF_5YSQs) | Establish the particular Lost Indian setting; do not guess an Eck Robertson or Cherokee Shuffle relationship. |
+
+**Count and ingestion corrections**
+
+- Source-player qualifiers matter. The Collins Sail Away Ladies count is 27, not the old 73-title-bucket total;
+  Marion Reece's Liza Jane has 18 exact source-title rows, not 23 mixed entries; the selected Cowboy Waltz has
+  14 Pyeatt-attributed rows, not the old 20 mixed settings. Cumberland Gap's 38 rows are explicitly a mixed-setting
+  title-family total, not a count for Nate's A setting. Columbia City's numeric ranks remain withdrawn until a
+  defensible, variant-aware global ranking is rebuilt; its selected cohort was not silently changed.
+- Read the full Columbia City "All, by Date" tab, not the default recent view. Set `headers=1` for gviz exports:
+  automatic header inference swallowed the first several Old Time Buddies tunes. XLSX hyperlink targets also
+  recovered links whose CSV cells contained only display text, such as O'Sullivan's March.
+- The Sep 30 source snapshots were readable through the published CSV/XLSX/document URLs. Do not assume that
+  an earlier session's Drive connection or browser sign-in is available now. All writes still require the
+  signed-in editor API; no direct D1 enrichment writes were used.
+- `POST /fiddle/api/session-sources/import` replaces each supplied sheet wholesale. Send the full intended
+  membership set using verified tune IDs; an `unmatched` response does not persist pending candidates.
+  Preserve version qualifiers and a reviewed raw-source-to-tune map rather than stripping them during matching.
+- The source tables do not turn community play counts into personal hearings, global commonness scores or
+  high-interest marks. The future numeric `session_counts` sync and F4 weighting design remain separate work.
+
+The private **Session tune imports** artifacts (session `091259e3-f796-443d-a5e4-45855bbc71b4`) contain the
+source snapshots, reviewed manifest, resolved source map, three holds, independent recording audit, import
+receipts and before/after editor snapshots. `verification-report.json` checks every expected field and source
+membership, runs the deployed gaps-page core checks, and confirms preservation of the original 132 tunes and
+their research, all previous refs, personal notes, hearings, media links and top choices. Public responses still
+exclude private data. No audio or video was played.
+
+**Next:** resolve the three held identities without guessing; then design a repeatable source-aware sync using
+this completed mapping. Deeper histories and recordings remain open enrichment work, not blockers to the
+148 imported records' complete core research.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -447,16 +479,27 @@ for now (Sep 26 2026).
 - "Bill Harris" from Maura's VOM class is logged as Bill Collins'. That's a guess and needs confirming.
 - Still unidentified: Kid and the Bacon (best guess Bacon Rind), Ravelin Wheel (SFSF favourite; guesses in its notes),
   McClellan's Row and November Sun (maybe a new Katie McNally tune). Nate has no more to add; use judgment.
+  Bacon Rind now has a separate community-sourced entry; that does not confirm or transfer the unidentified
+  Kid and the Bacon hearing.
 
 ---
 
 ## Log
 
-- 2026-09-30: Resumed A5 session-tune population using authenticated editor APIs and complete source
-  snapshots. Reconciled existing memberships before creating new tunes, preserving personal fields and
-  checking each new tune's research and community links after import. Added the slip-jig definition and
-  Western swing/Jazz genre branches needed by the source repertoire. The import is still in progress;
-  final counts and held identities will be recorded here after reconciliation.
+- 2026-09-30: Populated the five A5 source lists with 148 new, core-enriched tune/settings records and
+  25 missing memberships on existing records: 280 tunes in the book, 176 linked records, 175 of 178 source
+  rows resolved. Recovered nine Scottish set-note selections omitted from the old 64-name extraction;
+  split White Buffalo and Cut Knife Hill with explicit shared-count scope. Withdrew misleading Columbia
+  City ranks and corrected mixed-setting counts. Three identities remain held: the Couth Buzzard D Kilfenora,
+  the Wayfarers' Cold Frosty Morning and Cleveland's Lost Indian. Added five independently audited
+  recording refs (43-47), preserving release/recording-date distinctions and all manual top selections.
+  Original personal data and all 132 pre-existing tune/research records were unchanged; no hearings or
+  learning progress were inferred. The deployed gaps rules report zero core gaps for all 148 additions.
+  Added slip-jig, triple-hornpipe and quadrille definitions, four tradition labels, and wrapping for qualified
+  source statistics on phones. These code changes were pushed directly to main and their Workers Builds
+  and live assets were confirmed; data changes were separately imported and read back through the editor API.
+  Source snapshots, field comparisons, privacy checks, the full mapping and holds remain in private session
+  artifacts. Updated A1-A5 coverage; no audio/video playback.
 
 - 2026-09-29: Shipped high-interest marking and filtering (F11), with a schema-9 default, validated editor
   updates, undo/history and JSON/Markdown exports. Main commit `6aa8082` passed Workers Builds and the live

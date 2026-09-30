@@ -1,6 +1,6 @@
 {
   "generated": "2026-09-28 (pass 2 adds Old Time Buddies; pass 3 adds Columbia City Jam full-history resolution)",
-  "note": "Candidate tunes from local session data not yet in Nate's tune book, ranked as described in ROADMAP.md A5. 'plays' is the sheet's own times-played count where available.",
+  "note": "Historical Sep 27-28 shortlist, not a live pending-import queue or a safe import payload. The Sep 30 run reconciled this snapshot against complete sources and the live book; see ROADMAP.md A5 for current coverage and held identities. Original values are retained for provenance. Columbia City 'plays' values below are legacy title-bucket totals, not verified source-setting frequencies.",
   "sources": {
     "quebecois_pnw": {
       "sheet": "PNW Quebecois Tunes, Annotated",
@@ -607,7 +607,7 @@
     "old_time_buddies_ritz": {
       "sheet": "Seattle's Old Time Buddies - Tune Share (Ritz's jam)",
       "rank_method": "whole list counts as 'top' — it's already a short hand-picked share list, not a full log",
-      "note": "Red Haired Boy and Cherokee Shuffle are the only 2 of 30 already in the book (both heard once, from recordings research, not live at Ritz's jam) -- relevant to F3 priority tier 4 (Ritz jam tunes not yet memorized/played).",
+      "note": "Red Haired Boy and Cherokee Shuffle were already in the book when this snapshot was made. List membership or recording research does not establish a personal hearing; consult the editor hearing log rather than inferring Nate's experiences from this sheet.",
       "candidates": [
         {
           "tune": "Bully of the Town",
@@ -837,7 +837,7 @@
     },
     "columbia_city_jam": {
       "sheet": "Columbia City Jam - Tunes 2022-2026 (Seattle, WA)",
-      "rank_method": "Real play-count top 25, computed from the full 'All, by Date' tab (3084 logged plays, 3/31/2022-8/14/2026) -- NOT the 'Most Recent' tab, which is only a ~41-row fragment of the same log and was the source of an earlier data-completeness concern now resolved. Titles normalized (case/punctuation/parenthetical-insensitive) and counted; 701 distinct tunes logged, this is the top 25 by raw times-played.",
+      "rank_method": "Historical pass-3 selection from the full 'All, by Date' tab (3084 rows, 3/31/2022-8/14/2026), not the partial recent view. The old title normalization combined source-player settings. These preserved totals and positions are not valid per-setting ranks; the Sep 30 import retained the selected cohort but published qualified counts and withdrew unsupported numeric ranks.",
       "candidates": [
         {
           "tune": "Sail Away Ladies - W.S. Collins",
@@ -990,7 +990,7 @@
           "source": "John Summers, via Armin Barnett"
         }
       ],
-      "note": "Only 2 of 25 (Cumberland Gap, Bound to Have a Little Fun) are already in the book, and both already have exactly 1 hearing recorded, so neither is a 'local favorite, not yet heard' case. The other 23 are new-to-the-book candidates for future import."
+      "note": "The historical name-only diff missed Chattanooga (Old) / Old Chattanooga and made unsupported personal-hearing assumptions. See ROADMAP A5 and the private reviewed source mapping for the completed import; do not infer listening history or create duplicate tunes from this snapshot."
     }
   }
 }
