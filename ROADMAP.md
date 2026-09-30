@@ -313,6 +313,15 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
   Fiddlers); the other three sources have no linked tunes. Before adding new candidates, reconcile the existing
   book matches already listed in the source table above. Importing only the candidate lists leaves those known
   matches out of the feature.
+- **Resume in progress (Sep 30 2026):** recovered the current canonical source sheets and the original 64-tune
+  NWSF document, including previously omitted existing-book matches. Restored 19 missing memberships through
+  the editor API, then imported the first 41 new tunes with sourced core research and source-list badges.
+  Source captions are not treated as verified musical identities: the old Columbia City totals combined
+  different source-player settings, and some community pages have contradictory type/notation labels.
+  The reviewed manifest, source snapshots, identity decisions and exact read-back receipts are kept in the
+  Session tune imports session artifacts, not public assets. Further batches and the final coverage count
+  are still in progress. Added vocabulary support for slip jigs, Western swing and Jazz for the remaining
+  candidates; no personal hearing, learning progress, interest mark or recording preference is inferred.
 
 ### A6. Cleanup: unidentified tunes and data questions — S
 
@@ -439,6 +448,12 @@ for now (Sep 26 2026).
 ---
 
 ## Log
+
+- 2026-09-30: Resumed A5 session-tune population using authenticated editor APIs and complete source
+  snapshots. Reconciled existing memberships before creating new tunes, preserving personal fields and
+  checking each new tune's research and community links after import. Added the slip-jig definition and
+  Western swing/Jazz genre branches needed by the source repertoire. The import is still in progress;
+  final counts and held identities will be recorded here after reconciliation.
 
 - 2026-09-29: Shipped high-interest marking and filtering (F11), with a schema-9 default, validated editor
   updates, undo/history and JSON/Markdown exports. Main commit `6aa8082` passed Workers Builds and the live
