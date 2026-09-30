@@ -9,10 +9,10 @@ const GENRE_TREE = [
   ["Irish", ["Donegal", "Sliabh Luachra"]],
   ["Scottish", ["Shetland", "Orkney", "Cape Breton"]],
   ["English", ["Northumbrian"]],
-  ["Canadian", ["Québécois", "Métis", "Canadian old-time", "PEI", "Newfoundland", "Cape Breton"]],
+  ["Canadian", ["Québécois", "Acadian", "Métis", "Canadian old-time", "PEI", "Newfoundland", "Cape Breton"]],
   ["Québécois", ["Gaspé"]],
   ["American", ["Old-time", "Bluegrass", "Contra", "Cajun", "Western swing", "Jazz"]],
-  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Texas contest", "Black string band", "Minstrel", "Alabama", "Pacific Northwest"]],
+  ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Midwestern", "Texas contest", "Black string band", "Minstrel", "Alabama", "Pacific Northwest"]],
   ["Appalachian", ["Round Peak", "Galax", "West Virginia"]],
   ["Nordic", ["Swedish", "Finnish", "Scandinavian"]],
 ];
