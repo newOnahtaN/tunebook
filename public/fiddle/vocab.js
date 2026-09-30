@@ -33,6 +33,7 @@ const TYPE_INFO = {
   "pipe march": "A march from the Highland bagpipe repertoire, played on fiddle. Expect big gracenote-style ornaments and a range that sits on the pipes' nine notes.",
   rag: "An old-time tune that borrows ragtime's syncopation and moving chords, often chromatic passing notes and circle-of-fifths progressions.",
   "two-step": "A 2/4 or 4/4 tune for the two-step couples dance, common in Métis, Canadian old-time and Cajun music.",
+  quadrille: "Music for a square-set dance, usually in duple time and often using several strains or figures. Old-time quadrille tunes may keep irregular phrases rather than a standard reel layout.",
   waltz: "3/4 time, one strong beat per bar, for couples dancing. Played at anything from a slow ballad pace to a brisk turn.",
   "slow air": "A slow, free-time melody played expressively rather than for dancing, often from a song. The player shapes the rhythm like a singer.",
   "song tune": "An instrumental version of a song's melody. The words usually still exist and shape the phrasing.",
