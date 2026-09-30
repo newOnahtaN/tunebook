@@ -26,6 +26,7 @@ const TYPE_INFO = {
   slide: "A fast 12/8 tune from the Sliabh Luachra area on the Kerry–Cork border, played for set dancing. Feels like a jig with a long-short bounce.",
   polka: "A quick, bouncy 2/4 tune in short phrases. In Irish music it's the signature of Sliabh Luachra; it's also a staple of contra and Scandinavian dances.",
   hornpipe: "4/4 with a dotted or swung rhythm, slower and heavier than a reel, and parts that often end on three strong \"stops\". Originally for step dancing.",
+  "triple hornpipe": "An older hornpipe in 3/2 time, with three broad beats in each bar. Found in English and Scottish country-dance collections; distinct from the later 4/4 hornpipe and the 9/8 slip jig.",
   barndance: "A relaxed 4/4 tune with a hornpipe-like swing, played for barn dances and \"germans\". Related to the schottische.",
   strathspey: "A Scottish dance tune in slow 4/4 packed with the \"Scotch snap\" (a short note before a long one) and dotted rhythms. Usually played before a reel in a set.",
   march: "A tune for marching, usually in 2/4, 4/4 or 6/8, with a steady, stately pulse.",
