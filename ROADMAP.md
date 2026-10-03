@@ -486,6 +486,11 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-03: Added a fourth learning status, "Played, not maintaining" (stored as 3, so existing 0/1/2 rows and backups are
+  unchanged; the page shows it between "still learning" and "not played yet"). Moved seven tunes into it through the editor
+  API: Back Home, Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game of Drones and Pacific Sunrise. Still
+  "Played, still learning": the Bonaparte tunes, Trip to Skye, La Bastringue, Reel St-Antoine, Earl of Dalhousie's Happy
+  Return, Myra's Jig, Harris Dance and the two Habas. The default view now shows all played tunes ("All played").
 - 2026-10-03: Searching now looks across every status when the status filter is still the default (Memorized + Played), with a
   note saying so, so tunes hidden by the default never look missing; a status chosen on purpose still applies. The status
   button reads "Memorized + Playing" instead of "Status: 2 selected". Session-list badges and the detail panel now show a
