@@ -486,6 +486,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-03: Searching now looks across every status when the status filter is still the default (Memorized + Played), with a
+  note saying so, so tunes hidden by the default never look missing; a status chosen on purpose still applies. The status
+  button reads "Memorized + Playing" instead of "Status: 2 selected". Session-list badges and the detail panel now show a
+  five-bar popularity meter within each list (play count as a share of that list's busiest tune; Columbia City Jam uses
+  its title-family counts; NW Scottish Fiddlers and Old Time Buddies have no counts so show only a name), plus a "Sort:
+  most played in session lists" option that respects the Session lists filter.
 - 2026-10-03: Added a read-only viewer role. `VIEWER_EMAILS` (wrangler.jsonc) lists Google accounts that sign in and read everything
   the editor can (private notes, personal links, hearings, working notes, Drive recordings) but can't change anything: the
   API gate refuses every non-GET and every route outside a small read allowlist with 403, passkeys/Drive admin/sessions
