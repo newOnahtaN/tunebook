@@ -89,6 +89,7 @@ select{flex:0 1 auto}
 .mselpanel{position:absolute;top:calc(100% + 4px);left:0;z-index:20;min-width:200px;max-height:280px;overflow:auto;
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .mselpanel.hidden{display:none}
+.whoami{font-size:13px;color:var(--muted,#6b6b6b)}
 .mselpanel label{display:flex;align-items:center;gap:7px;padding:4px 6px;font-size:13.5px;border-radius:2px;cursor:pointer;white-space:nowrap}
 .mselpanel label:hover{background:var(--paper)}
 .mselpanel input[type=checkbox]{margin:0}
@@ -343,15 +344,15 @@ a.btn:hover{border-color:var(--muted)}
 <div class="toolbar ed-only hidden"><button type="button" id="addOpen">Add title</button></div>
 <ul class="open" id="open"></ul>
 
-<section class="ed-only hidden">
+<section class="rd-only hidden">
   <h2>Working notes</h2>
-  <p>Only you can see this. It saves as you type and is included in the markdown export.</p>
+  <p id="wnNote">Only you can see this. It saves as you type and is included in the markdown export.</p>
   <textarea class="wn" id="wn" aria-label="Working notes"></textarea>
   <details class="history" id="history">
     <summary>Recent changes</summary>
     <ol id="histList"></ol>
   </details>
-  <details class="history acct" id="acct">
+  <details class="history acct ed-only hidden" id="acct">
     <summary>Sign-in and passkeys</summary>
     <p id="acctWho"></p>
     <ul id="pkList"></ul>
@@ -360,11 +361,11 @@ a.btn:hover{border-color:var(--muted)}
       <button type="button" class="link" id="signOutOthers">Sign out on all other devices</button>
     </div>
   </details>
-  <details class="history drive" id="driveBox">
+  <details class="history drive ed-only hidden" id="driveBox">
     <summary id="driveSummary">Drive recordings</summary>
     <div id="driveBody"></div>
   </details>
-  <details class="history">
+  <details class="history ed-only hidden">
     <summary>Site &amp; deploys</summary>
     <ul>
       <li><a href="https://dash.cloudflare.com/?to=/:account/workers/services/view/tunebook/production/deployments" target="_blank" rel="noopener">Cloudflare deployment status</a></li>
@@ -377,18 +378,19 @@ a.btn:hover{border-color:var(--muted)}
 <footer>
   <div id="foot">Commonality is a rough 1–10 guess at how widely players of that genre know the tune. A ? in a key or form means it isn't confirmed yet.</div>
   <div class="links">
-    <button class="link hidden" id="signIn" type="button">Sign in to edit</button>
-    <a class="ed-only hidden" href="/fiddle/gaps">Data gaps</a>
-    <a class="ed-only hidden" href="/fiddle/api/export.md">Download markdown</a>
-    <a class="ed-only hidden" href="/fiddle/api/export.json">Download JSON</a>
-    <button class="link ed-only hidden" id="signOut" type="button">Sign out</button>
+    <button class="link hidden" id="signIn" type="button">Sign in</button>
+    <span class="whoami hidden" id="whoami"></span>
+    <a class="rd-only hidden" href="/fiddle/gaps">Data gaps</a>
+    <a class="rd-only hidden" href="/fiddle/api/export.md">Download markdown</a>
+    <a class="rd-only hidden" href="/fiddle/api/export.json">Download JSON</a>
+    <button class="link rd-only hidden" id="signOut" type="button">Sign out</button>
   </div>
 </footer>
 </div>
 
 <dialog id="loginDlg" aria-labelledby="loginTitle">
-  <h3 id="loginTitle">Sign in to edit</h3>
-  <p>Only the tune book's owner can edit. Everyone else can read.</p>
+  <h3 id="loginTitle">Sign in</h3>
+  <p>The owner can edit. Invited viewers can read everything, including private notes and recordings, but can't change anything. Everyone else sees the public view.</p>
   <div class="gbtn" id="gBtn"></div>
   <div class="or hidden" id="loginOr">or</div>
   <button type="button" class="wide hidden" id="pkLogin">Sign in with a passkey</button>
@@ -416,7 +418,7 @@ const GENRE_ORDER = ["Old-time","Contra","English","Irish","Québécois","Gaspé
 const API = "/fiddle/api/";
 const PENDING_KEY = "tunebook.pending.v1";
 
-let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[], open:[], working_notes:"", media:[], links:[] };
+let state = { editor:false, viewer:false, editingEnabled:false, googleClientId:null, tunes:[], open:[], working_notes:"", media:[], links:[] };
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly"), highInterestOnlyEl = $("highInterestOnly");
@@ -774,14 +776,15 @@ function render(){
 }
 
 function detailHtml(t, E){
+  const R = canRead();   // the private fields are shown to viewers too, read-only (ed() renders plain text for them)
   return `<div class="tcard-detail">
     <div class="dfield"><span class="lbl">Origin</span>${ed("tunes", t.id, "origin", t.origin, "", "Origin", "div")}</div>
     <div class="dfield"><span class="lbl">Form</span>${ed("tunes", t.id, "form", t.form, "", "Form")}</div>
-    ${heardField(t, E)}
-    ${genresField(t, E)}
-    ${E ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
-    ${E ? mediaCountLabel(t.id) : ""}
-    ${E ? mediaPanel(t) : ""}
+    ${heardField(t, R)}
+    ${genresField(t, R)}
+    ${R ? `<div class="dfield"><span class="lbl">Note</span>${ed("tunes", t.id, "notes", t.notes, "", "Add a note", "div")}</div>` : ""}
+    ${R ? mediaCountLabel(t.id) : ""}
+    ${R ? mediaPanel(t, E) : ""}
     ${myLinks(t)}
     ${researchBlock(t, E)}
     ${sessionBlock(t)}
@@ -812,11 +815,24 @@ function counts(){
      <li><b>${state.open.length}</b> still unidentified</li>`;
 }
 
+// Two kinds of signed-in people: the editor (reads and writes) and invited viewers (read everything, change nothing).
+// ".ed-only" elements are for the editor; ".rd-only" elements are for anyone who can read the private data.
+const canRead = () => !!(state.editor || state.viewer);
 function applyMode(){
+  const reads = canRead();
   document.body.classList.toggle("editor", state.editor);
+  document.body.classList.toggle("viewer", !!state.viewer);
   document.querySelectorAll(".ed-only").forEach(el => el.classList.toggle("hidden", !state.editor));
-  $("signIn").classList.toggle("hidden", state.editor || !state.editingEnabled);
-  if (state.editor) $("wn").value = state.working_notes;
+  document.querySelectorAll(".rd-only").forEach(el => el.classList.toggle("hidden", !reads));
+  $("signIn").classList.toggle("hidden", reads || !state.editingEnabled);
+  if (reads) $("wn").value = state.working_notes;
+  $("wn").readOnly = !state.editor;
+  $("wnNote").textContent = state.editor
+    ? "Only you can see this. It saves as you type and is included in the markdown export."
+    : "Nate's working notes, shown read-only. You're signed in as a viewer, so nothing on this page can be changed.";
+  const who = $("whoami");
+  who.classList.toggle("hidden", !state.viewer);
+  who.textContent = state.viewer && state.email ? `Signed in as ${state.email} (view only)` : "";
   setSaveState();
 }
 
@@ -973,7 +989,7 @@ function renderAll(){ indexMedia(); indexHearings(); indexResearch(); indexSessi
 
 async function reload(){
   const d = await call("GET", "data");
-  state = Object.assign({ editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null, occasions:[], hearings:[], research:[], refs:[] }, d);
+  state = Object.assign({ viewer:false, editingEnabled:false, googleClientId:null, working_notes:"", media:[], links:[], drive:null, occasions:[], hearings:[], research:[], refs:[] }, d);
   // re-apply unsaved local edits on top of server data
   for (const p of pending.values()){
     const list = p.tbl === "tunes" ? state.tunes : state.open;
@@ -1116,7 +1132,7 @@ async function loadHistory(){
         what = `${verb} ${esc(x.label)}`;
       }
       if (x.action === "undo" && x.field) what = "Undid: " + what;
-      const canUndo = !x.undone && x.action !== "undo";
+      const canUndo = state.editor && !x.undone && x.action !== "undo";
       return `<li><span class="what ${x.undone ? "undone" : ""}">${what}</span><time>${esc(when)}</time>${canUndo ? `<button class="link" data-undo="${x.id}" type="button">Undo</button>` : ""}</li>`;
     }).join("") || "<li>No changes yet.</li>";
   } catch (e) { list.innerHTML = `<li>${esc(e.message)}</li>`; }
@@ -1191,7 +1207,7 @@ function playableCandidates(t){
   return out;
 }
 function topRecording(t){
-  const drive = state.editor ? playableCandidates(t) : [];
+  const drive = canRead() ? playableCandidates(t) : [];
   const refs = (refsByTune.get(t.id) || []).filter(f => f.kind === "recording")
     .sort((a, b) => (a.origin === "mine" ? 0 : 1) - (b.origin === "mine" ? 0 : 1) || (CAT_ORDER[a.category] ?? 9) - (CAT_ORDER[b.category] ?? 9));
   if (t.top_media && String(t.top_media).startsWith("ref:")){
@@ -1213,23 +1229,23 @@ function topBtn(t, m){
   return `<button type="button" class="link toplink" data-settop="${isTop ? "" : esc(id)}" data-tune="${t.id}">${isTop ? "★ Top" : "☆ Set as top"}</button>`;
 }
 
-function mediaPanel(t){
+function mediaPanel(t, E){
   const list = mediaByTune.get(t.id) || [];
   const item = m => {
     const where = m.path ? `<small>${esc(m.path)}</small>` : "";
-    const unlink = `<button type="button" class="link" data-unlink="${esc(m.ids.join(","))}" data-tune="${t.id}">Unlink</button>`;
+    const unlink = E ? `<button type="button" class="link" data-unlink="${esc(m.ids.join(","))}" data-tune="${t.id}">Unlink</button>` : "";
     const share = canShareFile(m) ? `<button type="button" data-share="${esc(m.id)}">${m.kind === "video" ? `Share (${fmtSize(m.size)})` : "Share"}</button>` : "";
     const dl = `<a class="btn" href="${esc(mediaUrl(m, true))}">Download</a>`;
     if (m.kind === "pdf") return `<li class="mitem"><div class="mname"><a href="${esc(mediaUrl(m))}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div></li>`;
     if (m.kind === "video"){
       const a = audioOfVideo.get(m.id);
       const aShare = a && canShareFile(a) ? `<button type="button" data-share="${esc(a.id)}">Share</button>` : "";
-      const audioRow = a ? `<div class="vsub" data-item="${esc(a.id)}"><span class="lbl">Audio only</span><div class="macts"><button type="button" data-play="${esc(a.id)}">Play</button>${aShare}<a class="btn" href="${esc(mediaUrl(a, true))}">Download</a>${topBtn(t, a)}</div></div>`
+      const audioRow = a ? `<div class="vsub" data-item="${esc(a.id)}"><span class="lbl">Audio only</span><div class="macts"><button type="button" data-play="${esc(a.id)}">Play</button>${aShare}<a class="btn" href="${esc(mediaUrl(a, true))}">Download</a>${E ? topBtn(t, a) : ""}</div></div>`
         : (m.audio_id === "none" ? "" : (state.drive && state.drive.writer && state.drive.writer.connected ? `<div class="vsub"><span class="lbl">Audio only: made overnight</span></div>` : ""));
       return `<li class="mitem"><div class="mname"><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.name)}</a>${where}</div><div class="macts">${unlink}</div>
         <div class="vsub"><span class="lbl">Full video</span><div class="macts">${share}${dl}</div></div>${audioRow}</li>`;
     }
-    return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">${topBtn(t, m)}
+    return `<li class="mitem" data-item="${esc(m.id)}"><div class="mname">${esc(m.name)}${where}</div><div class="macts">${E ? topBtn(t, m) : ""}
       <button type="button" data-play="${esc(m.id)}">Play</button>${share}${dl}${unlink}</div></li>`;
   };
   const sections = [["audio", "Recordings"], ["pdf", "Sheet music"], ["video", "Videos"]].map(([k, label]) => {
@@ -1239,7 +1255,7 @@ function mediaPanel(t){
   const setup = state.drive && state.drive.configured ? "" : `<p>Drive isn't connected yet. See “Drive recordings” near the bottom of the page.</p>`;
   return `<div class="mpanel" data-panel="${t.id}">${sections || setup || "<p>No Drive files linked yet.</p>"}
     <div class="maka">Also known as: ${ed("tunes", t.id, "aka", t.aka, "akaed", "other names, comma-separated (used to match Drive files)")}</div>
-    <div class="mlink"><input list="mediaList" data-linkfor="${t.id}" placeholder="Link a Drive file…" aria-label="Link a Drive file to ${esc(t.name)}"></div></div>`;
+    ${E ? `<div class="mlink"><input list="mediaList" data-linkfor="${t.id}" placeholder="Link a Drive file…" aria-label="Link a Drive file to ${esc(t.name)}"></div>` : ""}</div>`;
 }
 
 // Downloads a file into memory for sharing, reporting progress. Cached so a second tap shares instantly.
