@@ -211,6 +211,13 @@ async function initDb(env) {
 
 const editorEmails = env => String(env.EDITOR_EMAILS || '').split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
 const isEditor = (env, email) => !!email && editorEmails(env).includes(String(email).toLowerCase());
+// Viewers are invited readers: they see everything the owner sees (private notes, personal links, hearing details,
+// Drive recordings) but can't change anything. Only editors may write; see the gate in api().
+const viewerEmails = env => String(env.VIEWER_EMAILS || '').split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+const isViewer = (env, email) => !!email && viewerEmails(env).includes(String(email).toLowerCase());
+const roleOf = (env, email) => isEditor(env, email) ? 'editor' : isViewer(env, email) ? 'viewer' : null;
+// The only routes a viewer may call past the read-only data endpoint. Everything else is owner-only (default deny).
+const VIEWER_GET = new Set(['history', 'export.json', 'export.md']);
 const randomId = (n = 32) => b64u(crypto.getRandomValues(new Uint8Array(n)));
 
 // Get (or create once) a random value stored in meta.
@@ -259,7 +266,9 @@ async function readSession(ctx) {
   const raw = getCookie(ctx.request, COOKIE);
   if (!raw) return null;                       // visitors never touch the database for auth
   const s = await readToken(ctx, 'session', raw);
-  return s && isEditor(ctx.env, s.email) ? s : null;
+  // The role is looked up on every request, so removing an email from EDITOR_EMAILS or VIEWER_EMAILS ends its sessions.
+  const role = s && roleOf(ctx.env, s.email);
+  return role ? { ...s, role } : null;
 }
 
 async function sessionCookie(ctx, email) {
@@ -311,7 +320,7 @@ async function authRoute(ctx, path, method, session) {
   if (path === 'auth/google' && method === 'POST') {
     const body = await readJson(request);
     const who = await verifyGoogleIdToken(body.credential, { clientId: env.GOOGLE_CLIENT_ID, certsUrl: env.GOOGLE_CERTS_URL || undefined });
-    if (!isEditor(env, who.email)) throw new HttpError(403, `${who.email} isn't allowed to edit this tune book.`);
+    if (!roleOf(env, who.email)) throw new HttpError(403, `${who.email} isn't on this tune book's sign-in list.`);
     return signedIn(ctx, who.email);
   }
 
@@ -335,8 +344,9 @@ async function authRoute(ctx, path, method, session) {
     return signedIn(ctx, row.email);
   }
 
-  // Everything below needs a signed-in editor.
+  // Everything below needs a signed-in editor (passkeys and signing out other devices belong to the owner).
   if (!session) throw new HttpError(401, 'Sign in first.');
+  if (session.role !== 'editor') throw new HttpError(403, "Only the tune book's owner can manage passkeys and sessions.");
   const email = session.email;
 
   if (path === 'auth/passkey/register/options' && method === 'POST') {
@@ -619,21 +629,21 @@ async function api(request, env, url) {
   const method = request.method;
   const ctx = { env, request, url, key: null };
   const session = await readSession(ctx);
-  const editor = !!session;
+  const editor = session?.role === 'editor', viewer = session?.role === 'viewer', reader = editor || viewer;
 
   if (path === 'data' && method === 'GET') {
     const [tunes, open, notes] = await Promise.all([
       env.DB.prepare(`SELECT * FROM tunes ORDER BY id`).all(),
       env.DB.prepare(`SELECT * FROM open_titles ORDER BY id`).all(),
-      editor ? env.DB.prepare(`SELECT v FROM meta WHERE k = 'working_notes'`).first('v') : null,
+      reader ? env.DB.prepare(`SELECT v FROM meta WHERE k = 'working_notes'`).first('v') : null,
     ]);
     const cookies = [];
-    if (editor && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
-    const signin = { editingEnabled: editorEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
-    return json(editor
-      ? { editor: true, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
-          ...(await hearingData(env, true)), ...(await researchData(env, true)), ...(await sessionSourceData(env)), ...(await mediaForEditor(ctx)) }
-      : { editor: false, ...signin, tunes: tunes.results.map(publicTune),
+    if (reader && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
+    const signin = { editingEnabled: editorEmails(env).length + viewerEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
+    return json(reader
+      ? { editor, viewer, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
+          ...(await hearingData(env, true)), ...(await researchData(env, true)), ...(await sessionSourceData(env)), ...(await mediaForReader(ctx, editor)) }
+      : { editor: false, viewer: false, ...signin, tunes: tunes.results.map(publicTune),
           open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env)), ...(await sessionSourceData(env)) },
       200, { cookies });
   }
@@ -653,8 +663,12 @@ async function api(request, env, url) {
     return streamMedia(ctx, mm[1], mm[2]);
   }
 
-  // Everything below is editor-only.
-  if (!editor) throw new HttpError(401, 'Sign in to edit.');
+  // Everything below is for signed-in people, and writing is the owner's alone. A viewer may only read the history
+  // and the exports; any other route, and every non-GET request, is refused for them.
+  if (!reader) throw new HttpError(401, 'Sign in first.');
+  if (viewer && !(method === 'GET' && VIEWER_GET.has(path))) {
+    throw new HttpError(403, 'This account can read the tune book but not change it.');
+  }
   if (method !== 'GET') checkSameOrigin(request, url);
 
   let m;
@@ -954,6 +968,15 @@ async function mediaForEditor(ctx) {
   };
 }
 
+// Viewers can play and download every recording, but see nothing about how Drive is connected.
+async function mediaForReader(ctx, editor) {
+  const m = await mediaForEditor(ctx);
+  if (editor) return m;
+  const { configured, lastScan, job, audioFolder } = m.drive;
+  return { ...m, drive: { configured, lastScan, job, audioFolder, robot: null, folderId: null,
+    writer: { canConnect: false, connected: false, email: null, since: null } } };
+}
+
 async function streamMedia(ctx, id, token) {
   const { env, request, url } = ctx;
   if (!(await readToken(ctx, 'media', token))) throw new HttpError(403, 'This recording link has expired. Reload the tune book and try again.');
@@ -1063,7 +1086,7 @@ async function driveConnect(ctx, session) {
 async function driveCallback(ctx, session) {
   const { env, url } = ctx;
   const back = msg => Response.redirect(`${url.origin}${HOME}?drive=${encodeURIComponent(msg)}#driveBox`, 302);
-  if (!session) return back('Sign in to the tune book first, then try again.');
+  if (!session || session.role !== 'editor') return back('Sign in to the tune book as its owner first, then try again.');
   if (url.searchParams.get('error')) return back(`Google said: ${url.searchParams.get('error')}`);
   const st = await readToken(ctx, 'drive-connect', url.searchParams.get('state'));
   if (!st || st.email !== session.email) return back('That took too long. Try again.');
