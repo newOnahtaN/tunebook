@@ -127,7 +127,7 @@ let selected = null, results = [], data = null;
 async function load(){
   const r = await fetch("/fiddle/api/data", { credentials:"same-origin" });
   data = await r.json();
-  $("signedOut").hidden = !!data.editor;
+  $("signedOut").hidden = !!(data.editor || data.viewer);
   const R = new Map((data.research || []).map(x => [x.tune_id, x]));
   const refs = new Map();
   for (const f of data.refs || []) (refs.get(f.tune_id) || refs.set(f.tune_id, []).get(f.tune_id)).push(f);
@@ -140,7 +140,7 @@ async function load(){
       refRecs: (refs.get(t.id) || []).filter(f => f.kind === "recording") };
     const gaps = [];
     for (const ch of CHECKS){
-      if (ch.id === "rec" && !data.editor) continue;  // Drive files aren't visible when signed out
+      if (ch.id === "rec" && !(data.editor || data.viewer)) continue;  // Drive files aren't visible when signed out
       const v = ch.test(c);
       if (v) gaps.push({ ch, detail: typeof v === "string" ? v : "" });
     }
@@ -159,7 +159,7 @@ function render(){
   let html = `<div class="hero"><b>${full} of ${total}</b><span>tunes have complete core research</span></div>
     <div class="meter" role="img" aria-label="${pct}% complete"><i style="width:${pct}%"></i></div>`;
   for (const [gid, title, blurb] of GROUPS){
-    const checks = CHECKS.filter(c => c.group === gid && !(c.id === "rec" && !data.editor));
+    const checks = CHECKS.filter(c => c.group === gid && !(c.id === "rec" && !(data.editor || data.viewer)));
     html += `<h2>${esc(title)}</h2><p class="sub">${esc(blurb)}</p><div class="checks">` +
       checks.map(c => { const n = count(c.id);
         return `<button type="button" class="check${n ? "" : " zero"}" data-check="${c.id}" aria-pressed="${selected === c.id}"${n ? "" : " disabled"}><span>${esc(c.label)}</span><b>${n || "✓"}</b></button>`; }).join("") +
