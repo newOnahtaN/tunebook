@@ -4,6 +4,32 @@ Read `CLAUDE.md` for the site's data, privacy and no-playback rules, and read
 `ROADMAP.md` before starting work. Update the relevant roadmap status and log
 before finishing.
 
+## Different devices, different workflows
+
+Work on this repo happens from more than one device, and each has different tools, so the delivery steps differ.
+Before following a device-specific step, check what this session actually has (a git checkout? Wrangler? only a
+browser?) and do not assume another device's setup exists. The rules in `CLAUDE.md` (privacy, no media playback,
+fully enriched tunes) and the roadmap and reporting duties apply on every device.
+
+| Device | What it has | Code delivery | Data |
+|---|---|---|---|
+| Nate's Windows workstation (local app sessions) | A git checkout with the `git personal` / `git gh` aliases; Node and Wrangler for dry-run builds and tests; Wrangler authorized for the `tunebook` D1 database through device OAuth, with credentials in Windows Credential Manager | Worktree, validate, push `HEAD:main` (steps below) | Signed-in editor API for writes; read-only D1 queries through Wrangler for verification |
+| Cloud or mobile session linked to Nate's browser | No checkout, no Wrangler or D1 credentials, and no build or test runner. `gh api` is blocked unless the repo is attached with push access (`add_repo`). The browser pane can be signed in to GitHub and, as Nate, to the site | Attach the repo with push access and use normal git, or commit through GitHub's web editor (below). Either way the commit goes straight to `main` | Signed-in editor API from a tab on the site; no direct D1 |
+
+Delivering through GitHub's web editor (no checkout):
+
+1. On a github.com tab, fetch the current file from `https://github.com/newOnahtaN/tunebook/raw/refs/heads/main/<path>`
+   without credentials, and apply exact string replacements, checking that each target matches exactly once.
+2. Keep the new text in `localStorage` on github.com so it survives navigating to `.../edit/main/<path>`, load it into
+   the CodeMirror editor with `view.dispatch`, and confirm the editor text hashes (SHA-256) to the intended content.
+3. Open "Commit changes...", click into the visible message fields and type the message. Never find the fields with a
+   script query for `input[type=text]`: the filename input matches, and a "/" in the message silently renames the file.
+4. Commit one file at a time, then re-fetch the raw file and compare hashes. With no build or tests available,
+   the Workers build and a check of the live site are the validation; do not call the work deployed before both.
+5. Code reaches `main` this way but data does not: data still goes through the editor API.
+
+When reporting, say which device the work ran on and which of committed, pushed, deployed and live data changed.
+
 ## Default delivery: push to main
 
 Nate is the only contributor and considers this a low-risk personal project.
@@ -13,8 +39,11 @@ a feature branch or requiring a pull request. Do not ask for another approval
 just to deliver completed work this way. A request for a draft, review-only work,
 a PR, or no deployment takes precedence for that task.
 
-App-managed sessions may still use isolated worktree branches. Work in the
-session's own worktree; do not switch or edit the shared main checkout.
+On a device with a local checkout, app-managed sessions may use isolated worktree branches. Work in the
+session's own worktree; do not switch or edit the shared main checkout. Devices without a checkout deliver
+differently; see the next section.
+
+On a device with a git checkout:
 
 1. Inspect the worktree and preserve unrelated edits. Fetch the latest
    `origin/main` and merge it into the session branch before final validation.
