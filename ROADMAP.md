@@ -486,6 +486,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-03: Added a read-only viewer role. `VIEWER_EMAILS` (wrangler.jsonc) lists Google accounts that sign in and read everything
+  the editor can (private notes, personal links, hearings, working notes, Drive recordings) but can't change anything: the
+  API gate refuses every non-GET and every route outside a small read allowlist with 403, passkeys/Drive admin/sessions
+  stay editor-only, and the page shows a read-only view with "Signed in as ... (view only)". Roles are rechecked each
+  request, so removing an email revokes access at once. First viewer: johnswatson.music@gmail.com. Verified in a mock-D1
+  test harness (44 checks); the Google sign-in screen and Drive share are set up outside the repo.
 - 2026-10-03: Defaulted the main page's status filter to Memorized and Played, still learning, so the 225
   "Not played yet" tunes (mostly community-list imports) no longer crowd the view; the Status filter's "Clear" shows
   everything, and adding a tune still clears it so the new tune is visible. Documented in `AGENTS.md` and
