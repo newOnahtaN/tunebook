@@ -486,6 +486,14 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-03: Reworked the search and filter area. A large sticky search bar has a "Within filters / Everything" scope switch
+  (Everything ignores every filter; a no-result search within filters offers a one-click "Search every tune instead"); the
+  filters sit in labeled rows (My playing, The tune, Where from) with Sort in the last row; a chips row shows every active
+  filter with an x, plus Clear all, Default view and an "N of M tunes" count. This replaces the earlier rule that search
+  ignored only the default status filter. The default view is now Memorized + Played, still learning only (the new
+  "Played, not maintaining" tunes are hidden by default), because the default is what visitors see of what Nate knows.
+  Queued by Nate for later: add Noon Lasses with full research, find Hayden's YouTube recording with "Nobody's Business"
+  plus other recordings, and mark it high interest.
 - 2026-10-03: Added a fourth learning status, "Played, not maintaining" (stored as 3, so existing 0/1/2 rows and backups are
   unchanged; the page shows it between "still learning" and "not played yet"). Moved seven tunes into it through the editor
   API: Back Home, Cedar Paths, Same Mistakes, Two Months Too Soon, Dragon Slayer, Game of Drones and Pacific Sunrise. Still
