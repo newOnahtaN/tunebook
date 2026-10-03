@@ -19,7 +19,10 @@
   `POST /fiddle/api/hearings/import`, `POST /fiddle/api/research/import`, and so on.
   Public research references (`origin = 'research'`) may be public.
   Nate's own links (`origin = 'mine'`), Drive recordings, working notes, occasion details and hearing notes are
-  editor-only; keep them out of anything public.
+  editor-only; keep them out of anything public. Invited viewers (`VIEWER_EMAILS` in `wrangler.jsonc`) can read
+  everything the editor can, but write nothing: new write routes are blocked for viewers by default (`VIEWER_GET`
+  in `src/worker.js` lists the few non-data routes they may read), so never add a viewer route without thought.
+  Don't put anything in editor-readable data that a viewer shouldn't see.
 
 - **Never play audio or video in the browser pane.** It comes out of Nate's speakers. To check a recording, load
   metadata only (a muted `Audio` with `preload = 'metadata'`, never `.play()`), use YouTube's oEmbed for links, and
