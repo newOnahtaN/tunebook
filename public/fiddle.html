@@ -420,7 +420,10 @@ let state = { editor:false, editingEnabled:false, googleClientId:null, tunes:[],
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly"), highInterestOnlyEl = $("highInterestOnly");
-const filterGenres = new Set(), filterKnow = new Set(), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set(), filterSession = new Set();
+// The book opens on what Nate is working on: memorized and still-learning tunes (indices into KNOW). "Clear" in the
+// Status filter shows every tune, including the large "Not played yet" backlog from the community session lists.
+const DEFAULT_KNOW = ["0", "1"];
+const filterGenres = new Set(), filterKnow = new Set(DEFAULT_KNOW), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set(), filterSession = new Set();
 
 // Genre families, tune types and tags are defined in /fiddle/vocab.js (shared with the data gaps page).
 const { GENRE_TREE, GENRE_ROOTS } = window.TUNE_VOCAB;
