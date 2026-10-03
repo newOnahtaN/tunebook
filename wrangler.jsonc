@@ -26,8 +26,11 @@
   "vars": {
     // Public OAuth client ID for "Sign in with Google" (Google Cloud project "Tune Book"). Not a secret.
     "GOOGLE_CLIENT_ID": "108966496545-2n8acck4q1hi0bqb0mvqq6hldllj3ce5.apps.googleusercontent.com",
-    // Google accounts allowed to edit, comma-separated. Everyone else gets read-only.
+    // Google accounts allowed to edit, comma-separated. Everyone else gets the public view.
     "EDITOR_EMAILS": "nate.cole.owen@gmail.com",
+    // Invited viewers, comma-separated: they sign in with Google and read everything the editor can (private notes,
+    // personal links, hearings, Drive recordings) but cannot change anything. Remove an email here to end its access.
+    "VIEWER_EMAILS": "johnswatson.music@gmail.com",
     // Google Drive "Fiddle" folder. Recordings are read through the service account in the GOOGLE_SERVICE_ACCOUNT secret.
     "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd",
     // Only this repo's nightly workflow (.github/workflows/video-audio.yml) may use the /job/ endpoints.
