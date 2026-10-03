@@ -134,6 +134,7 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .status-text[data-k="0"]{color:var(--pine)}
 .status-text[data-k="1"]{color:var(--sun)}
 .status-text[data-k="2"]{color:var(--muted)}
+.status-text[data-k="3"]{color:var(--muted);font-style:italic}
 .interest-toggle{font-size:12px;min-height:36px;padding:5px 9px;color:var(--muted)}
 .interest-toggle[aria-pressed="true"],.interest-mark{color:var(--claret);font-weight:600}
 .interest-toggle[aria-pressed="true"]{border-color:var(--claret)}
@@ -420,7 +421,9 @@ a.btn:hover{border-color:var(--muted)}
 <script type="module">
 import { countsAsHeard } from "/fiddle/hearings.js";
 
-const KNOW = ["Memorized","Played, still learning","Not played yet"];
+// Stored numbers: 0, 1, 2 as before; 3 (Played, not maintaining) was added later and is shown between 1 and 2.
+const KNOW = ["Memorized","Played, still learning","Not played yet","Played, not maintaining"];
+const KNOW_ORDER = [0, 1, 3, 2];
 const GENRE_ORDER = ["Old-time","Contra","English","Irish","Québécois","Gaspé","Scottish","Shetland","Cape Breton","Waltz","Castilian","Camp composition"];
 const API = "/fiddle/api/";
 const PENDING_KEY = "tunebook.pending.v1";
@@ -429,9 +432,9 @@ let state = { editor:false, viewer:false, editingEnabled:false, googleClientId:n
 
 const $ = id => document.getElementById(id);
 const rowsEl = $("rows"), q = $("q"), sortEl = $("sort"), primaryOnlyEl = $("primaryOnly"), highInterestOnlyEl = $("highInterestOnly");
-// The book opens on what Nate is working on: memorized and still-learning tunes (indices into KNOW). "Clear" in the
+// The book opens on the tunes Nate has played: memorized, still learning, and played but not maintaining (indices into KNOW). "Clear" in the
 // Status filter shows every tune, including the large "Not played yet" backlog from the community session lists.
-const DEFAULT_KNOW = ["0", "1"];
+const DEFAULT_KNOW = ["0", "1", "3"];
 const filterGenres = new Set(), filterKnow = new Set(DEFAULT_KNOW), filterTypes = new Set(), filterTags = new Set(), filterHeard = new Set(), filterSession = new Set();
 
 // Genre families, tune types and tags are defined in /fiddle/vocab.js (shared with the data gaps page).
@@ -524,10 +527,15 @@ const genreFilter = multiSelect($("fGenreBtn"), $("fGenrePanel"), genreFilterOpt
   { allLabel: "All genres", name: "Genre", depthOf: g => genreDepth.get(g) || 0 });
 const typeFilter = multiSelect($("fTypeBtn"), $("fTypePanel"), () => researchList("type"), filterTypes, { allLabel: "All types", name: "Type" });
 const tagFilter = multiSelect($("fTagBtn"), $("fTagPanel"), () => researchList("tags"), filterTags, { allLabel: "All tags", name: "Tags" });
-const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW.map((_, i) => String(i)), filterKnow,
+const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW_ORDER.map(String), filterKnow,
   { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i],
     // Short names so the button reads "Memorized + Playing" rather than "Status: 2 selected".
-    joinLabel: sel => sel.length >= KNOW.length ? "All statuses" : sel.slice().sort().map(i => ["Memorized", "Playing", "Not played"][+i]).join(" + ") });
+    joinLabel: sel => {
+      if (sel.length >= KNOW.length) return "All statuses";
+      const key = sel.slice().sort().join();
+      if (key === DEFAULT_KNOW.slice().sort().join()) return "All played";
+      return KNOW_ORDER.filter(i => sel.includes(String(i))).map(i => ["Memorized", "Playing", "Not played", "Not maintaining"][i]).join(" + ");
+    } });
 // Heard in real life: anywhere, at a particular kind of occasion, or not yet.
 const HEARD_KINDS = ["lesson", "class", "jam", "session", "camp", "other"];
 const HEARD_LABEL = { heard:"Heard in real life", none:"Not heard yet", lesson:"…at a lesson", class:"…in a class",
@@ -739,7 +747,7 @@ function render(){
   list.sort((a, b) => {
     if (by === "name") return a.name.localeCompare(b.name);
     if (by === "common") return b.common - a.common || a.name.localeCompare(b.name);
-    if (by === "know") return a.status - b.status || b.common - a.common;
+    if (by === "know") return KNOW_ORDER.indexOf(a.status) - KNOW_ORDER.indexOf(b.status) || b.common - a.common;
     if (by === "src") return a.source.localeCompare(b.source) || b.common - a.common;
     if (by === "heard") return heardOf(b).length - heardOf(a).length || b.common - a.common || a.name.localeCompare(b.name);
     if (by === "lastheard" || by === "firstheard"){
@@ -764,7 +772,7 @@ function render(){
     const E = state.editor;
     const open = expanded.has(t.id);
     const status = E
-      ? `<select data-tbl="tunes" data-id="${t.id}" data-field="status" aria-label="Status for ${esc(t.name)}">${KNOW.map((l, i) => `<option value="${i}"${i === t.status ? " selected" : ""}>${l}</option>`).join("")}</select>`
+      ? `<select data-tbl="tunes" data-id="${t.id}" data-field="status" aria-label="Status for ${esc(t.name)}">${KNOW_ORDER.map(i => `<option value="${i}"${i === t.status ? " selected" : ""}>${KNOW[i]}</option>`).join("")}</select>`
       : `<span class="status-text" data-k="${t.status}">${KNOW[t.status] ?? ""}</span>`;
     const interested = t.high_interest === 1;
     const interest = E
@@ -827,12 +835,13 @@ function renderOpen(){
 }
 
 function counts(){
-  const c = [0, 0, 0];
+  const c = [0, 0, 0, 0];
   state.tunes.forEach(t => c[t.status]++);
   $("counts").innerHTML =
     `<li><b>${state.tunes.length}</b> tunes traced</li>
      <li><b>${c[0]}</b> memorized</li>
      <li><b>${c[1]}</b> played, still learning</li>
+     <li><b>${c[3]}</b> played, not maintaining</li>
      <li><b>${c[2]}</b> not played yet</li>
      <li><b>${state.open.length}</b> still unidentified</li>`;
 }
