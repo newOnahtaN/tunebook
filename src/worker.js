@@ -28,12 +28,14 @@ const SEED_AKA = {
 };
 
 const TUNE_FIELDS = { name: 'text', key: 'text', genre: 'text', common: 'int0_10', form: 'text',
-                      origin: 'text', status: 'int0_2', source: 'text', notes: 'text', aka: 'text', genres2: 'text',
+                      origin: 'text', status: 'int0_3', source: 'text', notes: 'text', aka: 'text', genres2: 'text',
                       top_media: 'text', high_interest: 'int0_1' };
 const OPEN_FIELDS = { title: 'text', source: 'text', notes: 'text' };
 const TABLES = { tunes: TUNE_FIELDS, open: OPEN_FIELDS };
 const TABLE_NAME = { tunes: 'tunes', open: 'open_titles' };
-const KNOW = ['Memorized', 'Played, still learning', 'Not played yet'];
+// The stored numbers never change, so older rows and backups stay valid: 3 (played, not maintaining) was added later
+// and sits between 1 and 2 in the page's display order.
+const KNOW = ['Memorized', 'Played, still learning', 'Not played yet', 'Played, not maintaining'];
 const GENRE_ORDER = ['Old-time', 'Contra', 'English', 'Irish', 'Québécois', 'Gaspé', 'Scottish', 'Shetland',
                      'Cape Breton', 'Waltz', 'Castilian', 'Camp composition'];
 
@@ -419,7 +421,7 @@ function clean(type, value) {
     return s;
   }
   const n = Number(value);
-  const max = type === 'int0_10' ? 10 : type === 'int0_1' ? 1 : 2;
+  const max = type === 'int0_10' ? 10 : type === 'int0_1' ? 1 : type === 'int0_3' ? 3 : 2;
   if (!Number.isInteger(n) || n < 0 || n > max) throw new HttpError(400, `Must be a whole number from 0 to ${max}.`);
   return n;
 }
@@ -904,7 +906,7 @@ function toMarkdown(d) {
     const ia = GENRE_ORDER.indexOf(a), ib = GENRE_ORDER.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
   });
-  const counts = [0, 1, 2].map(i => d.tunes.filter(t => t.status === i).length);
+  const counts = [0, 1, 2, 3].map(i => d.tunes.filter(t => t.status === i).length);
   const occasions = new Map((d.occasions || []).map(o => [o.id, o]));
   const heard = new Map();
   for (const h of d.hearings || []) {
@@ -917,14 +919,14 @@ function toMarkdown(d) {
     '## How the columns work', '',
     '- **Common**: rough 1-10 guess at how widely players of that genre know the tune. Blank means unrated.',
     "- **Also**: other genres the tune fits, besides the section it's grouped under.",
-    '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet.',
+    '- **Status**: anything in the Google Drive Fiddle folder counts as played; tunes in the VOM 2026 subfolder are played but not memorized; everything else is not played yet. "Played, not maintaining" is set by hand for tunes Nate has played but isn\'t keeping up.',
     '- **High interest**: an explicit learning preference, independent of whether the tune has been played or memorized.',
     '- **From**: the first logged encounter with the tune, including lessons and classes.',
     '- **Heard**: separate non-teaching occasions (jams, sessions, camps and other encounters). Lessons and classes are logged but do not count here.',
     '- A `?` in Key, Form, or Origin means unconfirmed, not absent.', '',
     '## Totals', '',
     `- ${d.tunes.length} tunes traced`, `- ${counts[0]} memorized`, `- ${counts[1]} played, still learning`,
-    `- ${counts[2]} not played yet`, `- ${d.tunes.filter(t => t.high_interest === 1).length} high interest`,
+    `- ${counts[3]} played, not maintaining`, `- ${counts[2]} not played yet`, `- ${d.tunes.filter(t => t.high_interest === 1).length} high interest`,
     `- ${d.open.length} titles still unidentified`, '',
     '## Tunes', '',
   ];
