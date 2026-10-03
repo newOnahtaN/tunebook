@@ -3,7 +3,9 @@
 - Follow `AGENTS.md` for delivery. Nate's standing preference is to validate completed work and push directly
   to `origin/main` without an extra PR or approval step. Fetch and integrate concurrent work, resolve ordinary
   conflicts automatically while preserving both sides' intent, and retry non-forced pushes when main advances.
-  Stay in the session's own worktree; do not edit the shared main checkout.
+  Delivery differs by device (Nate's Windows workstation has a checkout and Wrangler; cloud and mobile sessions work
+  through the browser): see "Different devices, different workflows" in `AGENTS.md`. On a device with a checkout,
+  stay in the session's own worktree and do not edit the shared main checkout.
 - Nate's long-running goals for this site live in `ROADMAP.md`, written as a menu of projects. Read it at the start
   of any session on this repo, and update its statuses and log before you finish.
 - For recording-focused enrichment, also read `.github/skills/recording-curation/SKILL.md`.
