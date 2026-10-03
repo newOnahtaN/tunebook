@@ -486,6 +486,15 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-03: Defaulted the main page's status filter to Memorized and Played, still learning, so the 225
+  "Not played yet" tunes (mostly community-list imports) no longer crowd the view; the Status filter's "Clear" shows
+  everything, and adding a tune still clears it so the new tune is visible. Documented in `AGENTS.md` and
+  `CLAUDE.md` that the Windows workstation (git checkout, Wrangler/D1 read access) and cloud/mobile sessions (browser
+  only: GitHub web editor plus the signed-in editor API) follow different delivery workflows. Audited the Sep 28-30
+  changes from a cloud session: no conflicts with the original session-list, redesign or heard-rule intent; the
+  three A5 identity holds and the low-confidence research on Nate's own tunes are still open. Delivered from a cloud
+  session through GitHub's web editor, straight to `main`; no audio or video played.
+
 - 2026-09-30: Populated the five A5 source lists with 148 new, core-enriched tune/settings records and
   25 missing memberships on existing records: 280 tunes in the book, 176 linked records, 175 of 178 source
   rows resolved. Recovered nine Scottish set-note selections omitted from the old 64-name extraction;
