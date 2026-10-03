@@ -166,6 +166,11 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
   border:1px solid var(--sun);border-radius:9px;color:var(--sun);background:color-mix(in srgb, var(--sun) 10%, transparent);
 }
 .srcbadge::before{content:"♪ ";opacity:.8}
+/* Popularity within a session list: more filled bars = played more often on that list (relative to its busiest tune). */
+.pips{display:inline-flex;gap:1px;margin-left:5px;vertical-align:-1px}
+.pips i{display:block;width:3px;height:9px;border-radius:1px;background:currentColor;opacity:.22}
+.pips i.on{opacity:1}
+.searchnote{margin:0 0 8px;font-size:13px;font-style:italic;color:var(--muted)}
 .srcbadge.fave{border-color:var(--claret);color:var(--claret);background:color-mix(in srgb, var(--claret) 10%, transparent)}
 .playbtn{border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;background:var(--pine);border-color:var(--pine);color:var(--paper)}
 .chev{color:var(--muted);font-size:11px;transition:transform .15s}
@@ -328,6 +333,7 @@ a.btn:hover{border-color:var(--muted)}
     <option value="common">Sort: most common first</option>
     <option value="name">Sort: A–Z</option>
     <option value="know">Sort: status</option>
+    <option value="session">Sort: most played in session lists</option>
     <option value="heard">Sort: most heard</option>
     <option value="lastheard">Sort: recently heard</option>
     <option value="firstheard">Sort: first heard (newest)</option>
@@ -337,6 +343,7 @@ a.btn:hover{border-color:var(--muted)}
   <button class="primary ed-only hidden" id="addTune" type="button">Add tune</button>
 </div>
 
+<p id="searchNote" class="searchnote hidden"></p>
 <div id="rows"><p class="empty">Loading…</p></div>
 
 <h2>Not yet identified</h2>
@@ -376,7 +383,7 @@ a.btn:hover{border-color:var(--muted)}
 </section>
 
 <footer>
-  <div id="foot">Commonality is a rough 1–10 guess at how widely players of that genre know the tune. A ? in a key or form means it isn't confirmed yet.</div>
+  <div id="foot">Commonality is a rough 1–10 guess at how widely players of that genre know the tune. A ? in a key or form means it isn't confirmed yet. Bars on a session-list badge show how often a tune is played on that list, compared with the list's busiest tune; lists with no play counts show only their name.</div>
   <div class="links">
     <button class="link hidden" id="signIn" type="button">Sign in</button>
     <span class="whoami hidden" id="whoami"></span>
@@ -470,10 +477,10 @@ function tuneGenres(t, primaryOnly){
 
 // A dropdown button that opens a checkbox list. `getOptions()` returns the current option values;
 // `labelOf(v)` (default identity) is the text shown for a value in the panel and the closed button.
-function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf = x => x, depthOf = () => 0 }){
+function multiSelect(btn, panel, getOptions, selected, { allLabel, name, labelOf = x => x, depthOf = () => 0, joinLabel = null }){
   function label(){
     const n = selected.size;
-    btn.textContent = n === 0 ? allLabel : n === 1 ? labelOf([...selected][0]) : `${name}: ${n} selected`;
+    btn.textContent = n === 0 ? allLabel : n === 1 ? labelOf([...selected][0]) : joinLabel ? joinLabel([...selected]) : `${name}: ${n} selected`;
     btn.classList.toggle("active", n > 0);
     btn.setAttribute("aria-expanded", String(!panel.classList.contains("hidden")));
   }
@@ -518,7 +525,9 @@ const genreFilter = multiSelect($("fGenreBtn"), $("fGenrePanel"), genreFilterOpt
 const typeFilter = multiSelect($("fTypeBtn"), $("fTypePanel"), () => researchList("type"), filterTypes, { allLabel: "All types", name: "Type" });
 const tagFilter = multiSelect($("fTagBtn"), $("fTagPanel"), () => researchList("tags"), filterTags, { allLabel: "All tags", name: "Tags" });
 const knowFilter = multiSelect($("fKnowBtn"), $("fKnowPanel"), () => KNOW.map((_, i) => String(i)), filterKnow,
-  { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i] });
+  { allLabel: "All statuses", name: "Status", labelOf: i => KNOW[+i],
+    // Short names so the button reads "Memorized + Playing" rather than "Status: 2 selected".
+    joinLabel: sel => sel.length >= KNOW.length ? "All statuses" : sel.slice().sort().map(i => ["Memorized", "Playing", "Not played"][+i]).join(" + ") });
 // Heard in real life: anywhere, at a particular kind of occasion, or not yet.
 const HEARD_KINDS = ["lesson", "class", "jam", "session", "camp", "other"];
 const HEARD_LABEL = { heard:"Heard in real life", none:"Not heard yet", lesson:"…at a lesson", class:"…in a class",
@@ -704,12 +713,15 @@ function render(){
   const primaryOnly = primaryOnlyEl.checked;
   const genres = genreList();
   const wanted = selectedGenreSet();
+  // Typing a search looks across every status when the status filter is still the default (Memorized + Played),
+  // so a tune hidden by that default never looks missing. A status the user chose on purpose still applies.
+  const searchOverridesStatus = !!term && filterKnow.size === DEFAULT_KNOW.length && DEFAULT_KNOW.every(k => filterKnow.has(k));
   let list = state.tunes.filter(t => {
     if (filterGenres.size && !tuneGenres(t, primaryOnly).some(g => wanted.has(g))) return false;
     const r = researchByTune.get(t.id) || {};
     if (filterTypes.size && !filterTypes.has(r.type)) return false;
     if (filterTags.size && !splitList(r.tags).some(x => filterTags.has(x))) return false;
-    if (filterKnow.size && !filterKnow.has(String(t.status))) return false;
+    if (filterKnow.size && !searchOverridesStatus && !filterKnow.has(String(t.status))) return false;
     if (highInterestOnlyEl.checked && t.high_interest !== 1) return false;
     if (filterHeard.size && !heardMatches(t)) return false;
     if (filterSession.size && !sessionMatches(t)) return false;
@@ -734,10 +746,20 @@ function render(){
       const at = t => { const hs = heardOf(t); return hs.length ? (by === "lastheard" ? hs[hs.length - 1] : hs[0]).o.start : ""; };
       return at(b).localeCompare(at(a)) || b.common - a.common || a.name.localeCompare(b.name);
     }
+    if (by === "session"){   // best showing on the chosen session list(s), or on any list when none is chosen
+      const best = t => Math.max(0, ...(sessionByTune.get(t.id) || []).filter(s => !filterSession.size || filterSession.has(s.sheet_key)).map(s => s.pop || 0));
+      return best(b) - best(a) || b.common - a.common || a.name.localeCompare(b.name);
+    }
     if (by === "recent") return (b.updated_at || "").localeCompare(a.updated_at || "") || b.id - a.id;
     return genres.indexOf(a.genre) - genres.indexOf(b.genre) || b.common - a.common || a.name.localeCompare(b.name);
   });
 
+  const note = $("searchNote");
+  if (searchOverridesStatus){
+    const extra = list.filter(t => !filterKnow.has(String(t.status))).length;
+    note.textContent = extra ? `Searching all statuses. ${extra} of these ${extra === 1 ? "is a tune" : "are tunes"} you haven't played yet, which the default view hides.` : "Searching all statuses.";
+  }
+  note.classList.toggle("hidden", !searchOverridesStatus);
   rowsEl.innerHTML = list.length ? list.map(t => {
     const E = state.editor;
     const open = expanded.has(t.id);
@@ -944,8 +966,16 @@ function indexSessionSources(){
     sessionByTune.get(s.tune_id).push(s);
     if (s.sheet_name) sheetNames.set(s.sheet_key, s.sheet_name);
   }
-  for (const l of sessionByTune.values()) l.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+  // Popularity within each list: play count (or title-family count) as a share of that list's busiest tune.
+  // Lists that carry no counts (NW Scottish Fiddlers, Old Time Buddies) get no meter, only a name.
+  const top = new Map();
+  for (const s of state.session_sources || []){ s.plays = playsOf(s.stat); top.set(s.sheet_key, Math.max(top.get(s.sheet_key) || 0, s.plays)); }
+  for (const s of state.session_sources || []) s.pop = s.plays > 0 ? s.plays / top.get(s.sheet_key) : null;
+  for (const l of sessionByTune.values()) l.sort((a, b) => (a.rank || 99) - (b.rank || 99) || (b.pop || 0) - (a.pop || 0));
 }
+const playsOf = stat => { const m = /^\s*(\d+)/.exec(stat || ""); return m ? +m[1] : 0; };
+const pipsHtml = s => s.pop == null ? "" : `<span class="pips" aria-hidden="true">${[1, 2, 3, 4, 5].map(n => `<i${n <= Math.max(1, Math.round(s.pop * 5)) ? ' class="on"' : ""}></i>`).join("")}</span>`;
+const popTitle = s => s.pop == null ? "" : `${Math.max(1, Math.round(s.pop * 5))} of 5 bars: ${s.stat} (busiest tune on this list = 5)`;
 const sheetNameOf = key => sheetNames.get(key) || key;
 function sessionBadges(t){
   const rows = sessionByTune.get(t.id) || [];
@@ -953,15 +983,15 @@ function sessionBadges(t){
   const fave = !heardOf(t).length;
   return rows.map(r => {
     const label = r.rank && r.stat ? `${r.sheet_name} #${r.rank}` : r.sheet_name;
-    const title = [r.stat, "From a community session list, not Nate's own data"].filter(Boolean).join(" · ");
-    return `<span class="srcbadge${fave ? " fave" : ""}" title="${esc(title)}">${esc(label)}</span>`;
+    const title = [popTitle(r) || r.stat, "From a community session list, not Nate's own data"].filter(Boolean).join(" · ");
+    return `<span class="srcbadge${fave ? " fave" : ""}" title="${esc(title)}">${esc(label)}${pipsHtml(r)}</span>`;
   }).join("");
 }
 function sessionBlock(t){
   const rows = sessionByTune.get(t.id) || [];
   if (!rows.length) return "";
   const fave = !heardOf(t).length;
-  const items = rows.map(r => `<li><span class="sname">${esc(r.sheet_name)}</span><span class="sstat">${esc([r.rank ? "#" + r.rank : "", r.stat].filter(Boolean).join(" · "))}</span></li>`).join("");
+  const items = rows.map(r => `<li><span class="sname">${esc(r.sheet_name)}${pipsHtml(r)}</span><span class="sstat">${esc([r.rank ? "#" + r.rank : "", r.stat].filter(Boolean).join(" · "))}</span></li>`).join("");
   return `<div class="sblock"><h5>From community session lists</h5><ul>${items}</ul>
     ${fave ? `<span class="snote">Local favorite — you haven’t heard this one live yet.</span>` : ""}</div>`;
 }
