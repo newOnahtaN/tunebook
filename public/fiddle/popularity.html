@@ -1,1 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How popularity works · Tune Book</title>
+<meta name="description" content="How the tune book scores each tune's popularity from 1 to 10, with the live evidence behind every score.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDEFE9; --surface:#F7F8F4; --line:#CFD5CC;
+  --ink:#1B241F; --muted:#5C6A62;
+  --claret:#7A2E3A; --pine:#2E6355; --sun:#B8813A; --warn:#9A3B1F; --slate:#4F5F7A;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141917; --surface:#1B211E; --line:#333C37;
+    --ink:#E7EAE3; --muted:#9AA79F;
+    --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B; --slate:#A3B3D1;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141917; --surface:#1B211E; --line:#333C37;
+  --ink:#E7EAE3; --muted:#9AA79F;
+  --claret:#D9808C; --pine:#7FBFAE; --sun:#D9A85C; --warn:#E39A7B; --slate:#A3B3D1;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+main{max-width:900px;margin:0 auto;padding:22px 16px 64px}
+a{color:var(--pine)}
+.back{font-size:14px}
+h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:clamp(30px,7vw,44px);letter-spacing:-.015em;line-height:1.05;margin:12px 0 6px}
+h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:22px;margin:36px 0 6px}
+h3{font-size:15px;margin:18px 0 4px}
+p{max-width:68ch}
+.sub{color:var(--muted);margin:0}
+.note{font-size:13px;color:var(--muted)}
+code{font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:10px 0}
+.badge{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.02em;border-radius:10px;padding:0 8px;line-height:19px;white-space:nowrap;border:1px solid currentColor}
+.b-both{color:var(--pine)} .b-local{color:var(--claret)} .b-online{color:var(--slate)} .b-hearsay{color:var(--sun)} .b-none{color:var(--muted);border-style:dashed}
+.meter{display:inline-flex;gap:2px;vertical-align:middle}
+.meter i{width:5px;height:12px;border-radius:1px;background:var(--line)}
+.meter i.on{background:var(--pine)}
+.score{font-weight:600;font-variant-numeric:tabular-nums;min-width:1.6em;display:inline-block;text-align:right}
+/* distribution */
+.dist{display:grid;grid-template-columns:repeat(11,1fr);gap:6px;align-items:end;height:150px;margin:14px 0 4px;max-width:620px}
+.dist button{all:unset;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px;font-size:12px;color:var(--muted)}
+.dist .bar{width:100%;background:var(--pine);border-radius:2px 2px 0 0;min-height:2px}
+.dist .none .bar{background:var(--line)}
+.dist button[aria-pressed="true"] .bar{background:var(--claret)}
+.dist b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.badges button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.badges button[aria-pressed="true"] .badge{background:currentColor}
+.badges button[aria-pressed="true"] .badge span{color:var(--surface)}
+table.rules{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+table.rules td,table.rules th{border-bottom:1px solid var(--line);padding:6px 8px 6px 0;text-align:left;vertical-align:top}
+table.rules th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 6px}
+.tools input,.tools select{font:inherit;font-size:14px;padding:6px 9px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink)}
+.tools input{flex:1 1 200px;min-width:0}
+.count{font-size:13px;color:var(--muted)}
+.clear{font:inherit;font-size:13px;background:none;border:0;color:var(--pine);text-decoration:underline;padding:0;cursor:pointer}
+ul.tunes{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+ul.tunes>li{border-bottom:1px solid var(--line)}
+ul.tunes summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;padding:9px 2px}
+ul.tunes summary::-webkit-details-marker{display:none}
+.tn{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tg{color:var(--muted);font-size:12.5px;font-weight:400;margin-left:6px}
+.flag{color:var(--warn);font-size:12px;font-weight:600}
+.ev{padding:2px 2px 12px 18px;font-size:13.5px}
+.ev table{border-collapse:collapse;width:100%}
+.ev td{padding:5px 8px 5px 0;border-top:1px dashed var(--line);vertical-align:top}
+.ev td:first-child{white-space:nowrap;font-weight:500;width:1%}
+.ev td.s{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums;width:1%;text-align:right}
+.ev .why{color:var(--muted);margin:6px 0 0}
+.ev ul{margin:4px 0 0;padding-left:18px}
+.hist{list-style:none;margin:0;padding:0;font-size:13.5px}
+.hist li{padding:5px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.hist time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+.empty{color:var(--muted);font-style:italic}
+.ok{color:var(--pine)} .bad{color:var(--warn)}
+@media (max-width:560px){ ul.tunes summary{grid-template-columns:auto 1fr auto} ul.tunes summary .meter{display:none} .dist{gap:3px} }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/fiddle">&larr; Tune book</a>
+  <h1>How popularity works</h1>
+  <p class="sub">Every tune in the book gets a popularity score from 1 to 10: how likely you are to hear it, or be able to play it, at a jam. The score comes from local session logs first and the wider internet second. Everything below is read live from the tune book's database, so each score can be checked against its evidence.</p>
 
+  <div id="summary"><p class="empty">Loading…</p></div>
+
+  <h2>The badges</h2>
+  <p>Next to each score is a badge saying what the score rests on.</p>
+  <table class="rules">
+    <tr><td><span class="badge b-both">local + online</span></td><td>Played at one of the local sessions (or on a curated local list) <em>and</em> popular online. The strongest evidence.</td></tr>
+    <tr><td><span class="badge b-local">local</span></td><td>Played locally, but not found online in a way that counts.</td></tr>
+    <tr><td><span class="badge b-online">online</span></td><td>Not played locally (yet); scored from The Session or published jam lists, plus hearsay research where there is some.</td></tr>
+    <tr><td><span class="badge b-hearsay">hearsay</span></td><td>Only hearsay research: forums, blogs, teachers' pages, videos, festival set lists. A judgment call, with sources.</td></tr>
+    <tr><td><span class="badge b-none">no data</span></td><td>Looked for and found nowhere (camp compositions, family tunes, very obscure settings). No score.</td></tr>
+  </table>
+
+  <h2>Where the evidence comes from</h2>
+  <div id="sources"><p class="empty">Loading…</p></div>
+
+  <h2>The calculation</h2>
+  <div id="formula"><p class="empty">Loading…</p></div>
+
+  <h2>Every tune</h2>
+  <p class="note">Tap a tune to see its evidence. Each score is recomputed in your browser from the evidence shown, using the same code the server uses; any disagreement is flagged.</p>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search tunes" aria-label="Search tunes">
+    <select id="sort" aria-label="Sort">
+      <option value="score">Most popular first</option>
+      <option value="low">Least popular first</option>
+      <option value="name">A to Z</option>
+      <option value="genre">By genre</option>
+    </select>
+  </div>
+  <div class="badges" id="badgeFilter"></div>
+  <p class="count" id="count"></p>
+  <ul class="tunes" id="list"></ul>
+
+  <h2>Changes over time</h2>
+  <p class="note">A line is written whenever a tune's score or badge changes, with the reason for the update.</p>
+  <ul class="hist" id="hist"><li class="empty">Loading…</li></ul>
+
+  <h2>Keeping it current</h2>
+  <div class="card">
+    <p>Evidence is gathered by a script (<code>data/popularity/evidence_pipeline.js</code> in the repo) that reads the session spreadsheets, The Session's public data dump and the jam-list panel, merges in the hearsay research, and posts everything to the tune book. The server then recomputes every score with <code>/fiddle/popularity.js</code>, the same file this page uses.</p>
+    <p>Every new tune gets popularity evidence when it's researched. Tunes that aren't on any local list or online source get hearsay research rather than a guess.</p>
+  </div>
+</main>
+
+<script type="module">
+import { computePopularity, popGroup, CONSTANTS as LOCAL_CONSTANTS, SOURCES as LOCAL_SOURCES } from "/fiddle/popularity.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]);
+const BADGE = { "local + online":"b-both", "local":"b-local", "online":"b-online", "hearsay":"b-hearsay", "no data":"b-none" };
+const BADGES = Object.keys(BADGE);
+const badge = b => `<span class="badge ${BADGE[b] || "b-none"}"><span>${esc(b)}</span></span>`;
+const meter = s => `<span class="meter" aria-hidden="true">${Array.from({ length:10 }, (_, i) => `<i class="${s && i < s ? "on" : ""}"></i>`).join("")}</span>`;
+const link = (url, text) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+const pct = v => v == null ? "—" : Math.round(v * 100) + "%";
+const fmtDate = s => s ? String(s).slice(0, 10) : "";
+
+let D, rows = [], filt = { badge:null, score:undefined };
+
+async function load(){
+  const r = await fetch("/fiddle/api/popularity");
+  if (!r.ok){ $("summary").innerHTML = `<p class="bad">Couldn't load popularity data (${r.status}).</p>`; return; }
+  D = await r.json();
+  const ev = new Map(), sc = new Map(D.scores.map(s => [s.tune_id, s]));
+  for (const e of D.evidence) (ev.get(e.tune_id) || ev.set(e.tune_id, []).get(e.tune_id)).push(e);
+  const listStats = Object.fromEntries(Object.entries(D.lists).map(([k, v]) => [k, v]));
+  rows = D.tunes.map(t => {
+    const e = ev.get(t.id) || [];
+    const s = sc.get(t.id) || { score:null, basis:"no data" };
+    const check = computePopularity(e.map(x => ({ source:x.source, value:x.value, extra:x.extra })), t.genre, listStats, D.constants);
+    return { t, e, s, check, mismatch: check.score !== s.score || check.basis !== s.basis };
+  });
+  renderSummary(); renderSources(); renderFormula(); renderBadgeFilter(); renderList(); renderHistory();
+}
+
+function renderSummary(){
+  const counts = Array(11).fill(0);
+  for (const r of rows) counts[r.s.score ?? 0]++;
+  const max = Math.max(...counts, 1);
+  const byBadge = Object.fromEntries(BADGES.map(b => [b, rows.filter(r => r.s.basis === b).length]));
+  const mism = rows.filter(r => r.mismatch).length;
+  const versionNote = D.version !== undefined ? `Scoring version ${D.version}` : "";
+  const computed = D.scores.map(s => s.computed_at).sort().pop();
+  const order = [1,2,3,4,5,6,7,8,9,10,0];
+  $("summary").innerHTML = `
+    <div class="dist" role="group" aria-label="Score distribution">
+      ${order.map(i => `<button data-score="${i}" aria-pressed="${filt.score === i}" class="${i ? "" : "none"}" title="${i ? "Score " + i : "No data"}: ${counts[i]} tunes">
+        <b>${counts[i]}</b><span class="bar" style="height:${Math.round(100 * counts[i] / max)}%"></span><span>${i || "–"}</span></button>`).join("")}
+    </div>
+    <p class="note">${rows.length} tunes. ${BADGES.map(b => `${byBadge[b]} ${esc(b)}`).join(" · ")}. ${versionNote}${computed ? ", last computed " + fmtDate(computed) : ""}.
+      ${mism ? `<span class="bad">${mism} score${mism > 1 ? "s" : ""} disagree with a fresh recompute.</span>` : `<span class="ok">Every stored score matches a fresh recompute.</span>`}</p>`;
+  $("summary").querySelectorAll("[data-score]").forEach(b => b.onclick = () => {
+    const v = +b.dataset.score; filt.score = filt.score === v ? undefined : v; renderSummary(); renderList();
+  });
+}
+
+function sourceDetail(key, L){
+  const s = L || {};
+  switch (key){
+    case "columbia": return `${s.nights ?? "?"} jam nights logged (${fmtDate(s.first)} to ${fmtDate(s.last)}); the busiest tune came up on ${s.max} nights, and on ${s.maxRecent} of the last ${s.recentNights} nights.`;
+    case "quebecois": return `${s.tunes ?? "?"} tunes with play counts; the busiest has ${s.max} plays.`;
+    case "couth": return `${s.tunes ?? "?"} tunes with play counts; the busiest has ${s.max} plays.`;
+    case "nwsf": return `${s.tunes ?? "?"} tunes on the club's top-tunes list${s.revised ? " (revised " + esc(s.revised) + ")" : ""}.`;
+    case "otb": return `${s.tunes ?? "?"} tunes on the group's list.`;
+    case "session": return `Tunebook counts for ${s.tunes ? s.tunes.toLocaleString() : "every"} tune on The Session (how many members have saved it), from its public data dump.`;
+    case "jamlists": return (s.lists || []).map(l => `${link(l.url, l.label)} (${l.tunes} tunes, worth ${l.weight})`).join(", ") + ".";
+    case "hearsay": return `${s.tunes ?? "?"} tunes researched by hand.`;
+  }
+  return "";
+}
+
+const SOURCE_WHY = {
+  columbia: "Seattle's weekly old-time jam. Its full play log lets us count how many nights each tune came up, and how many of the most recent nights, so a tune that's popular now beats one that was popular years ago.",
+  quebecois: "The PNW Québécois session's tune list with play counts.",
+  couth: "The Couth Buzzard Irish session's tune list with play counts.",
+  nwsf: "The Northwest Scottish Fiddlers' list of top tunes. A curated list rather than a log, so it doesn't count plays (see the calculation).",
+  otb: "The Old Time Buddies jam's tune list. Curated, like the NWSF list.",
+  session: "The Session (thesession.org) is the biggest online tune community. It's centred on Irish music, so old-time tunes are measured against a lower ceiling and capped.",
+  jamlists: "A panel of published old-time and bluegrass jam lists from other cities, for old-time, bluegrass and waltz tunes The Session undercounts.",
+  hearsay: "For tunes no list covers: forum threads, blogs, teachers' pages, videos and festival set lists, summarised as a 1–10 judgment with sources. Also a good place to find recordings.",
+};
+
+function renderSources(){
+  const S = D.sources || LOCAL_SOURCES;
+  const kinds = [["local", "Local sessions (strongest)"], ["curated", "Curated local lists"], ["online", "Online"]];
+  $("sources").innerHTML = kinds.map(([k, title]) => `
+    <h3>${title}</h3>
+    <table class="rules">${Object.entries(S).filter(([, m]) => m.kind === k).map(([key, m]) => {
+      const L = D.lists[key];
+      return `<tr><td style="width:30%"><b>${link(L?.url, m.label)}</b>${L?.as_of ? `<br><span class="note">read ${fmtDate(L.as_of)}</span>` : ""}</td>
+        <td>${SOURCE_WHY[key] || ""}<br><span class="note">${L ? sourceDetail(key, L) : "No data imported yet."}</span></td></tr>`;
+    }).join("")}</table>`).join("");
+}
+
+function renderFormula(){
+  const C = D.constants || LOCAL_CONSTANTS;
+  const ex = n => (1 + 9 * Math.pow(n, C.curve)).toFixed(1);
+  $("formula").innerHTML = `
+    <p>Each piece of evidence becomes a <b>strength</b> between 0 and 1, and the strongest one decides the score:</p>
+    <div class="card"><b>score = 1 + 9 × strength<sup>${C.curve}</sup></b>, rounded. <span class="note">Squaring spreads the scores out, so a 10 has to be a real 10: strength 50% is a ${ex(0.5)}, 75% is a ${ex(0.75)}, 90% is a ${ex(0.9)}.</span></div>
+    <h3>Local strength</h3>
+    <ul>
+      <li>Play counts are measured on a log scale against the busiest tune at that session, so the gap between 1 and 5 plays matters more than between 30 and 34. For the Columbia City Jam, half the strength is all-time nights and half is recent nights.</li>
+      <li>Local evidence alone tops out at ${Math.round(C.localCap * 10)}/10 (strength × ${C.localCap}), <b>except each session's ${C.topLocalRank} most-played tunes, which are 10s</b>.</li>
+      <li>Each extra local session a tune shows up at adds ${pct(C.extraLocalBonus)} strength.</li>
+    </ul>
+    <h3>Online strength</h3>
+    <ul>
+      <li><b>The Session:</b> log of tunebook count against a ceiling of ${C.sessionCeiling.celtic.toLocaleString()} for Irish, Scottish and other Celtic tunes and ${C.sessionCeiling.americana.toLocaleString()} for everything else. Old-time and bluegrass tunes are capped at ${pct(C.sessionCapAmericana)}.</li>
+      <li><b>Jam lists:</b> ${pct(C.jamListBase)} for being on any list, rising to 100% with ${C.jamListMax} points of lists.</li>
+      <li><b>Hearsay:</b> the researched 1–10 judgment converted back into a strength, so a hearsay 7 counts the same as other evidence that would score 7. A hearsay 1 means "found nowhere" and gives the no data badge.</li>
+    </ul>
+    <h3>Putting it together</h3>
+    <ul>
+      <li>Strength is the larger of local and online. When both exist, they agree, so add ${pct(C.agreementBonus)} of the weaker one.</li>
+      <li><b>Curated lists</b> (NW Scottish Fiddlers and Old Time Buddies) get a deliberate bump: their tunes land between ${C.curatedFloor} and ${C.curatedFloor + C.curatedSpan}, placed in that range by online strength (${C.curatedFloor} + ${C.curatedSpan} × online strength<sup>${C.curve}</sup>). A tune on a curated list that scores higher on other evidence keeps the higher score.</li>
+      <li>No evidence at all, or only a hearsay 1, means no score and the no data badge.</li>
+    </ul>`;
+}
+
+function renderBadgeFilter(){
+  $("badgeFilter").innerHTML = BADGES.map(b => `<button data-b="${esc(b)}" aria-pressed="${filt.badge === b}">${badge(b)} ${rows.filter(r => r.s.basis === b).length}</button>`).join("")
+    + (filt.badge || filt.score !== undefined || $("q").value ? ` <button class="clear" id="clearF">Clear filters</button>` : "");
+  $("badgeFilter").querySelectorAll("[data-b]").forEach(btn => btn.onclick = () => { filt.badge = filt.badge === btn.dataset.b ? null : btn.dataset.b; renderBadgeFilter(); renderList(); });
+  const c = $("clearF"); if (c) c.onclick = () => { filt = { badge:null, score:undefined }; $("q").value = ""; renderSummary(); renderBadgeFilter(); renderList(); };
+}
+
+function evRow(e, part, group){
+  const m = (D.sources || LOCAL_SOURCES)[e.source] || { label:e.source };
+  const x = e.extra || {};
+  let what = "";
+  switch (e.source){
+    case "columbia": what = `${e.value} nights (${x.recent ?? 0} recent)${x.rank ? `, #${x.rank} at the jam` : ""}${x.last ? `, last played ${fmtDate(x.last)}` : ""}${x.variants > 1 ? `, ${x.variants} spellings merged` : ""}`; break;
+    case "quebecois": case "couth": what = `${e.value} plays${x.rank ? `, #${x.rank} at the session` : ""}${x.last ? `, last played ${fmtDate(x.last)}` : ""}${x.title ? ` <span class="note">as “${esc(x.title)}”</span>` : ""}`; break;
+    case "nwsf": case "otb": what = "On the list"; break;
+    case "session": what = `${Number(e.value).toLocaleString()} tunebooks${x.name ? ` as ${link(e.url, x.name)}` : ""}${x.type ? ` (${esc(x.type)})` : ""}`; break;
+    case "jamlists": what = `${e.value} points: ${esc((x.lists || []).join(", "))}`; break;
+    case "hearsay": what = `${e.value}/10${x.confidence ? ` (${esc(x.confidence)} confidence)` : ""}`; break;
+    default: what = esc(e.value);
+  }
+  const st = part ? (part.strength == null ? "range 7–10" : pct(part.strength)) : "";
+  let more = "";
+  if (e.source === "hearsay"){
+    if (e.note) more += `<p class="why">${esc(e.note)}</p>`;
+    if ((x.sources || []).length) more += `<p class="why">Sources: ${x.sources.map(u => link(u, host(u))).join(", ")}</p>`;
+    if ((x.recordings || []).length) more += `<p class="why">Recordings found:</p><ul>${x.recordings.map(r => `<li>${link(r.url, r.title || host(r.url))}</li>`).join("")}</ul>`;
+  } else if (e.note) more = `<p class="why">${esc(e.note)}</p>`;
+  return `<tr><td>${link(e.source === "session" ? "" : e.url, m.label)}</td><td>${what}${more}</td><td class="s" title="Strength">${st}</td></tr>`;
+}
+
+function renderList(){
+  const q = $("q").value.trim().toLowerCase();
+  const by = $("sort").value;
+  let list = rows.filter(r => (!filt.badge || r.s.basis === filt.badge)
+    && (filt.score === undefined || (r.s.score ?? 0) === filt.score)
+    && (!q || r.t.name.toLowerCase().includes(q) || (r.t.genre || "").toLowerCase().includes(q)));
+  const nm = (a, b) => a.t.name.localeCompare(b.t.name);
+  list.sort(by === "name" ? nm
+    : by === "low" ? (a, b) => (a.s.score ?? 0) - (b.s.score ?? 0) || nm(a, b)
+    : by === "genre" ? (a, b) => (a.t.genre || "").localeCompare(b.t.genre || "") || (b.s.score ?? 0) - (a.s.score ?? 0) || nm(a, b)
+    : (a, b) => (b.s.score ?? 0) - (a.s.score ?? 0) || nm(a, b));
+  $("count").textContent = list.length === rows.length ? `${rows.length} tunes` : `${list.length} of ${rows.length} tunes`;
+  $("list").innerHTML = list.map(r => {
+    const parts = new Map((r.check.parts || []).map(p => [p.source, p]));
+    const c = r.check;
+    const why = [
+      c.local != null ? `local strength ${pct(c.local)}${c.topLocal ? " (a top-" + D.constants.topLocalRank + " tune at its session)" : ""}` : "",
+      c.online != null ? `online strength ${pct(c.online)}` : "",
+      c.curated ? "on a curated list (range " + D.constants.curatedFloor + "–" + (D.constants.curatedFloor + D.constants.curatedSpan) + ")" : "",
+    ].filter(Boolean).join(" · ");
+    return `<li><details><summary>
+      <span class="score">${r.s.score ?? "–"}</span>${meter(r.s.score)}
+      <span class="tn">${esc(r.t.name)}<span class="tg">${esc(r.t.genre || "")}</span>${r.mismatch ? ` <span class="flag" title="A fresh recompute gives ${c.score ?? "no score"} (${esc(c.basis)})">≠ ${c.score ?? "–"}</span>` : ""}</span>
+      ${badge(r.s.basis)}</summary>
+      <div class="ev">${r.e.length ? `<table>${r.e.map(e => evRow(e, parts.get(e.source), popGroup(r.t.genre))).join("")}</table>` : `<p class="empty">No evidence yet.</p>`}
+      ${why ? `<p class="why">${why}${c.strength != null ? ` → strength ${pct(c.strength)}` : ""} → ${c.score ?? "no score"}.</p>` : ""}</div>
+    </details></li>`;
+  }).join("") || `<li class="empty" style="padding:10px 2px">No tunes match.</li>`;
+}
+
+function renderHistory(){
+  const names = new Map(D.tunes.map(t => [t.id, t.name]));
+  const h = D.history || [];
+  if (!h.length){ $("hist").innerHTML = `<li class="empty">No changes yet.</li>`; return; }
+  // Group the first scoring of every tune into one line per import, so the log stays readable.
+  const out = []; let firstRun = null;
+  for (const x of h){
+    if (x.prev_score == null && !x.prev_basis){
+      if (firstRun && firstRun.at === x.at){ firstRun.n++; continue; }
+      firstRun = { at:x.at, n:1, reason:x.reason }; out.push(firstRun); continue;
+    }
+    out.push(x);
+  }
+  $("hist").innerHTML = out.slice(0, 300).map(x => x.n ? `<li><time>${fmtDate(x.at)}</time> First scores for ${x.n} tunes <span class="note">${esc(x.reason)}</span></li>`
+    : `<li><time>${fmtDate(x.at)}</time> <b>${esc(names.get(x.tune_id) || "Deleted tune #" + x.tune_id)}</b>
+       ${x.prev_score ?? "–"} ${x.prev_basis ? badge(x.prev_basis) : ""} → ${x.score ?? "–"} ${badge(x.basis)} <span class="note">${esc(x.reason)}</span></li>`).join("");
+}
+
+$("q").addEventListener("input", () => { renderBadgeFilter(); renderList(); });
+$("sort").addEventListener("change", renderList);
+const deep = new URLSearchParams(location.search).get("q"); if (deep) $("q").value = deep;
+load();
+</script>
+</body>
+</html>
