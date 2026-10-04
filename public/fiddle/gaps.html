@@ -106,6 +106,7 @@ const CHECKS = [
   { id:"region", group:"core", label:"No region", test: c => !c.r.region },
   { id:"summary", group:"core", label:"No researched fact", test: c => !c.r.summary },
   { id:"sources", group:"core", label:"No sources", test: c => !(c.r.sources || []).length },
+  { id:"pop", group:"core", label:"No popularity research", test: c => !c.pop || !c.pop.n },
   { id:"lowconf", group:"core", label:"Low-confidence research", test: c => lc(c.r.confidence || "") === "low" },
   { id:"key", group:"basics", label:"Key missing or unconfirmed", test: c => !c.t.key || c.t.key.includes("?") },
   { id:"form", group:"basics", label:"Form missing or unconfirmed", test: c => !c.t.form || c.t.form.includes("?") },
@@ -136,7 +137,7 @@ async function load(){
   const drive = new Set();
   for (const [mid, tid] of data.links || []){ const m = media.get(mid); if (m && !m.ignored && (m.kind === "audio" || m.kind === "video")) drive.add(tid); }
   results = data.tunes.map(t => {
-    const c = { t, r: R.get(t.id) || {}, encountered: encountered.has(t.id), drive: drive.has(t.id),
+    const c = { t, r: R.get(t.id) || {}, encountered: encountered.has(t.id), drive: drive.has(t.id), pop: (data.popularity || {})[t.id],
       refRecs: (refs.get(t.id) || []).filter(f => f.kind === "recording") };
     const gaps = [];
     for (const ch of CHECKS){
