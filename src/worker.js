@@ -6,7 +6,6 @@ import { AuthError, b64u, unb64u, enc, verifyGoogleIdToken, verifyRegistration, 
 import { kindOf, serveType, buildIndex, matchFile } from './media.js';
 import { serviceAccount, listTree, fetchMedia, oauthConfig, exchangeCode, writerToken, whoAmI, ensureFolder, uploadFile, WRITE_SCOPE } from './drive.js';
 import { countsAsHeard } from '../public/fiddle/hearings.js';
-import { ensurePopTables, importPopularity, popScores, popularityPayload, recomputeAll } from './popularity.js';
 
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
@@ -207,7 +206,6 @@ async function initDb(env) {
     const cols = (await db.prepare(`PRAGMA table_info(tunes)`).all()).results.map(c => c.name);
     if (!cols.includes('high_interest')) await db.prepare(`ALTER TABLE tunes ADD COLUMN high_interest INTEGER NOT NULL DEFAULT 0 CHECK (high_interest IN (0, 1))`).run();
   }
-  await ensurePopTables(db);   // popularity evidence, scores and history (src/popularity.js)
   await db.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('schema_version', ?)`).bind(SCHEMA_VERSION).run();
 }
 
@@ -636,19 +634,18 @@ async function api(request, env, url) {
   const editor = session?.role === 'editor', viewer = session?.role === 'viewer', reader = editor || viewer;
 
   if (path === 'data' && method === 'GET') {
-    const [tunes, open, notes, popularity] = await Promise.all([
+    const [tunes, open, notes] = await Promise.all([
       env.DB.prepare(`SELECT * FROM tunes ORDER BY id`).all(),
       env.DB.prepare(`SELECT * FROM open_titles ORDER BY id`).all(),
       reader ? env.DB.prepare(`SELECT v FROM meta WHERE k = 'working_notes'`).first('v') : null,
-      popScores(env.DB),
     ]);
     const cookies = [];
     if (reader && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
     const signin = { editingEnabled: editorEmails(env).length + viewerEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(reader
-      ? { editor, viewer, email: session.email, ...signin, tunes: tunes.results, popularity, open: open.results, working_notes: notes || '',
+      ? { editor, viewer, email: session.email, ...signin, tunes: tunes.results, open: open.results, working_notes: notes || '',
           ...(await hearingData(env, true)), ...(await researchData(env, true)), ...(await sessionSourceData(env)), ...(await mediaForReader(ctx, editor)) }
-      : { editor: false, viewer: false, ...signin, tunes: tunes.results.map(publicTune), popularity,
+      : { editor: false, viewer: false, ...signin, tunes: tunes.results.map(publicTune),
           open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env)), ...(await sessionSourceData(env)) },
       200, { cookies });
   }
@@ -657,9 +654,6 @@ async function api(request, env, url) {
     checkSameOrigin(request, url);
     return json({ ok: true }, 200, { cookies: [clearCookie(COOKIE)] });
   }
-
-  // GET /popularity: every tune's popularity score with the evidence behind it, for the public /fiddle/popularity page.
-  if (path === 'popularity' && method === 'GET') return json(await popularityPayload(env.DB));
 
   if (path.startsWith('auth/')) return authRoute(ctx, path, method, session);
   if (path.startsWith('job/')) return jobRoute(ctx, path, method);
@@ -678,16 +672,6 @@ async function api(request, env, url) {
     throw new HttpError(403, 'This account can read the tune book but not change it.');
   }
   if (method !== 'GET') checkSameOrigin(request, url);
-
-  // POST /popularity/import   body: { reason, lists, replace_sources, evidence } (see src/popularity.js).
-  // Stores the evidence, recomputes every tune's score and logs what changed. data/popularity/evidence_pipeline.js builds it.
-  if (path === 'popularity/import' && method === 'POST') {
-    const body = await readJson(request);
-    const ids = new Set((await env.DB.prepare(`SELECT id FROM tunes`).all()).results.map(r => r.id));
-    return json(await importPopularity(env.DB, body, ids));
-  }
-  // POST /popularity/recompute  -- rescore from stored evidence (after a scoring change or genre edits)
-  if (path === 'popularity/recompute' && method === 'POST') return json(await recomputeAll(env.DB, 'recompute'));
 
   let m;
   // PATCH /tunes/:id or /open/:id   body: { field, value }
