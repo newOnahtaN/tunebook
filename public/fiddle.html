@@ -187,7 +187,11 @@ button.link{border:0;background:none;padding:0;color:var(--pine);text-decoration
 .pips i{display:block;width:3px;height:9px;border-radius:1px;background:currentColor;opacity:.22}
 .pips i.on{opacity:1}
 .searchnote{margin:0 0 8px;font-size:13px;font-style:italic;color:var(--muted)}
-.srcbadge.fave{border-color:var(--claret);color:var(--claret);background:color-mix(in srgb, var(--claret) 10%, transparent)}
+/* Popularity: 10-step meter plus a badge saying what the score rests on (see /fiddle/popularity). */
+.pop{display:inline-flex;align-items:center;gap:8px}
+.popb{font-size:11px;font-weight:600;letter-spacing:.02em;white-space:nowrap;line-height:16px;padding:0 7px;border:1px solid currentColor;border-radius:9px;text-decoration:none}
+.popb:hover{text-decoration:underline}
+.popb.both{color:var(--pine)} .popb.local{color:var(--claret)} .popb.online{color:var(--muted)} .popb.hearsay{color:var(--sun)} .popb.none{color:var(--muted);border-style:dashed;opacity:.8}
 .playbtn{border-radius:50%;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;background:var(--pine);border-color:var(--pine);color:var(--paper)}
 .chev{color:var(--muted);font-size:11px;transition:transform .15s}
 .tcard[data-open="true"] .chev{transform:rotate(180deg)}
@@ -360,7 +364,7 @@ a.btn:hover{border-color:var(--muted)}
     <label class="sortwrap">Sort
       <select id="sort" aria-label="Sort">
         <option value="genre">genre</option>
-        <option value="common">most common first</option>
+        <option value="common">most popular first</option>
         <option value="name">A–Z</option>
         <option value="know">status</option>
         <option value="session">most played in session lists</option>
@@ -414,10 +418,11 @@ a.btn:hover{border-color:var(--muted)}
 </section>
 
 <footer>
-  <div id="foot">Commonality is a rough 1–10 guess at how widely players of that genre know the tune. A ? in a key or form means it isn't confirmed yet. Bars on a session-list badge show how often a tune is played on that list, compared with the list's busiest tune; lists with no play counts show only their name.</div>
+  <div id="foot">Popularity (1–10) is how likely you are to hear a tune at a jam: local session logs first, then The Session, published jam lists and hearsay research. The badge says what each score rests on; <a href="/fiddle/popularity">how popularity works</a>. A ? in a key or form means it isn't confirmed yet. Bars on a session-list badge show how often a tune is played on that list, compared with the list's busiest tune; lists with no play counts show only their name.</div>
   <div class="links">
     <button class="link hidden" id="signIn" type="button">Sign in</button>
     <span class="whoami hidden" id="whoami"></span>
+    <a href="/fiddle/popularity">How popularity works</a>
     <a class="rd-only hidden" href="/fiddle/gaps">Data gaps</a>
     <a class="rd-only hidden" href="/fiddle/api/export.md">Download markdown</a>
     <a class="rd-only hidden" href="/fiddle/api/export.json">Download JSON</a>
@@ -583,7 +588,7 @@ function heardMatches(t){
 const FAVE = "fave";
 const sessionFilter = multiSelect($("fSessionBtn"), $("fSessionPanel"), () => {
   const keys = [...new Set((state.session_sources || []).map(s => s.sheet_key))];
-  return keys.length ? ["any", FAVE, ...keys] : [];
+  return keys.length ? ["any", ...keys] : [];
 }, filterSession, { allLabel: "Session lists", name: "Session list",
   labelOf: v => v === "any" ? "On any session list" : v === FAVE ? "Local favorite, not yet heard" : sheetNameOf(v) });
 function sessionMatches(t){
@@ -686,17 +691,17 @@ window.addEventListener("online", () => { if (pending.size) flush(); });
 
 // ------------------------------------------------------------ rendering
 
-function bars(c, id){
-  let s = '<span class="bars" title="' + (c ? c + " of 10" : "not rated") + '">';
-  for (let i = 1; i <= 10; i++) s += '<i class="' + (i <= c ? "on" : "") + '"></i>';
-  if (state.editor){
-    s += '<select data-tbl="tunes" data-id="' + id + '" data-field="common" aria-label="Commonality">';
-    for (let i = 0; i <= 10; i++) s += `<option value="${i}"${i === c ? " selected" : ""}>${i || "–"}</option>`;
-    s += '</select>';
-  } else s += '<span>' + (c ? c : "–") + '</span>';
-  return s + '</span>';
+// Popularity from /fiddle/api/data (computed server-side by /fiddle/popularity.js). The badge links to the explainer.
+const POPB = { "local + online":"both", "local":"local", "online":"online", "hearsay":"hearsay", "no data":"none" };
+const popOf = t => ((state.popularity || {})[t.id] || {}).score || 0;
+function popCell(t){
+  const p = (state.popularity || {})[t.id] || {};
+  const s = p.score || 0, basis = p.basis || "no data";
+  let h = '<span class="pop"><span class="bars" title="Popularity: ' + (s ? s + " of 10" : "no data") + '">';
+  for (let i = 1; i <= 10; i++) h += '<i class="' + (i <= s ? "on" : "") + '"></i>';
+  h += '<span>' + (s || "–") + '</span></span>';
+  return h + '<a class="popb ' + (POPB[basis] || "none") + '" href="/fiddle/popularity?q=' + encodeURIComponent(t.name) + '" title="What this score rests on. Tap for the evidence.">' + esc(basis) + '</a></span>';
 }
-
 function ed(tbl, id, field, value, cls, ph, tag = "span"){
   if (!state.editor) return `<${tag} class="${cls}">${esc(value)}</${tag}>`;
   return `<${tag} class="${cls}" contenteditable="plaintext-only" spellcheck="false" data-tbl="${tbl}" data-id="${id}" data-field="${field}" data-ph="${esc(ph)}">${esc(value)}</${tag}>`;
@@ -813,20 +818,20 @@ function render(){
   const by = sortEl.value;
   list.sort((a, b) => {
     if (by === "name") return a.name.localeCompare(b.name);
-    if (by === "common") return b.common - a.common || a.name.localeCompare(b.name);
-    if (by === "know") return KNOW_ORDER.indexOf(a.status) - KNOW_ORDER.indexOf(b.status) || b.common - a.common;
-    if (by === "src") return a.source.localeCompare(b.source) || b.common - a.common;
-    if (by === "heard") return heardOf(b).length - heardOf(a).length || b.common - a.common || a.name.localeCompare(b.name);
+    if (by === "common") return popOf(b) - popOf(a) || a.name.localeCompare(b.name);
+    if (by === "know") return KNOW_ORDER.indexOf(a.status) - KNOW_ORDER.indexOf(b.status) || popOf(b) - popOf(a);
+    if (by === "src") return a.source.localeCompare(b.source) || popOf(b) - popOf(a);
+    if (by === "heard") return heardOf(b).length - heardOf(a).length || popOf(b) - popOf(a) || a.name.localeCompare(b.name);
     if (by === "lastheard" || by === "firstheard"){
       const at = t => { const hs = heardOf(t); return hs.length ? (by === "lastheard" ? hs[hs.length - 1] : hs[0]).o.start : ""; };
-      return at(b).localeCompare(at(a)) || b.common - a.common || a.name.localeCompare(b.name);
+      return at(b).localeCompare(at(a)) || popOf(b) - popOf(a) || a.name.localeCompare(b.name);
     }
     if (by === "session"){   // best showing on the chosen session list(s), or on any list when none is chosen
       const best = t => Math.max(0, ...(sessionByTune.get(t.id) || []).filter(s => !filterSession.size || filterSession.has(s.sheet_key)).map(s => s.pop || 0));
-      return best(b) - best(a) || b.common - a.common || a.name.localeCompare(b.name);
+      return best(b) - best(a) || popOf(b) - popOf(a) || a.name.localeCompare(b.name);
     }
     if (by === "recent") return (b.updated_at || "").localeCompare(a.updated_at || "") || b.id - a.id;
-    return genres.indexOf(a.genre) - genres.indexOf(b.genre) || b.common - a.common || a.name.localeCompare(b.name);
+    return genres.indexOf(a.genre) - genres.indexOf(b.genre) || popOf(b) - popOf(a) || a.name.localeCompare(b.name);
   });
 
   const note = $("searchNote");
@@ -861,7 +866,7 @@ function render(){
             ${ed("tunes", t.id, "genre", t.genre, "tcard-genre", "Genre")}${genre2Cell(t)}${rtype ? `<span class="rtype" title="From research">${esc(rtype)}</span>` : ""}${heardChip(t, by)}${sessionBadges(t)}
             ${status}${interest}
           </div>
-          <div class="tcard-bottom">${bars(t.common, t.id)}</div>
+          <div class="tcard-bottom">${popCell(t)}</div>
         </div>
         <div class="tcard-side">${playBtn}<span class="chev" aria-hidden="true">▾</span></div>
       </div>
@@ -1056,20 +1061,17 @@ const sheetNameOf = key => sheetNames.get(key) || key;
 function sessionBadges(t){
   const rows = sessionByTune.get(t.id) || [];
   if (!rows.length) return "";
-  const fave = !heardOf(t).length;
   return rows.map(r => {
     const label = r.rank && r.stat ? `${r.sheet_name} #${r.rank}` : r.sheet_name;
     const title = [popTitle(r) || r.stat, "From a community session list, not Nate's own data"].filter(Boolean).join(" · ");
-    return `<span class="srcbadge${fave ? " fave" : ""}" title="${esc(title)}">${esc(label)}${pipsHtml(r)}</span>`;
+    return `<span class="srcbadge" title="${esc(title)}">${esc(label)}${pipsHtml(r)}</span>`;
   }).join("");
 }
 function sessionBlock(t){
   const rows = sessionByTune.get(t.id) || [];
   if (!rows.length) return "";
-  const fave = !heardOf(t).length;
   const items = rows.map(r => `<li><span class="sname">${esc(r.sheet_name)}${pipsHtml(r)}</span><span class="sstat">${esc([r.rank ? "#" + r.rank : "", r.stat].filter(Boolean).join(" · "))}</span></li>`).join("");
-  return `<div class="sblock"><h5>From community session lists</h5><ul>${items}</ul>
-    ${fave ? `<span class="snote">Local favorite — you haven’t heard this one live yet.</span>` : ""}</div>`;
+  return `<div class="sblock"><h5>From community session lists</h5><ul>${items}</ul></div>`;
 }
 
 // ------------------------------------------------------------ tune type legend
