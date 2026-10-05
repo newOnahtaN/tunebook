@@ -16,6 +16,15 @@ too. Actively seek this kind of performance; do not automatically rank it below
 an archive recording or a solo fiddle just because it has a band. This is a
 positive search signal, not permission to skip identity or personnel checks.
 
+**Nate's preferred reference fiddlers (Oct 5, 2026):** search these YouTube channels
+first and use them whenever they cover the tune; when several do, include one
+reference from each. Stewart Hardy Music ("The Tune Vault"; his Moon and Seven
+Stars is a model), The Fiddle Channel (@thefiddlechannel), Devon Leger
+(@devonleger7469), Liz Faiella (@lizfaiellamusic), Michael Burnyeat
+(@michaelburnyeat), Nerea the Fiddler (@nereathefiddler), Tim Chaisson
+(@timchaissonmusic) and Fergal Scahill (@fergalscahill). He also called Jay Ungar
+and Molly Mason's Folk Alley Sessions Ashokan Farewell a great reference.
+
 ## Non-negotiables
 
 - Never play audio or video in the browser, even muted. Use page/track metadata,
