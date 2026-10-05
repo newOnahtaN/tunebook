@@ -27,7 +27,8 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   `public/fiddle/popularity.js` holds the shared scoring, `src/popularity.js` the D1 tables (pop_lists,
   pop_evidence, pop_scores, pop_history), import and recompute. `public/fiddle/popularity.html` (at
   `/fiddle/popularity`) explains the method with live data for auditing. Evidence comes from
-  `data/popularity/evidence_pipeline.js` (session lists plus `public/fiddle/popularity-hearsay.json`) and is
+  `data/popularity/evidence_pipeline.js` (session sheets, The Session, `public/fiddle/popularity-jamlists.json` and
+  `public/fiddle/popularity-hearsay.json`; runbook in `data/popularity/README.md`) and is
   loaded with the editor-only `POST /fiddle/api/popularity/import`; `GET /fiddle/api/popularity` is public.
   Tests: `node --test test/popularity.test.mjs`.
 - High interest: signed-in editors can toggle a tune's star independently of its learning status. The
