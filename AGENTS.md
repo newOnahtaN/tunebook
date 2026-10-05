@@ -28,6 +28,24 @@ Delivering through GitHub's web editor (no checkout):
    the Workers build and a check of the live site are the validation; do not call the work deployed before both.
 5. Code reaches `main` this way but data does not: data still goes through the editor API.
 
+Browser-tool notes for cloud sessions (learned in Oct 2026):
+
+- Reading: JavaScript results from the Chrome extension are capped at roughly 1,500 characters, and its output
+filter blanks any result containing `?`, `=`, `&` or words that look like secrets, so replace those characters
+before returning text. To read a whole file, open `https://github.com/newOnahtaN/tunebook/raw/main/<path>` and
+extract the page text, which returns tens of thousands of characters.
+- Carrying text between pages: `window.name` survives a same-tab navigation, even across origins (site tab to
+github.com and back); `localStorage` only works within one origin. Anything that must outlive the session (inputs,
+research, lists) belongs in the repo, never only in a browser's storage.
+- A tab left in the background can stop resolving `fetch` calls made from injected scripts, and stale tabs cause
+"Couldn't determine which page this action targets". Open a fresh tab in the session's group and close old ones.
+- The "Commit changes..." button sometimes has to be clicked twice before the dialog and its own "Commit changes"
+button exist. GitHub may replace the commit message with an auto-generated one.
+- New files: open `.../new/main/<folder>`, set the input labeled "File name", then load the editor.
+- In Oct 2026 several commits landed as empty files and a Worker that imported an empty module took the API down.
+Compare each committed file's length or hash with the intended text before moving on, and commit a new module
+before the code that imports it.
+
 When reporting, say which device the work ran on and which of committed, pushed, deployed and live data changed.
 
 ## Default delivery: push to main
