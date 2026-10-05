@@ -189,6 +189,11 @@ Nate's rubric for the top recording:
    recording), style (a master fiddler in the tune's own tradition, fiddle-led), band (only if influential),
    teaching (optional). A slot can stay empty; an obscure recording picked because it was easy to link is worse
    than none.
+   **Nate's preferred reference fiddlers (Oct 5 2026):** when a tune is covered by any of these YouTube channels, use
+   them, and include one from each when several overlap: Stewart Hardy Music ("The Tune Vault"), The Fiddle Channel
+   (@thefiddlechannel), Devon Leger (@devonleger7469), Liz Faiella (@lizfaiellamusic), Michael Burnyeat
+   (@michaelburnyeat), Nerea the Fiddler (@nereathefiddler), Tim Chaisson (@timchaissonmusic) and Fergal Scahill
+   (@fergalscahill).
 3. **Prefer links that play on the site:** embeddable YouTube or direct audio, then official streams — Tidal before
    Spotify or Apple Music (Nate, Sep 27 2026), then Bandcamp, Folkways pages. Prefer label, archive, artist and
    auto-generated "Topic" uploads over fan uploads; a fan transfer of a 78 is fine when a discography confirms the
@@ -412,14 +417,27 @@ and shown read-only to visitors. Existing tunes default to unmarked. This suppli
 the practicing/learning/flashcard recommendation system itself remains a future feature.
 Bonaparte's Retreat and Music for a Found Harmonium are marked high interest; both remain "Not played yet."
 
-### F4. Popularity overhaul and session-only tunes — `idea` · L (needs A5)
+### F4. Popularity overhaul — `shipped` (Oct 4 2026) · L (needs A5)
 
-Replace the popularity score with one driven by local play counts (the current `common` score becomes the fallback),
-add every sheet tune to the book, and make "not heard by me yet" unmistakable alongside "popular locally".
+Every tune gets a 1–10 popularity score with a basis badge: "local + online", "local", "online", "hearsay" or
+"no data". Local play counts from the session lists (A5) beat internet sentiment; The Session's tunebook counts and
+online jam lists are the online evidence; hearsay research (forums, blogs, social media) fills in when nothing better
+exists. Each local list's top three tunes are 10s. NWSF top-tunes and Old Time Buddies tunes get Nate's explicit
+bump: they land between 7 and 10 by online sentiment. The old `common` score is retired (left in the DB, unused).
 
-Open questions: How to weight the sessions against each other and how much recency matters? One overall score, per
-genre, or both? Should sheet-only tunes count in the header totals or sit behind a toggle? Does being on the Old Time
-Buddies list (no counts) earn a fixed boost? Should session counts be public or editor-only?
+How it works, with live data for auditing: /fiddle/popularity (the formula built from the live constants, every
+tune's evidence, a recompute-mismatch check and change history). Code: `public/fiddle/popularity.js` (shared
+scoring, used by both the worker and the explainer page) and `src/popularity.js` (tables, import, recompute).
+Tables: pop_lists, pop_evidence, pop_scores, pop_history. API: public `GET /fiddle/api/popularity`; editor
+`POST /fiddle/api/popularity/import` and `POST /fiddle/api/popularity/recompute`. Evidence is built by
+`data/popularity/evidence_pipeline.js` (run in a signed-in tab) from the session lists plus
+`public/fiddle/popularity-hearsay.json`. Tests: `node --test test/popularity.test.mjs`. Every new tune needs
+popularity evidence (see CLAUDE.md); the gaps page flags "No popularity research".
+
+Open: green highlighting in the NWSF list no longer means anything special (all NWSF tunes land at 7–10); #212
+"Garde ton souffle" may be a mix-up with André Brunet's "À plein souffle"; the Wedgwood Alehouse jam list (~800
+tunes, 2013–15) could become a sixth local source; recordings found during hearsay research (in the hearsay file)
+are candidate refs not yet imported.
 
 ### F5. Tune type legend — `shipped` (Sep 26 2026) · S
 
@@ -486,6 +504,13 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-05: Nate named preferred reference fiddlers (added to the A3 method) and two great references; imported
+  Stewart Hardy's Moon and Seven Stars (The Tune Vault) and Jay Ungar & Molly Mason's Ashokan Farewell (Folk Alley
+  Sessions) as style refs.
+- 2026-10-04: Shipped F4, the popularity overhaul: 1–10 scores with basis badges for all 280 tunes, a "most popular
+  first" sort, the /fiddle/popularity explainer with live data, and a "No popularity research" check on the gaps
+  page. Some GitHub web-editor commits landed as empty files and briefly broke the API; fixed by re-committing each
+  file and guarding the worker so a popularity failure can't take down /data.
 - 2026-10-03: Reworked the search and filter area. A large sticky search bar has a "Within filters / Everything" scope switch
   (Everything ignores every filter; a no-result search within filters offers a one-click "Search every tune instead"); the
   filters sit in labeled rows (My playing, The tune, Where from) with Sort in the last row; a chips row shows every active
