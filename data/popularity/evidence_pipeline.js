@@ -2,7 +2,8 @@
 // Run in a signed-in browser tab on https://nategrimwood.com (no CSP there; the Google Sheets gviz CSV
 // endpoints and raw.githubusercontent.com both allow cross-origin reads). Inputs:
 //   window.__PANEL_LISTS = { stl: "...", clt: "...", scvfa: "...", bg: "...", vic: "..." }   (comma-separated titles;
-//                          falls back to localStorage '__PANEL_LISTS' on nategrimwood.com)
+//                          normally loaded from /fiddle/popularity-jamlists.json, which lives in the repo at public/fiddle/)
+// Full runbook, safety checks and the hearsay scoring rubric: data/popularity/README.md
 //   window.__HEARSAY     = [ {id, score, confidence, note, sources, recordings}, ... ]       (hearsay research; falls
 //                          back to /fiddle/popularity-hearsay.json, which lives in the repo at public/fiddle/)
 // To add hearsay research for a tune: add an entry to public/fiddle/popularity-hearsay.json, deploy, rerun this.
@@ -10,8 +11,11 @@
 window.__done = null;
 (async () => {
 const TODAY = new Date().toISOString().slice(0, 10);
-if (!window.__PANEL_LISTS) { try { window.__PANEL_LISTS = JSON.parse(localStorage.getItem('__PANEL_LISTS') || 'null'); } catch {} }
+if (!window.__PANEL_LISTS) { const J = await fetch('/fiddle/popularity-jamlists.json?' + Date.now()).then(r => r.json()); window.__PANEL_LISTS = Object.fromEntries(Object.entries(J.lists).map(([k, v]) => [k, v.titles.join(', ')])); }
 if (!window.__HEARSAY) window.__HEARSAY = await fetch('/fiddle/popularity-hearsay.json?' + Date.now()).then(r => r.json());
+// The import replaces every source wholesale, so a missing input would silently wipe that source's evidence.
+for (const k of ['stl', 'clt', 'scvfa', 'bg', 'vic']) if (!window.__PANEL_LISTS?.[k]) throw new Error('Jam list ' + k + ' is missing; refusing to build a payload that would wipe jamlists evidence');
+if (!window.__HEARSAY?.length) throw new Error('Hearsay research is missing; refusing to build a payload that would wipe hearsay evidence');
 const csv = t => { const rows=[]; let row=[], f='', q=false; for (let i=0;i<t.length;i++){ const c=t[i]; if(q){ if(c==='"'){ if(t[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; } else { if(c==='"') q=true; else if(c===','){row.push(f);f='';} else if(c==='\n'){row.push(f);rows.push(row);row=[];f='';} else if(c!=='\r') f+=c; } } if(f||row.length){row.push(f);rows.push(row);} return rows; };
 const nm = s => String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\(.*?\)/g,' ').replace(/,\s*(the|le|la|les|l')\s*$/,'').replace(/[’'`]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9 ]/g,' ').replace(/\b(the|le|la|les|reel|jig|de|du|des|a|an|l)\b/g,' ').replace(/\s+/g,' ').trim();
 const base = s => { s=String(s||'').replace(/\b[A-Z]{4,}\b/g,' '); s=s.replace(/,\s*(The|Le|La|Les|L')\s*$/i,''); s=s.replace(/\s+-\s+.*$/,'').replace(/,.*$/,''); return nm(s); };
