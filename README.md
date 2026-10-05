@@ -23,6 +23,13 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   - Google: the page shows a "Sign in with Google" button using the public client ID in `wrangler.jsonc` (`GOOGLE_CLIENT_ID`, Google Cloud project "Tune Book"). The Worker checks Google's signature and only accepts the accounts in `EDITOR_EMAILS` (can edit) and `VIEWER_EMAILS` (invited readers: they see everything the editor sees, including private notes and Drive recordings, but every write route returns 403 for them; removing an address ends its sessions immediately). Passkeys, Drive connection and session management are editor-only. For a viewer to sign in, the Google Cloud OAuth consent screen must be published (or list them as a test user). No client secret is involved.
   - Passkeys: once signed in, "Sign-in and passkeys" (bottom of the page) adds a passkey for this device. Passkeys are stored in the `passkeys` table and checked in `src/auth.js` with WebCrypto (no dependencies).
   - Sessions last 400 days and renew themselves. They're signed with a random key in `meta.session_key`; "Sign out on all other devices" replaces that key.
+- Popularity: every tune has a 1–10 score with a basis badge (local + online, local, online, hearsay, no data).
+  `public/fiddle/popularity.js` holds the shared scoring, `src/popularity.js` the D1 tables (pop_lists,
+  pop_evidence, pop_scores, pop_history), import and recompute. `public/fiddle/popularity.html` (at
+  `/fiddle/popularity`) explains the method with live data for auditing. Evidence comes from
+  `data/popularity/evidence_pipeline.js` (session lists plus `public/fiddle/popularity-hearsay.json`) and is
+  loaded with the editor-only `POST /fiddle/api/popularity/import`; `GET /fiddle/api/popularity` is public.
+  Tests: `node --test test/popularity.test.mjs`.
 - High interest: signed-in editors can toggle a tune's star independently of its learning status. The
   **High interest only** checkbox combines with the other filters. Marked tunes show a read-only badge to
   visitors, and the flag is included in JSON and Markdown backups. The editor API accepts
