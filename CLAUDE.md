@@ -40,7 +40,13 @@ it before finishing the turn, so every filter works for it. Import through `POST
    session standard...). Add new tags sparingly.
 4. `region`, `summary` (one notable sourced fact), `sources` (URLs) and `confidence`.
 5. If a good style-model recording is easy to find, add it to `refs` too (see ROADMAP A3 for the rubric).
+   Prefer Nate's reference fiddlers when they cover the tune (list in ROADMAP A3), one from each when several do.
 6. For a streaming link, prefer Tidal over Spotify or Apple Music (Tidal tends to embed better and Nate prefers it).
+7. Popularity: add an entry for the tune to `public/fiddle/popularity-hearsay.json` (one line: `id`, `score` 1–10,
+   `confidence`, `note`, `sources`, and any `recordings` found) from forum, blog and social-media sentiment, unless
+   local or online evidence already covers it. Then rerun `data/popularity/evidence_pipeline.js` in a signed-in tab
+   and `POST /fiddle/api/popularity/import` (it recomputes). The method is explained live at /fiddle/popularity and
+   in ROADMAP F4.
 
 Then check /fiddle/gaps: the tune should have no "Core research" gaps. That page is the single place that shows
 what's missing; don't put gap information on the main tune book.
