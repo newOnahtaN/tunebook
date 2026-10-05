@@ -31,6 +31,17 @@ Feature statuses: `idea` → `designing` → `building` → `shipped`.
   When a PCC-sourced tune's origin comes back low-confidence or unverified, she's a real, askable source — Nate can
   check with her directly rather than the answer staying a guess.
 
+## Up next: requests Nate has queued
+
+Do these before picking from the menu, unless Nate asks for something else. Remove an item once it's done (and log it).
+
+- **Noon Lasses** (queued Oct 3 2026): add the tune with full enrichment (CLAUDE.md checklist, including popularity),
+find Hayden Stern's YouTube recording of it played with "Nobody's Business" plus other good recordings, and mark it
+high interest.
+
+Questions waiting on Nate's answer are spread across A1 (proposals), A3 and A5 (identity holds), F4 (open), F9 and
+"Open data questions" below. F10 would gather them into one list.
+
 ---
 
 ## A. Data enrichment (always open; order any of these again)
@@ -140,7 +151,7 @@ Nate's rubric for the top recording:
 - Next passes: widen out from old-time — Irish, Scottish and Québécois are thin on outside recordings. Make V7
   (tune identity) a hard stop rather than a judgment call: it was the top failure mode across all three passes
   (Forked Deer, Little Liza Jane, Spotted Pony, Buffalo Gals) and, outside this project, Bea's Waltz.
-- **One-tune quality pilot (Sep 28-29, 2026): imported and verified.** Angeline the Baker (commonness 10)
+- **One-tune quality pilot (Sep 28-29, 2026): imported and verified.** Angeline the Baker (popularity 10)
   now has four research recordings. Added Brad Leftwich with Brett Riggs
   (1990, provisional old-time style candidate, not solo); George Jackson's Old Time 100 overhead-camera
   performance (a five-piece band and explicitly Pyeatt-derived variant); and Casey Willis's public performance/
@@ -304,8 +315,8 @@ Sources (the first four linked from Nate's "Fiddle Tune Learning" Google Doc, id
   and it must stay obvious which tunes Nate has actually heard. Community data is a third provenance, distinct from
   both Nate's own data and research. He only wants the top 25 per session at most, and "top" should be defined
   per-source rather than forced into one formula (see table above).
-- **Provenance and status:** the existing UI derives "Local favorite, not yet heard" from community membership
-  and counted hearings. Do not handwrite that statement into personal notes, invent a style tag for it, or turn
+- **Provenance and status:** the "Local favorite, not yet heard" badge was removed in F4 (Oct 4 2026); session-list
+  membership now shows as list badges and feeds popularity. Do not write "local favorite" into personal notes, invent a style tag for it, or turn
   a sheet appearance into a personal hearing. New records start at "Not played yet"; existing learning status,
   interest flags, personal references, private notes and manual top selections remain unchanged.
 
@@ -350,7 +361,8 @@ Chattanooga (Old)/Old Chattanooga.
   membership set using verified tune IDs; an `unmatched` response does not persist pending candidates.
   Preserve version qualifiers and a reviewed raw-source-to-tune map rather than stripping them during matching.
 - The source tables do not turn community play counts into personal hearings, global commonness scores or
-  high-interest marks. The future numeric `session_counts` sync and F4 weighting design remain separate work.
+  high-interest marks. F4 (shipped Oct 4 2026) reads the sheets' play counts live through `data/popularity/evidence_pipeline.js`; see
+  `data/popularity/README.md`.
 
 The private **Session tune imports** artifacts (session `091259e3-f796-443d-a5e4-45855bbc71b4`) contain the
 source snapshots, reviewed manifest, resolved source map, three holds, independent recording audit, import
@@ -394,7 +406,7 @@ An Anki-style mode for learning new tunes and keeping learned ones fresh. State 
       Use the flag for personally important tunes; a free-text note alone does not set this priority.
    4. Tunes heard at Ritz's old-time jam not yet memorized or played.
    5. Tunes broadly popular across all local sessions (old-time, Québécois, Scottish, Irish) — uses F4's popularity
-      overhaul, so needs A5 (session data) and F4 built first.
+      scores (A5 and F4 have both shipped).
    Separately: already-memorized tunes need their own way to stay in rotation so they don't go stale while this
    list keeps attention on new material — see the staleness survey below; the two may end up as one system.
 2. **Practice log:** a lightweight per-session record — "played it", free-text notes for that session, and a
@@ -406,7 +418,7 @@ An Anki-style mode for learning new tunes and keeping learned ones fresh. State 
    **Punted, low priority for now (Nate, Sep 27 2026)** — still wanted eventually, just not designed yet.
 
 Open questions: how much weight the staleness survey gets relative to new-tune priority; where chord charts would come from if/when
-accompaniment happens. Needs F4 + A5 for priority tier 5, and F9 (a "learned from" field) to drive tiers 1-2
+accompaniment happens. Needs F9 (a "learned from" field) to drive tiers 1-2
 without text-matching on `source`.
 
 ### F11. High-interest tunes — `shipped` (Sep 29 2026) · S
@@ -431,7 +443,8 @@ scoring, used by both the worker and the explainer page) and `src/popularity.js`
 Tables: pop_lists, pop_evidence, pop_scores, pop_history. API: public `GET /fiddle/api/popularity`; editor
 `POST /fiddle/api/popularity/import` and `POST /fiddle/api/popularity/recompute`. Evidence is built by
 `data/popularity/evidence_pipeline.js` (run in a signed-in tab) from the session lists plus
-`public/fiddle/popularity-hearsay.json`. Tests: `node --test test/popularity.test.mjs`. Every new tune needs
+`public/fiddle/popularity-hearsay.json` and `public/fiddle/popularity-jamlists.json`. **Runbook (how to rerun,
+add hearsay, add a source; the hearsay rubric): `data/popularity/README.md`.** Tests: `node --test test/popularity.test.mjs`. Every new tune needs
 popularity evidence (see CLAUDE.md); the gaps page flags "No popularity research".
 
 Open: green highlighting in the NWSF list no longer means anything special (all NWSF tunes land at 7–10); #212
@@ -504,6 +517,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-05: Handoff pass, so a session without this conversation can continue: committed the five published jam lists
+  (`public/fiddle/popularity-jamlists.json`; they had lived only in one browser's localStorage, and rerunning the pipeline
+  without them would have wiped the jam-list evidence), made the pipeline load them and refuse to run with missing
+  inputs, and wrote `data/popularity/README.md` (runbook, Nate's decisions, hearsay rubric, matching quirks). Added
+  the "Up next" queue above, browser-tool notes in AGENTS.md, and fixed roadmap lines that still described the old
+  popularity UI.
 - 2026-10-05: Nate named preferred reference fiddlers (added to the A3 method) and two great references; imported
   Stewart Hardy's Moon and Seven Stars (The Tune Vault) and Jay Ungar & Molly Mason's Ashokan Farewell (Folk Alley
   Sessions) as style refs.
