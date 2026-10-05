@@ -8,7 +8,8 @@
   stay in the session's own worktree and do not edit the shared main checkout.
 - Nate's long-running goals for this site live in `ROADMAP.md`, written as a menu of projects. Read it at the start
   of any session on this repo, and update its statuses and log before you finish.
-- For recording-focused enrichment, also read `.github/skills/recording-curation/SKILL.md`.
+- For recording-focused enrichment, also read `.github/skills/recording-curation/SKILL.md`. For popularity work,
+  read `data/popularity/README.md`. Requests Nate has queued are at the top of `ROADMAP.md` ("Up next").
 - The site is a Cloudflare Worker (`src/worker.js`) with D1, plus the main page (`public/fiddle.html`), the data gaps
   page (`public/fiddle/gaps.html`, at /fiddle/gaps) and the shared vocabulary (`public/fiddle/vocab.js`: genre
   families, tune type definitions, style tags). Pushes to `main` deploy automatically.
@@ -45,8 +46,9 @@ it before finishing the turn, so every filter works for it. Import through `POST
 7. Popularity: add an entry for the tune to `public/fiddle/popularity-hearsay.json` (one line: `id`, `score` 1–10,
    `confidence`, `note`, `sources`, and any `recordings` found) from forum, blog and social-media sentiment, unless
    local or online evidence already covers it. Then rerun `data/popularity/evidence_pipeline.js` in a signed-in tab
-   and `POST /fiddle/api/popularity/import` (it recomputes). The method is explained live at /fiddle/popularity and
-   in ROADMAP F4.
+   and `POST /fiddle/api/popularity/import` (it recomputes). For a hearsay-only change you can post just that tune's
+   row. Runbook and the hearsay scoring rubric: `data/popularity/README.md`; the method is explained live at
+   /fiddle/popularity.
 
 Then check /fiddle/gaps: the tune should have no "Core research" gaps. That page is the single place that shows
 what's missing; don't put gap information on the main tune book.
