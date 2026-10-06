@@ -517,6 +517,11 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-06: Second handoff pass. Added a "Tests" GitHub Actions workflow that runs `node --test` on every push to
+  main, so cloud sessions without a test runner can see test results. Its first run passed but showed the worker
+  tests' mock database rejecting the popularity queries (the worker caught the errors, so the popularity path was
+  untested); fixed the mock and added a test that /data carries popularity scores. 17 of 17 tests pass. Noted in
+  AGENTS.md how to check the workflow and how to avoid committing an empty new file.
 - 2026-10-05: Handoff pass, so a session without this conversation can continue: committed the five published jam lists
   (`public/fiddle/popularity-jamlists.json`; they had lived only in one browser's localStorage, and rerunning the pipeline
   without them would have wiped the jam-list evidence), made the pipeline load them and refuse to run with missing
