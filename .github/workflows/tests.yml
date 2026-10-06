@@ -1,0 +1,21 @@
+# Runs the unit tests (node --test: src/worker.test.js, test/popularity.test.mjs) on every push to main,
+# so a session without a checkout or test runner can still see whether a change broke them (Actions tab).
+# Deployment is separate (Cloudflare Workers Builds) and does not wait for this.
+name: Tests
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Unit tests
+        run: node --test
