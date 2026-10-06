@@ -24,8 +24,10 @@ Delivering through GitHub's web editor (no checkout):
    the CodeMirror editor with `view.dispatch`, and confirm the editor text hashes (SHA-256) to the intended content.
 3. Open "Commit changes...", click into the visible message fields and type the message. Never find the fields with a
    script query for `input[type=text]`: the filename input matches, and a "/" in the message silently renames the file.
-4. Commit one file at a time, then re-fetch the raw file and compare hashes. With no build or tests available,
-   the Workers build and a check of the live site are the validation; do not call the work deployed before both.
+4. Commit one file at a time, then re-fetch the raw file and compare hashes. There is no test runner here, but the
+   "Tests" GitHub Actions workflow (`.github/workflows/tests.yml`) runs `node --test` on every push to main: check
+   its run in the Actions tab after committing code. That, the Workers build and a check of the live site are the
+   validation; do not call the work deployed before all three.
 5. Code reaches `main` this way but data does not: data still goes through the editor API.
 
 Browser-tool notes for cloud sessions (learned in Oct 2026):
@@ -41,7 +43,9 @@ research, lists) belongs in the repo, never only in a browser's storage.
 "Couldn't determine which page this action targets". Open a fresh tab in the session's group and close old ones.
 - The "Commit changes..." button sometimes has to be clicked twice before the dialog and its own "Commit changes"
 button exist. GitHub may replace the commit message with an auto-generated one.
-- New files: open `.../new/main/<folder>`, set the input labeled "File name", then load the editor.
+- New files: open `.../new/main/<folder>` and set the input labeled "File name". Then, in a separate step, load the
+editor and confirm its text before committing: doing both in one script once committed an empty file, because
+the editor re-rendered after the name changed.
 - In Oct 2026 several commits landed as empty files and a Worker that imported an empty module took the API down.
 Compare each committed file's length or hash with the intended text before moving on, and commit a new module
 before the code that imports it.
