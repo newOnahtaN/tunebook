@@ -37,6 +37,8 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
     media: [],
     media_links: [],
     edits: [],
+    pop_scores: [],
+    pop_evidence: [],
   };
   if (!highInterestColumn) delete tables.tunes[0].high_interest;
   const meta = new Map([
@@ -68,7 +70,8 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
           if (sql === 'PRAGMA table_info(tunes)') {
             return { results: Object.keys(tables.tunes[0]).map(name => ({ name })) };
           }
-          const table = sql.match(/\bFROM (\w+)/)?.[1];
+          if (sql.includes('FROM pop_scores s')) return { results: structuredClone(tables.pop_scores) };
+        const table = sql.match(/\bFROM (\w+)/)?.[1];
           assert.ok(Object.hasOwn(tables, table), `Unexpected read: ${sql}`);
           return { results: structuredClone(tables[table]) };
         },
@@ -111,7 +114,7 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
             tables.edits.find(e => e.id === parameters[0]).undone = 1;
             return { success: true };
           }
-          assert.match(sql, /^(CREATE TABLE IF NOT EXISTS|DROP TABLE IF EXISTS|INSERT OR REPLACE INTO meta \(k,v\) VALUES \('schema_version')/);
+          assert.match(sql, /^(CREATE TABLE IF NOT EXISTS|CREATE INDEX IF NOT EXISTS|DROP TABLE IF EXISTS|INSERT OR REPLACE INTO meta \(k,v\) VALUES \('schema_version')/);
           return { success: true };
         },
       };
@@ -176,6 +179,15 @@ test('authenticated JSON backups retain personal and research refs', async () =>
   const data = await response.json();
   assert.deepEqual(data.refs, references);
   assert.equal(data.tunes[0].top_media, 'ref:2');
+});
+
+test('the data payload carries each tune\'s popularity score and badge', async () => {
+  const env = environment();
+  env.tables.pop_scores = [{ tune_id: 1, score: 7, basis: 'local + online', curated: 1, n: 3 }];
+  const response = await get('data', undefined, env);
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.deepEqual(data.popularity, { 1: { score: 7, basis: 'local + online', curated: true, n: 3 } });
 });
 
 test('signed-out readers cannot download a private JSON backup', async () => {
