@@ -91,10 +91,12 @@ where it's still played, the recordings and players that made it popular, other 
 - Cite sources (The Traditional Tune Archive, The Session, irishtune.info, Slippery-Hill, the Lomax archive, liner
   notes...). Say where sources disagree instead of quietly picking one.
 - Stored in `research.summary` (one notable fact) and `research.history` (longer notes and corrections), with `sources`.
-- Coverage: all 280 tunes have a one-fact summary, 278 have source URLs, and 35 have history text
-  (live data, Sep 30 2026). Having text is not a separate check of its factual quality. Some new community-only
-  composer credits remain explicitly attributed to the source sheet, with medium confidence.
-- Next best step: full histories for the most-heard tunes first.
+- Coverage (live data, Oct 8 2026, after the deep-enrichment run below): all 280 tunes have a summary, source URLs
+  and history text; 279 histories are over 2,000 characters (average about 4,100). Every history was checked
+  claim by claim by an independent auditor before import. Some community-only composer credits remain explicitly
+  attributed to the source sheet, with medium confidence.
+- Next best step: Nate's own knowledge for the identity holds listed under A3 (the VOM camp compositions and the
+  class-specific settings), which no outside source could resolve.
 
 ### A3. Recordings for every tune, and a well-chosen top recording — M per pass (formerly S3)
 
@@ -128,10 +130,15 @@ Nate's rubric for the top recording:
   direct audio files play inline like Drive files; anything else opens in a new tab. Any can be the top recording
   (`top_media = 'ref:<id>'`). Auto-pick order: Nate's Drive files, then links he added, then research recordings,
   style models first.
-- Coverage (Sep 30 2026, after the session-list pass; research-origin recordings only): 29 tunes have outside
-  recordings (42 refs), 15 with a style-model candidate. Including personal refs, the editor-visible totals
-  are 43 recordings across 29 tunes, 16 with a style model. Done so
-  far: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
+- Coverage (live data, Oct 8 2026, after the deep-enrichment run; research-origin recordings only): 266 of 280
+  tunes have outside recordings (1,704 refs: 358 style, 298 source, 609 band, 175 teaching, 264 other), and 202
+  have a style-model candidate. The other 14 were searched exhaustively and audited, and are held rather than
+  filled by guesswork. Identity holds (no outside source establishes which tune the book means): Lucy Farr's Polka,
+  Bea's Waltz, Habas de Montes Torozos, Habas para una Amiga, Two Months Too Soon, Dragon Slayer, Bonaparte
+  Crossing the Alps, Bonaparte Crossing the Rhine. Nothing recorded anywhere findable: Back Home, Cedar Paths, Same
+  Mistakes, Game of Drones, Reel de la montée des Mille-Îles, Reel du mois de juillet. Nate's own recording or the
+  tune packet is the way forward for these.
+- Before the Oct 2026 run (Sep 30 2026): 29 tunes had outside recordings (42 refs). Done in the early passes: the most-heard old-time tunes (Angeline the Baker, Old Joe Clark, Step Around Johnny, Ducks on the Millpond,
   Fly Around My Pretty Little Miss, Five Miles from Town, Red Haired Boy, Soldier's Joy, Cherokee Shuffle,
   Cumberland Gap, Dry and Dusty, Forked Deer, Little Liza Jane, Spotted Pony, Sandy Boys) and Frank's Reel,
   Cliffs of Moher, La Bastringue, Buntàta 's Sgadan, Mrs. MacLeod of Raasay, Sleep Soond Ida Mornin',
@@ -228,6 +235,19 @@ Nate's rubric for the top recording:
 
 #### Pass log
 
+- **Deep-enrichment run (Oct 6-8, 2026), all 280 tunes.** Ten research agents ran at once, one tune each, and got
+  a new tune only after finishing. Each wrote a payload, a search ledger of "stones" (every source, archive,
+  reference channel and master player checked, with its result) and a dossier. A mechanical gate checked
+  the ledger's breadth, the history's length and every ref's fields; then an independent auditor re-verified each
+  ref (V1-V7), checked the history claim by claim, ran its own searches and returned PASS or REDO (up to three
+  attempts). Zero-recording, identity-hold and thin-history tunes got high scrutiny: REDO unless the auditor's own
+  probe proved exhaustion. Mid-run, a mandatory YouTube sweep was added (top 40 results for the tune, every
+  reference-fiddler channel checked by handle), and the 14 tunes done before that were swept again. Results:
+  1,704 research recordings on 266 tunes, histories on all 280, 14 documented holds (see coverage above). What
+  the audits caught most: release or upload years given as recording years, same-title different tunes, album
+  credits used as track credits, and workers missing well-known performances that the auditor's own YouTube
+  probe then found. Imports went through the signed-in editor API with a conflict check against the live
+  `updated_at` and a field-by-field read-back; personal refs and top recordings were untouched.
 - **Quality pilot (Sep 28-29, 2026), one tune, three additions and one correction.** Focused on Angeline the Baker rather than
   increasing coverage. The useful improvement was to evaluate actual takes: search synthesis supplied
   mismatched video URLs/channel credits; an overhead fiddle camera concealed a full-band lineup; original
@@ -517,6 +537,11 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-08: Finished the deep-enrichment run over all 280 tunes (A3 pass log): 1,704 audited research
+  recordings on 266 tunes, full histories on every tune, 14 documented holds. Added "Faroese" under Nordic in
+  `vocab.js` (four Shetland tunes are in the Faroese repertoire). Proposals left for Nate in the run's
+  notes: a "New England" or "Franco-American" genre (Contra used for now), Manx, Hawaiian, Mississippi and
+  Tennessee old-time, and "habas" and "retreat march" types.
 - 2026-10-06: Second handoff pass. Added a "Tests" GitHub Actions workflow that runs `node --test` on every push to
   main, so cloud sessions without a test runner can see test results. Its first run passed but showed the worker
   tests' mock database rejecting the popularity queries (the worker caught the errors, so the popularity path was

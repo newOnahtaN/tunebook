@@ -14,7 +14,7 @@ const GENRE_TREE = [
   ["American", ["Old-time", "Bluegrass", "Contra", "Cajun", "Western swing", "Jazz"]],
   ["Old-time", ["Appalachian", "Kentucky", "North Carolina Piedmont", "Ozark", "Midwestern", "Texas contest", "Black string band", "Minstrel", "Alabama", "Pacific Northwest"]],
   ["Appalachian", ["Round Peak", "Galax", "West Virginia"]],
-  ["Nordic", ["Swedish", "Finnish", "Scandinavian"]],
+  ["Nordic", ["Swedish", "Finnish", "Scandinavian", "Faroese"]],
 ];
 const GENRE_ROOTS = ["Celtic", "English", "Canadian", "American", "Nordic", "Waltz", "Castilian", "Camp composition"];
 // Plain-language definitions shown in the "Tune types" legend.
