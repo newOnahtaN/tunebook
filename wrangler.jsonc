@@ -30,7 +30,7 @@
     "EDITOR_EMAILS": "nate.cole.owen@gmail.com",
     // Invited viewers, comma-separated: they sign in with Google and read everything the editor can (private notes,
     // personal links, hearings, Drive recordings) but cannot change anything. Remove an email here to end its access.
-    "VIEWER_EMAILS": "johnswatson.music@gmail.com",
+    "VIEWER_EMAILS": "johnswatson.music@gmail.com,connollymp17@gmail.com,stern.hayden.e@gmail.com",
     // Google Drive "Fiddle" folder. Recordings are read through the service account in the GOOGLE_SERVICE_ACCOUNT secret.
     "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd",
     // Only this repo's nightly workflow (.github/workflows/video-audio.yml) may use the /job/ endpoints.
