@@ -599,12 +599,18 @@ async function importSessionSources(env, body) {
   return { ok: true, matched, unmatched };
 }
 
-async function researchData(env, editor = false) {
+// The page's /data feed leaves out the long text (research histories, source links, recording notes) and sends
+// lengths instead; a card fetches the text from /tunes/:id/detail when it opens, and search from /search-index.
+// Exports and backups (full = true) keep everything.
+async function researchData(env, editor = false, full = true) {
   const [research, refs] = await Promise.all([
-    env.DB.prepare(`SELECT * FROM research ORDER BY tune_id`).all(),
-    env.DB.prepare(`SELECT * FROM refs ORDER BY tune_id, id`).all(),
+    env.DB.prepare(full ? `SELECT * FROM research ORDER BY tune_id`
+      : `SELECT tune_id, type, genres, region, summary, confidence, tags, updated_at, length(history) AS history_len,
+         CASE WHEN json_valid(sources) THEN json_array_length(sources) ELSE 0 END AS sources_n FROM research ORDER BY tune_id`).all(),
+    env.DB.prepare(full ? `SELECT * FROM refs ORDER BY tune_id, id`
+      : `SELECT id, tune_id, kind, url, title, performer, year, category, origin, length(note) AS note_len FROM refs ORDER BY tune_id, id`).all(),
   ]);
-  return { research: research.results.map(r => ({ ...r, sources: JSON.parse(r.sources || '[]') })),
+  return { research: full ? research.results.map(r => ({ ...r, sources: JSON.parse(r.sources || '[]') })) : research.results,
     refs: editor ? refs.results : refs.results.filter(r => r.origin === 'research') };
 }
 
@@ -649,9 +655,9 @@ async function api(request, env, url) {
     const signin = { editingEnabled: editorEmails(env).length + viewerEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(reader
       ? { editor, viewer, email: session.email, ...signin, tunes: tunes.results, popularity, open: open.results, working_notes: notes || '',
-          ...(await hearingData(env, true)), ...(await researchData(env, true)), ...(await sessionSourceData(env)), ...(await mediaForReader(ctx, editor)) }
+          ...(await hearingData(env, true)), ...(await researchData(env, true, false)), ...(await sessionSourceData(env)), ...(await mediaForReader(ctx, editor)) }
       : { editor: false, viewer: false, ...signin, tunes: tunes.results.map(publicTune), popularity,
-          open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env)), ...(await sessionSourceData(env)) },
+          open: open.results.map(({ title, source, id }) => ({ id, title, source })), ...(await hearingData(env, false)), ...(await researchData(env, false, false)), ...(await sessionSourceData(env)) },
       200, { cookies });
   }
 
@@ -667,6 +673,25 @@ async function api(request, env, url) {
     catch (e) { console.error('popularity', e); return json({ error: 'Popularity data unavailable: ' + String(e?.message || e) }, 500); }
   }
 
+  // GET /tunes/:id/detail: the long text /data leaves out (the research history and source links, and each
+  // recording's note). Public like /data, with the same rule: signed-out readers only get research refs.
+  let dm;
+  if ((dm = path.match(/^tunes\/(\d+)\/detail$/)) && method === 'GET') {
+    const id = Number(dm[1]);
+    const [research, refs] = await Promise.all([
+      env.DB.prepare(`SELECT tune_id, history, sources FROM research WHERE tune_id = ?`).bind(id).all(),
+      env.DB.prepare(`SELECT id, tune_id, origin, note FROM refs WHERE tune_id = ? ORDER BY id`).bind(id).all(),
+    ]);
+    const r = research.results.find(x => x.tune_id === id);
+    return json({ tune_id: id, research: r ? { history: r.history || '', sources: JSON.parse(r.sources || '[]') } : null,
+      refs: refs.results.filter(x => x.tune_id === id && (reader || x.origin === 'research')).map(x => ({ id: x.id, note: x.note || '' })) });
+  }
+  // GET /search-index: every tune's research history, which the page's search box looks through. The page loads it
+  // in the background after it draws, so a search still finds a name that only appears in a history.
+  if (path === 'search-index' && method === 'GET') {
+    const rows = await env.DB.prepare(`SELECT tune_id, history FROM research WHERE history != ''`).all();
+    return json({ history: Object.fromEntries(rows.results.filter(r => r.history).map(r => [r.tune_id, r.history])) });
+  }
   if (path.startsWith('auth/')) return authRoute(ctx, path, method, session);
   if (path.startsWith('job/')) return jobRoute(ctx, path, method);
   if (path === 'drive/callback' && method === 'GET') return driveCallback(ctx, session);
