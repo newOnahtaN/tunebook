@@ -808,7 +808,7 @@ function render(){
     if (term){
       const hay = [t.name, t.origin, t.source, t.genre, t.genres2, t.key, t.form, t.notes, t.aka,
         ...(heardByTune.get(t.id) || []).map(h => [h.o.name, h.o.series, h.o.detail, h.note].join(" ")),
-        ...(r => r ? [r.type, r.genres, r.tags, r.region, r.summary, r.history] : [])(researchByTune.get(t.id)),
+        ...(r => r ? [r.type, r.genres, r.tags, r.region, r.summary, searchHistory.get(t.id) || r.history] : [])(researchByTune.get(t.id)),
         ...(refsByTune.get(t.id) || []).map(f => refLabel(f)),
         ...(sessionByTune.get(t.id) || []).map(s => s.sheet_name)].join(" ").toLowerCase();
       if (!hay.includes(term)) return false;
@@ -874,7 +874,7 @@ function render(){
       ${open ? detailHtml(t, E) : ""}
     </div>`;
   }).join("") : `<p class="empty">No tunes match that${term && activeCount ? ` within your filters. <button type="button" class="link" data-act="searchall">Search every tune instead</button>` : ". Clear the search or filters to see them all."}</p>`;
-  counts();
+  counts(); for (const id of expanded) loadDetail(id);
 }
 
 function detailHtml(t, E){
@@ -993,6 +993,31 @@ function indexResearch(){
 }
 const CAT_LABEL = { style:"style model", source:"source recording", band:"band", teaching:"teaching", other:"" };
 const CAT_ORDER = { style:0, teaching:1, source:2, band:3, other:4, "":5 };
+// Long text (research histories, source links, recording notes) isn't in /data, to keep that feed small. A card
+// fetches it from /tunes/:id/detail the first time it opens, and search uses /search-index, loaded after the first draw.
+const details = new Map(); // tune id -> detail once loaded (null while loading)
+function applyDetails(){
+  for (const [id, d] of details){
+    if (!d) continue;
+    const r = researchByTune.get(id);
+    if (r && d.research){ r.history = d.research.history; r.sources = d.research.sources; }
+    for (const n of d.refs || []){ const f = refById.get(n.id); if (f) f.note = n.note; }
+  }
+}
+async function loadDetail(id){
+  if (details.has(id)) return;
+  details.set(id, null);
+  try { details.set(id, await call("GET", `tunes/${id}/detail`)); applyDetails(); if (expanded.has(id)) render(); }
+  catch (e) { details.delete(id); }
+}
+let searchHistory = new Map();
+async function loadSearchIndex(){
+  try {
+    const d = await call("GET", "search-index");
+    searchHistory = new Map(Object.entries(d.history || {}).map(([k, v]) => [+k, v]));
+    if (q.value.trim()) render();
+  } catch (e) { setTimeout(loadSearchIndex, 30000); }
+}
 function refLabel(f){ return [f.performer, f.title].filter(Boolean).join(" – ") || f.url; }
 function youtubeId(url){
   const m = String(url).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
@@ -1030,10 +1055,12 @@ function researchBlock(t, E){
   const sources = r && r.sources && r.sources.length
     ? `<div class="rsrc">Sources: ${r.sources.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a>`).join(", ")}</div>` : "";
   const hist = r && r.history ? r.history.split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join("") : "";
+const more = !details.get(t.id) && ((r && (r.history_len || r.sources_n)) || refs.some(f => f.note_len))
+  ? `<p class="rload" style="color:var(--muted);font-size:13px">Loading the full history and notes…</p>` : "";
   return `<div class="rblock"><h5>From research <small>added by Claude${when ? " · " + esc(when) : ""}${r && r.confidence ? " · " + esc(r.confidence) + " confidence" : ""}</small></h5>
     ${meta ? `<div class="rmeta">${meta}</div>` : ""}
     ${r && r.tags ? `<div class="rtags">${splitList(r.tags).map(x => `<span class="rtag">${esc(x)}</span>`).join("")}</div>` : ""}
-    ${r && r.summary ? `<p>${esc(r.summary)}</p>` : ""}${hist}
+    ${r && r.summary ? `<p>${esc(r.summary)}</p>` : ""}${hist}${more}
     ${refs.length ? `<ul>${refs.map(f => refItem(t, f, E)).join("")}</ul>` : ""}
     ${sources}</div>`;
 }
@@ -1093,7 +1120,7 @@ $("typeList").addEventListener("click", e => {
   filterTypes.clear(); filterTypes.add(b.dataset.showtype); typeFilter.build(); render(); $("typeDlg").close();
 });
 
-function renderAll(){ indexMedia(); indexHearings(); indexResearch(); indexSessionSources(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
+function renderAll(){ indexMedia(); indexHearings(); indexResearch(); applyDetails(); indexSessionSources(); fillFilters(); applyMode(); render(); renderOpen(); renderDrive(); }
 
 async function reload(){
   const d = await call("GET", "data");
@@ -1829,7 +1856,7 @@ highInterestOnlyEl.addEventListener("change", render);
     setTimeout(() => toast(dq === "connected" ? "Saving to Drive is on. Audio copies of your videos will appear after tonight\u2019s run." : "Drive: " + dq), 600);
     setTimeout(() => { const b = $("driveBox"); if (b){ b.open = true; b.scrollIntoView({ block:"start" }); } }, 900);
   }
-  try { await reload(); }
+  try { await reload(); loadSearchIndex(); }
   catch (e) { rowsEl.innerHTML = `<p class="empty">Couldn't load the tune book: ${esc(e.message)}</p>`; return; }
   if (state.editor && pending.size) flush();
 })();
