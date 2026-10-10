@@ -29,7 +29,7 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
   const tables = {
     tunes: [{ ...tuneDefaults, id: 1, name: 'Synthetic tune', notes: 'private-tune-note', aka: 'private-alias', top_media: 'ref:2' }],
     open_titles: [],
-    research: [{ tune_id: 1, sources: '["https://example.test/research"]' }],
+    research: [{ tune_id: 1, sources: '["https://example.test/research"]', history: 'Synthetic history text' }],
     refs: references,
     occasions: [],
     hearings: [],
@@ -151,7 +151,12 @@ async function assertPublicData(cookie) {
   const data = await response.json();
   assert.equal(data.editor, false);
   assert.deepEqual(data.refs, references.filter(ref => ref.origin === 'research'));
-  assert.deepEqual(data.research[0].sources, ['https://example.test/research']);
+  // Long text is fetched per tune; signed-out readers get the research refs' notes and nothing personal.
+  const detail = await (await get('tunes/1/detail', cookie)).json();
+  assert.deepEqual(detail.research.sources, ['https://example.test/research']);
+  assert.equal(detail.research.history, 'Synthetic history text');
+  assert.deepEqual(detail.refs.map(f => f.id), references.filter(ref => ref.origin === 'research').map(ref => ref.id));
+  assert.ok(!JSON.stringify(detail).includes('private-'));
   assert.equal(data.tunes[0].top_media, undefined);
   assert.equal(data.media, undefined);
   assert.equal(data.working_notes, undefined);
@@ -297,4 +302,29 @@ test('undoing a tune deletion restores its interest mark', async () => {
   assert.equal(env.tables.tunes[0].id, 1);
   assert.equal(env.tables.tunes[0].high_interest, 1);
   assert.equal(env.tables.tunes[0].status, 2);
+});
+
+test('the data feed leaves out long text and sends its lengths instead', async () => {
+  const env = environment();
+  const response = await get('data', undefined, env);
+  assert.equal(response.status, 200);
+  assert.ok(env.statements.some(sql => /length\(history\) AS history_len/.test(sql)));
+  assert.ok(env.statements.some(sql => /length\(note\) AS note_len/.test(sql)));
+  assert.ok(!env.statements.some(sql => sql === 'SELECT * FROM research ORDER BY tune_id'));
+});
+
+test('editors get every recording note from the detail endpoint', async () => {
+  const detail = await (await get('tunes/1/detail', sessionCookie())).json();
+  assert.deepEqual(detail.refs.map(f => f.id), references.map(ref => ref.id));
+});
+
+test('the search index carries each tune\'s history', async () => {
+  const index = await (await get('search-index')).json();
+  assert.deepEqual(index.history, { 1: 'Synthetic history text' });
+});
+
+test('backups still carry the full research text', async () => {
+  const json = await (await get('export.json', sessionCookie())).json();
+  assert.equal(json.research[0].history, 'Synthetic history text');
+  assert.deepEqual(json.research[0].sources, ['https://example.test/research']);
 });
