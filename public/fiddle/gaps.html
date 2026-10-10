@@ -105,7 +105,7 @@ const CHECKS = [
   { id:"genrevocab", group:"core", label:"Genre not in the family map", test: c => { const x = [c.t.genre, ...split(c.t.genres2), ...split(c.r.genres)].filter(g => g && !KNOWN_GENRES.has(lc(g))); return x.length ? [...new Set(x)].join(", ") : false; } },
   { id:"region", group:"core", label:"No region", test: c => !c.r.region },
   { id:"summary", group:"core", label:"No researched fact", test: c => !c.r.summary },
-  { id:"sources", group:"core", label:"No sources", test: c => !(c.r.sources || []).length },
+  { id:"sources", group:"core", label:"No sources", test: c => !(c.r.sources_n ?? (c.r.sources || []).length) },
   { id:"pop", group:"core", label:"No popularity research", test: c => !c.pop || !c.pop.n },
   { id:"lowconf", group:"core", label:"Low-confidence research", test: c => lc(c.r.confidence || "") === "low" },
   { id:"key", group:"basics", label:"Key missing or unconfirmed", test: c => !c.t.key || c.t.key.includes("?") },
@@ -115,7 +115,7 @@ const CHECKS = [
   { id:"rec", group:"deeper", label:"No recording at all", test: c => !c.drive && !c.refRecs.length },
   { id:"outrec", group:"deeper", label:"No outside recording", test: c => !c.refRecs.length },
   { id:"style", group:"deeper", label:"No style-model recording", test: c => !c.refRecs.some(f => f.category === "style") },
-  { id:"history", group:"deeper", label:"No full history", test: c => !c.r.history },
+  { id:"history", group:"deeper", label:"No full history", test: c => !(c.r.history_len ?? (c.r.history || '').length) },
 ];
 const GROUPS = [
   ["core", "Core research", "What the genre, type and tag filters depend on. Every tune should have all of these."],
