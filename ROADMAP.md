@@ -537,6 +537,11 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-10: Added Spoofiskerry (tune 284) at Nate's request, marked high interest and "Not played yet": a spoofed
+  Spootiskerry played as a fiddle duet by Southern Oregon fiddler M'Gilvry Allen and Raphaella on his TikTok
+  (@mgilvryallen). Full core research (reel; Shetland, Scottish; modern composition; medium confidence) and a
+  hearsay popularity entry (2: one video, no other trace). Nate supplied the video file, not a link, so it has no ref
+  yet; the key is an audio-analysis estimate ("G?"), not checked by ear, and Raphaella's full name wasn't found.
 - 2026-10-08: Finished the deep-enrichment run over all 280 tunes (A3 pass log): 1,704 audited research
   recordings on 266 tunes, full histories on every tune, 14 documented holds. Added "Faroese" under Nordic in
   `vocab.js` (four Shetland tunes are in the Faroese repertoire). Proposals left for Nate in the run's
