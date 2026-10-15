@@ -537,6 +537,17 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-15: Added three tunes from Sarah Comer's PCC Fall 2026 class recordings, all "Played, still learning", with
+  core research, outside recordings where good ones exist, hearsay popularity and the class recording as top pick:
+  Waltz from Boda (285; Swedish, Dalarna; Folkways Delsbo recording), Carthy's Waltz (286; Carthy Sisco of Rosedale WA;
+  no recording found) and Bearen Dance (287; matched by name to Baerendans, possibly Danish or Flemish, via David Kaynor).
+  Keys are audio-analysis estimates ("Bm?", "D?", "A?"); the Boda class setting sounds a fifth above the Tune Archive's
+  E minor. Added them to the PCC Fall 2026 hearing, keeping its other eleven tunes.
+- 2026-10-10: Fixed "Worker exceeded resource limits" errors. Oct 8's deep-enrichment run had grown /fiddle/api/data to
+  2.9 MB (3.1 MB signed in): research histories 1.16 MB, 1,704 recording refs 1.19 MB, source links 0.31 MB. /data now
+  sends lengths instead of that text (0.73 MB public, 0.90 MB signed in); cards load it from /tunes/:id/detail when
+  opened and search loads /search-index after the first draw. Exports unchanged. 21 tests pass. Occasional 1102 errors
+  still happen on the first signed-in load after idle; a retry succeeds.
 - 2026-10-10: Added Spoofiskerry (tune 284) at Nate's request, marked high interest and "Not played yet": a spoofed
   Spootiskerry played as a fiddle duet by Southern Oregon fiddler M'Gilvry Allen and Raphaella on his TikTok
   (@mgilvryallen). Full core research (reel; Shetland, Scottish; modern composition; medium confidence) and a
