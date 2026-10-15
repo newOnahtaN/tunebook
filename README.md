@@ -23,6 +23,11 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   - Google: the page shows a "Sign in with Google" button using the public client ID in `wrangler.jsonc` (`GOOGLE_CLIENT_ID`, Google Cloud project "Tune Book"). The Worker checks Google's signature and only accepts the accounts in `EDITOR_EMAILS` (can edit) and `VIEWER_EMAILS` (invited readers: they see everything the editor sees, including private notes and Drive recordings, but every write route returns 403 for them; removing an address ends its sessions immediately). Passkeys, Drive connection and session management are editor-only. For a viewer to sign in, the Google Cloud OAuth consent screen must be published (or list them as a test user). No client secret is involved.
   - Passkeys: once signed in, "Sign-in and passkeys" (bottom of the page) adds a passkey for this device. Passkeys are stored in the `passkeys` table and checked in `src/auth.js` with WebCrypto (no dependencies).
   - Sessions last 400 days and renew themselves. They're signed with a random key in `meta.session_key`; "Sign out on all other devices" replaces that key.
+- Payload size: `/fiddle/api/data` leaves out the long research text (histories, source links, recording notes)
+  and sends `history_len`, `sources_n` and `note_len` instead. A tune's card fetches the text from
+  `GET /fiddle/api/tunes/:id/detail` when it opens, and the search box loads `GET /fiddle/api/search-index`
+  (every history) after the page draws. Both are public with the same privacy rule as `/data`; exports keep
+  everything. Keep `/data` small: the Worker builds it on every page load within Cloudflare's per-request CPU limit.
 - Popularity: every tune has a 1–10 score with a basis badge (local + online, local, online, hearsay, no data).
   `public/fiddle/popularity.js` holds the shared scoring, `src/popularity.js` the D1 tables (pop_lists,
   pop_evidence, pop_scores, pop_history), import and recompute. `public/fiddle/popularity.html` (at
