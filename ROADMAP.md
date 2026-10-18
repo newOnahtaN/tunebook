@@ -537,6 +537,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-18: Logged the Oct 15 Ritz jam (Seattle Old Time Buddies): Get Away from the Federals, Old Man Gone, Salt Spring,
+  Ol' Bob and Kentucky Whiskey. Added three as new, fully researched "Not played yet" tunes: Get Away from the Federals
+  (288; Mom Ruth's 1948 title for Seneca Square Dance), Ol' Bob (289; Garry Harrison's AEae reel from Red Prairie Dawn,
+  which Nate remembered as by "Barry Garrison"; not Gusty Wallace's Kentucky Old Bob) and Kentucky Whiskey (290; Noah
+  Beavers via Garry Harrison's Dear Old Illinois). Hearing notes keep Nate's comments (Salt Spring as a popular
+  bluegrass tune; Haley loves Ol' Bob). Hearsay popularity 8, 6 and 5.
 - 2026-10-15: Added three tunes from Sarah Comer's PCC Fall 2026 class recordings, all "Played, still learning", with
   core research, outside recordings where good ones exist, hearsay popularity and the class recording as top pick:
   Waltz from Boda (285; Swedish, Dalarna; Folkways Delsbo recording), Carthy's Waltz (286; Carthy Sisco of Rosedale WA;
