@@ -25,6 +25,9 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   - Nate's PC publishes it with `POST /planning/publish`, signed with a key that never leaves that PC. The site only
     holds the public half (`PLANNING_PUBLISH_KEY` in `wrangler.jsonc`), and publishing can't read the page. Nobody
     uploads anything by hand. `/planning/upload` is a manual fallback for the editor.
+  - Saved scenarios (the page's settings, by name) live in the `planning_scenarios` table, so they follow Nate
+    between devices. The routes are `GET /planning/api/scenarios`, and `PUT` and `DELETE` on
+    `/planning/api/scenarios/:id`. They're editor-only, and the page's CSP allows only these same-origin requests.
 - Site hub: signed-in editors get a small navigation bar (Fiddle, Planning) at the top of every page. The Worker
   adds it to each HTML response. Visitors and viewers get the files in `public/` unchanged.
 - Data lives in a Cloudflare D1 database (binding `DB`). The Worker creates its tables on first run and fills them from `src/seed.json` once, when the database is empty. After that the database is the source of truth; `seed.json` is never re-applied.

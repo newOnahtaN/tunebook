@@ -537,6 +537,9 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-28: Saved scenarios for `/planning`: an editor-only API (`/planning/api/scenarios`) and a
+  `planning_scenarios` table, so named settings follow Nate between devices. The page's CSP now allows
+  `connect-src 'self'` and nothing else.
 - 2026-10-28: Nate's PC now publishes the planning page itself with `POST /planning/publish`, so nobody uploads
   a file. It's signed with a non-exportable key in that PC's Windows key store; `wrangler.jsonc` holds only the
   public half, and each publish must be newer than the last. Removed the "Update planning page" link from the hub.

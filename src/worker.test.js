@@ -42,6 +42,7 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
     pop_scores: [],
     pop_evidence: [],
     planning_page: [],
+    planning_scenarios: [],
   };
   if (!highInterestColumn) delete tables.tunes[0].high_interest;
   const meta = new Map([
@@ -64,6 +65,8 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
             row = meta.has(key) ? { v: meta.get(key) } : null;
           } else if (sql === 'SELECT html, updated_at FROM planning_page WHERE id = 1') {
             row = structuredClone(tables.planning_page[0] ?? null);
+          } else if (sql === 'SELECT COUNT(*) AS n FROM planning_scenarios WHERE id != ?') {
+            row = { n: tables.planning_scenarios.filter(s => s.id !== parameters[0]).length };
           } else {
             const table = sql.match(/^SELECT (?:\*|id) FROM (tunes|edits) WHERE id = \?$/)?.[1];
             assert.ok(table, `Unexpected first: ${sql}`);
@@ -113,6 +116,15 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
           }
           if (sql === 'DELETE FROM tunes WHERE id = ?') {
             tables.tunes = tables.tunes.filter(t => t.id !== parameters[0]);
+            return { success: true };
+          }
+          if (sql === 'INSERT OR REPLACE INTO planning_scenarios (id, name, data, updated_at) VALUES (?, ?, ?, ?)') {
+            const [id, name, data, updated_at] = parameters;
+            tables.planning_scenarios = tables.planning_scenarios.filter(s => s.id !== id).concat([{ id, name, data, updated_at }]);
+            return { success: true };
+          }
+          if (sql === 'DELETE FROM planning_scenarios WHERE id = ?') {
+            tables.planning_scenarios = tables.planning_scenarios.filter(s => s.id !== parameters[0]);
             return { success: true };
           }
           if (sql === "INSERT OR REPLACE INTO meta (k,v) VALUES ('planning_published_at', ?)") {
@@ -543,6 +555,65 @@ test('publishing needs the configured key and an HTML body', async () => {
   assert.equal((await publish(env, { html: '{"not":"html"}' })).status, 400);
   assert.equal((await publish(env, { type: 'application/json' })).status, 415);
   assert.deepEqual(env.tables.planning_page, []);
+});
+
+// Saved scenarios (/planning/api/scenarios)
+async function scenarioCall(env, method, id = '', body, { cookie = sessionCookie(), origin = 'https://nategrimwood.com' } = {}) {
+  const headers = { origin, accept: 'application/json' };
+  if (cookie) headers.cookie = cookie;
+  if (body !== undefined) headers['content-type'] = 'application/json';
+  return worker.fetch(new Request(`https://nategrimwood.com/planning/api/scenarios${id ? '/' + id : ''}`, {
+    method, headers, body: body === undefined ? undefined : JSON.stringify(body),
+  }), env);
+}
+
+test('the editor can save, edit, list and delete scenarios', async () => {
+  const env = environment();
+  const data = { opts: { elle: { on: true, val: 2100 } }, proj: false, mode: 'all', safe: { r: 3 } };
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-1', { name: 'Elle moves in', data })).status, 200);
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-2', { name: 'Everything', data })).status, 200);
+  const edited = await scenarioCall(env, 'PUT', 'scenario-1', { name: 'Elle moves in, renamed', data: { ...data, proj: true } });
+  assert.equal(edited.status, 200);
+  let list = await (await scenarioCall(env, 'GET')).json();
+  assert.equal(list.scenarios.length, 2);
+  const one = list.scenarios.find(s => s.id === 'scenario-1');
+  assert.equal(one.name, 'Elle moves in, renamed');
+  assert.equal(one.data.proj, true);
+  assert.equal((await scenarioCall(env, 'DELETE', 'scenario-2')).status, 200);
+  list = await (await scenarioCall(env, 'GET')).json();
+  assert.deepEqual(list.scenarios.map(s => s.id), ['scenario-1']);
+});
+
+test('only the editor can read or change scenarios', async () => {
+  const env = environment();
+  env.tables.planning_scenarios = [{ id: 'scenario-1', name: 'private-scenario', data: '{"safe":{"fbN":123456}}', updated_at: 'x' }];
+  for (const [who, cookie] of outsiders) {
+    const read = await scenarioCall(env, 'GET', '', undefined, { cookie });
+    assert.equal(read.status, 302, who);
+    assert.ok(!(await read.text()).includes('private-scenario'));
+    assert.equal((await scenarioCall(env, 'PUT', 'scenario-9', { name: 'x', data: {} }, { cookie })).status, 403, who);
+    assert.equal((await scenarioCall(env, 'DELETE', 'scenario-1', undefined, { cookie })).status, 403, who);
+  }
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-9', { name: 'x', data: {} }, { origin: 'https://other.example.test' })).status, 403);
+  assert.deepEqual(env.tables.planning_scenarios.map(s => s.id), ['scenario-1']);
+});
+
+test('bad scenario names, ids and settings are refused', async () => {
+  const env = environment();
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-1', { name: '  ', data: {} })).status, 400);
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-1', { name: 'x'.repeat(81), data: {} })).status, 400);
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-1', { name: 'ok', data: [] })).status, 400);
+  assert.equal((await scenarioCall(env, 'PUT', 'scenario-1', { name: 'ok', data: { big: 'x'.repeat(20001) } })).status, 413);
+  assert.equal((await scenarioCall(env, 'PUT', 'bad id!', { name: 'ok', data: {} })).status, 404);
+  assert.deepEqual(env.tables.planning_scenarios, []);
+});
+
+test('the planning page may call its own scenarios API and nothing else', async () => {
+  const env = environment();
+  env.tables.planning_page = [{ id: 1, html: planningHtml, updated_at: 'x' }];
+  const csp = (await page('/planning', sessionCookie(), env)).headers.get('content-security-policy');
+  assert.match(csp, /connect-src 'self'/);
+  assert.match(csp, /default-src 'none'/);
 });
 
 test('signing out clears both the site-wide and the old /fiddle session cookie', async () => {

@@ -175,6 +175,9 @@ async function initDb(env) {
     // The /planning page: one row holding the whole uploaded HTML file. Owner-only; never in exports.
     db.prepare(`CREATE TABLE IF NOT EXISTS planning_page (
       id INTEGER PRIMARY KEY CHECK (id = 1), html TEXT NOT NULL, updated_at TEXT NOT NULL)`),
+    // Saved settings on the /planning page (which cuts are on, slider values, layoff assumptions). Owner-only.
+    db.prepare(`CREATE TABLE IF NOT EXISTS planning_scenarios (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, data TEXT NOT NULL, updated_at TEXT NOT NULL)`),
   ]);
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
@@ -725,6 +728,9 @@ async function planning(request, env, url) {
     return planningPage(row ? row.html : uploadForm('No planning page has been published yet.'), url.pathname);
   }
   if (path === PLANNING + '/upload' && read) return planningPage(uploadForm(), url.pathname);
+  if (path === PLANNING + '/api/scenarios' || path.startsWith(PLANNING + '/api/scenarios/')) {
+    return scenarioRoute(request, env, url, path.slice((PLANNING + '/api/scenarios').length));
+  }
   if (path === PLANNING + '/upload' && method === 'POST') {
     checkSameOrigin(request, url);
     const html = await uploadedPage(request);
@@ -735,11 +741,45 @@ async function planning(request, env, url) {
   throw new HttpError(404, 'No such page.');
 }
 
-// The planning page is self-contained (inline scripts and styles, no requests), so it is locked down to exactly that.
+// Saved scenarios, so they follow Nate between devices. The caller is already a signed-in editor (see planning()).
+//   GET    /planning/api/scenarios       -> { scenarios: [{ id, name, data, updated_at }] }
+//   PUT    /planning/api/scenarios/:id   body { name, data }  (create or overwrite)
+//   DELETE /planning/api/scenarios/:id
+async function scenarioRoute(request, env, url, rest) {
+  const method = request.method;
+  if (rest === '' && method === 'GET') {
+    const rows = (await env.DB.prepare(`SELECT id, name, data, updated_at FROM planning_scenarios ORDER BY name COLLATE NOCASE`).all()).results;
+    return json({ scenarios: rows.map(r => ({ ...r, data: JSON.parse(r.data) })) });
+  }
+  const m = rest.match(/^\/([A-Za-z0-9_-]{6,40})$/);
+  if (!m) throw new HttpError(404, 'No such scenario route.');
+  checkSameOrigin(request, url);
+  if (method === 'PUT') {
+    const body = await readJson(request);
+    const name = String(body?.name ?? '').trim();
+    if (!name || name.length > 80) throw new HttpError(400, 'A scenario needs a name of up to 80 characters.');
+    if (!body.data || typeof body.data !== 'object' || Array.isArray(body.data)) throw new HttpError(400, 'Missing scenario settings.');
+    const data = JSON.stringify(body.data);
+    if (data.length > 20000) throw new HttpError(413, 'Those settings are too big.');
+    const count = await env.DB.prepare(`SELECT COUNT(*) AS n FROM planning_scenarios WHERE id != ?`).bind(m[1]).first('n');
+    if (count >= 200) throw new HttpError(400, 'That is a lot of scenarios. Delete some first.');
+    const updated_at = new Date().toISOString();
+    await env.DB.prepare(`INSERT OR REPLACE INTO planning_scenarios (id, name, data, updated_at) VALUES (?, ?, ?, ?)`)
+      .bind(m[1], name, data, updated_at).run();
+    return json({ id: m[1], name, data: body.data, updated_at });
+  }
+  if (method === 'DELETE') {
+    await env.DB.prepare(`DELETE FROM planning_scenarios WHERE id = ?`).bind(m[1]).run();
+    return json({ ok: true });
+  }
+  throw new HttpError(405, 'Not allowed.');
+}
+
+// The planning page is self-contained (inline scripts and styles); its only requests are to its own scenarios API.
 function planningPage(html, path) {
   const res = privatePage(addHub(html, path));
   res.headers.set('content-security-policy', "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; " +
-    "img-src data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+    "img-src data:; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
   res.headers.set('x-robots-tag', 'noindex');
   return res;
 }
