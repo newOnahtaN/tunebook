@@ -558,7 +558,9 @@ test('publishing needs the configured key and an HTML body', async () => {
 });
 
 // Saved scenarios (/planning/api/scenarios)
-async function scenarioCall(env, method, id = '', body, { cookie = sessionCookie(), origin = 'https://nategrimwood.com' } = {}) {
+async function scenarioCall(env, method, id = '', body, opts = {}) {
+  // An explicit cookie: undefined means signed out, so no default for it
+  const cookie = 'cookie' in opts ? opts.cookie : sessionCookie(), origin = opts.origin ?? 'https://nategrimwood.com';
   const headers = { origin, accept: 'application/json' };
   if (cookie) headers.cookie = cookie;
   if (body !== undefined) headers['content-type'] = 'application/json';
