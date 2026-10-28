@@ -34,7 +34,10 @@
     // Google Drive "Fiddle" folder. Recordings are read through the service account in the GOOGLE_SERVICE_ACCOUNT secret.
     "DRIVE_FOLDER_ID": "14zVG4SsfHgLwdI_B6VkhAsy8I-YJSrzd",
     // Only this repo's nightly workflow (.github/workflows/video-audio.yml) may use the /job/ endpoints.
-    "GITHUB_REPO": "newOnahtaN/tunebook"
+    "GITHUB_REPO": "newOnahtaN/tunebook",
+    // Public half of the key Nate's PC signs /planning publishes with (POST /planning/publish in src/worker.js).
+    // Not a secret. The private half lives only in that PC's Windows key store (CNG key "nategrimwood-planning-publisher").
+    "PLANNING_PUBLISH_KEY": "{\"kty\":\"RSA\",\"n\":\"uHB_9ioJWyOGiRHD0nj-XTL9AGboWSnoV4qA0kwa6kwYIzVasbS4NK5eIPcmaZVLNXrG68ZtYY9HNVPSUa_O_Mr9pKEgZ2EChCiio59owVtLEyz9QXFndOzbW-2GlqX8BNswT8dMnQgsJ7JMKOJuVS55x8RB8M7qy4JjC_jUyTh0RIkZcPAt0uztMRlmnIDdhPEKQqM4TjH-fHc1KDgOMr1ifMbvg9eW_sss13eAHeFE39wmWD716nMw5qKobfyNgQQsnnpZ5D8gPIA_jnDvtAw1isU7vX-7TkZjmdKkySEbWKScMwJ_awwWBByYVN9_5umOUKUpH2c8tBRkar5tg4vTUCMUDBf204qhXoZzskXaGqlZUTbzngVAGM3cZwXdLrUvQ7IV77QCDMZxkCB_H8WNK22A9ucUSthpZRjJTaDzK2Lqkj7_If0h0iM7Z_LOe3QabMzaIcwguMomW_x4t3FT5jZting_OiuH3fcB4fomJhDAj5tsbn7OeFu53g9h\",\"e\":\"AQAB\"}"
   },
   // Rescan Drive once a day (11:17 UTC, early morning in Seattle).
   "triggers": { "crons": ["17 11 * * *"] },

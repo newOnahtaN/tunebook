@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHash, createHmac, createSign, generateKeyPairSync, randomBytes } from 'node:crypto';
 import test from 'node:test';
 import worker from './worker.js';
 
@@ -113,6 +113,10 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
           }
           if (sql === 'DELETE FROM tunes WHERE id = ?') {
             tables.tunes = tables.tunes.filter(t => t.id !== parameters[0]);
+            return { success: true };
+          }
+          if (sql === "INSERT OR REPLACE INTO meta (k,v) VALUES ('planning_published_at', ?)") {
+            meta.set('planning_published_at', parameters[0]);
             return { success: true };
           }
           if (sql === 'INSERT OR REPLACE INTO planning_page (id, html, updated_at) VALUES (1, ?, ?)') {
@@ -402,7 +406,7 @@ test('before any upload the editor sees the upload form', async () => {
   const response = await page('/planning', sessionCookie());
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /No planning page has been uploaded yet/);
+  assert.match(html, /No planning page has been published yet/);
   assert.match(html, /<form method="post" action="\/planning\/upload" enctype="multipart\/form-data">/);
 });
 
@@ -483,6 +487,62 @@ test('an old /fiddle session moves to a site-wide cookie on the next data load',
 test('a browser holding both an old and a new session cookie is still signed in', async () => {
   const both = `tb_session=invalid.signature; ${sessionCookie(editorEmail, undefined, { p: '/' })}`;
   assert.equal((await page('/planning', both)).status, 200);
+});
+
+// Signed publishing from Nate's PC (POST /planning/publish).
+const publisher = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const stranger = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const publishKey = JSON.stringify(publisher.publicKey.export({ format: 'jwk' }));
+
+async function publish(env, { html = planningHtml, time = Date.now(), key = publisher.privateKey, signedHtml = html, type = 'text/html' } = {}) {
+  const hex = createHash('sha256').update(signedHtml).digest('hex');
+  const signature = createSign('sha256').update(`planning-publish\n${time}\n${hex}`).sign(key).toString('base64url');
+  return worker.fetch(new Request('https://nategrimwood.com/planning/publish', {
+    method: 'POST', body: html,
+    headers: { 'content-type': type, 'x-planning-time': String(time), 'x-planning-signature': signature },
+  }), env);
+}
+
+function publishEnv() {
+  const env = environment();
+  env.PLANNING_PUBLISH_KEY = publishKey;
+  return env;
+}
+
+test('the PC can publish the planning page with a valid signature, and outsiders still cannot read it', async () => {
+  const env = publishEnv();
+  const response = await publish(env);
+  assert.equal(response.status, 204);
+  assert.equal(env.tables.planning_page[0].html, planningHtml);
+  assert.match(await (await page('/planning', sessionCookie(), env)).text(), /private-planning-number/);
+  for (const [, cookie] of outsiders) {
+    assert.ok(!(await (await page('/planning', cookie, env)).text()).includes('private-planning'));
+  }
+});
+
+test('a publish signed by any other key, or for different content, is refused', async () => {
+  const env = publishEnv();
+  assert.equal((await publish(env, { key: stranger.privateKey })).status, 401);
+  assert.equal((await publish(env, { signedHtml: '<!doctype html><p>something else</p>' })).status, 401);
+  assert.deepEqual(env.tables.planning_page, []);
+});
+
+test('stale and replayed publishes are refused', async () => {
+  const env = publishEnv();
+  assert.equal((await publish(env, { time: Date.now() - 10 * 60000 })).status, 401);
+  const time = Date.now();
+  assert.equal((await publish(env, { time })).status, 204);
+  assert.equal((await publish(env, { time, html: '<!doctype html><p>replayed</p>' })).status, 409);
+  assert.equal((await publish(env, { time: time - 1000 })).status, 409);
+  assert.equal(env.tables.planning_page[0].html, planningHtml);
+});
+
+test('publishing needs the configured key and an HTML body', async () => {
+  assert.equal((await publish(environment())).status, 404);
+  const env = publishEnv();
+  assert.equal((await publish(env, { html: '{"not":"html"}' })).status, 400);
+  assert.equal((await publish(env, { type: 'application/json' })).status, 415);
+  assert.deepEqual(env.tables.planning_page, []);
 });
 
 test('signing out clears both the site-wide and the old /fiddle session cookie', async () => {

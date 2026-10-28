@@ -670,14 +670,12 @@ padding:6px 12px;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif
 #site-hub a{color:#3b3a37;text-decoration:none;padding:3px 10px;border-radius:999px}
 #site-hub a:hover{background:rgba(0,0,0,.06)}
 #site-hub a[aria-current]{background:#2b2a27;color:#fff}
-#site-hub .end{margin-left:auto}
 @media (prefers-color-scheme:dark){#site-hub{background:#1c1c1b;border-bottom-color:rgba(255,255,255,.1)}
 #site-hub a{color:#d6d4ce}#site-hub a:hover{background:rgba(255,255,255,.08)}#site-hub a[aria-current]{background:#e9e7e1;color:#111}}`;
 
 function addHub(html, path) {
   const here = href => path === href || path.startsWith(href + '/');
-  let links = HUB_LINKS.map(([label, href]) => `<a href="${href}"${here(href) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
-  if (here(PLANNING)) links += `<a class="end" href="${PLANNING}/upload">Update planning page</a>`;
+  const links = HUB_LINKS.map(([label, href]) => `<a href="${href}"${here(href) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const nav = `<style>${HUB_CSS}</style><nav id="site-hub" aria-label="Site">${links}</nav>`;
   return /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, m => m + nav) : nav + html;
 }
@@ -709,10 +707,12 @@ async function withHub(request, env, url) {
 
 // /planning: Nate's household planning page (spending, cut options, layoff safe-zone map). Owner only: everyone
 // else, signed in as a viewer or not, is sent to the tune book. The page, numbers and all, is one HTML file kept in
-// D1 and replaced through /planning/upload, so none of it is in the repo or in public/.
+// D1, so none of it is in the repo or in public/. Nate's PC publishes it (POST /planning/publish, signed); the
+// /planning/upload form is a manual fallback.
 async function planning(request, env, url) {
   const method = request.method;
   const read = method === 'GET' || method === 'HEAD';
+  if (url.pathname === PLANNING + '/publish' && method === 'POST') return publishPlanning(request, env);
   const session = await readSession({ env, request, url, key: null });
   if (session?.role !== 'editor') {
     if (read) return new Response(null, { status: 302, headers: { location: url.origin + HOME, 'cache-control': 'no-store' } });
@@ -722,7 +722,7 @@ async function planning(request, env, url) {
   const path = url.pathname.replace(/\/+$/, '');
   if (path === PLANNING && read) {
     const row = await env.DB.prepare(`SELECT html, updated_at FROM planning_page WHERE id = 1`).first();
-    return planningPage(row ? row.html : uploadForm('No planning page has been uploaded yet.'), url.pathname);
+    return planningPage(row ? row.html : uploadForm('No planning page has been published yet.'), url.pathname);
   }
   if (path === PLANNING + '/upload' && read) return planningPage(uploadForm(), url.pathname);
   if (path === PLANNING + '/upload' && method === 'POST') {
@@ -757,9 +757,44 @@ async function uploadedPage(request) {
   } else {
     throw new HttpError(415, 'Send the page as an HTML file.');
   }
+  return checkPage(html);
+}
+
+function checkPage(html) {
   if (enc.encode(html).length > PLANNING_MAX_BYTES) throw new HttpError(413, 'That file is too big.');
   if (!/^\s*(<!doctype html|<html)/i.test(html)) throw new HttpError(400, "That doesn't look like an HTML page.");
   return html;
+}
+
+// POST /planning/publish: Nate's PC replaces the page, so nobody has to upload a file. The body is the page as
+// text/html. x-planning-time (ms since 1970) and x-planning-signature (base64url RSASSA-PKCS1-v1_5 / SHA-256 over
+// "planning-publish\n<time>\n<SHA-256 hex of the body bytes>") must verify against PLANNING_PUBLISH_KEY in
+// wrangler.jsonc. That is a public key; its private half never leaves that PC's Windows key store. Publishing can
+// only replace the page, never read it. Each publish must be newer than the last, so an old request can't be replayed.
+async function publishPlanning(request, env) {
+  if (!env.PLANNING_PUBLISH_KEY) throw new HttpError(404, 'No such page.');
+  if (!(request.headers.get('content-type') || '').includes('text/html')) throw new HttpError(415, 'Send the page as text/html.');
+  if (Number(request.headers.get('content-length') || 0) > 2 * PLANNING_MAX_BYTES) throw new HttpError(413, 'That file is too big.');
+  const time = Number(request.headers.get('x-planning-time'));
+  if (!Number.isSafeInteger(time) || Math.abs(Date.now() - time) > 5 * 60000) throw new HttpError(401, 'Missing or stale x-planning-time.');
+  let sig;
+  try { sig = unb64u(request.headers.get('x-planning-signature') || ''); } catch { throw new HttpError(401, 'Bad signature.'); }
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  const hex = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(b => b.toString(16).padStart(2, '0')).join('');
+  const key = await crypto.subtle.importKey('jwk', JSON.parse(env.PLANNING_PUBLISH_KEY),
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+  if (!sig.length || !(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sig, enc.encode(`planning-publish\n${time}\n${hex}`)))) {
+    throw new HttpError(401, 'Bad signature.');
+  }
+  const html = checkPage(new TextDecoder().decode(bytes));
+  await ensureDb(env);
+  const last = Number(await env.DB.prepare(`SELECT v FROM meta WHERE k = 'planning_published_at'`).first('v') || 0);
+  if (time <= last) throw new HttpError(409, 'A newer page is already published.');
+  await env.DB.batch([
+    env.DB.prepare(`INSERT OR REPLACE INTO planning_page (id, html, updated_at) VALUES (1, ?, ?)`).bind(html, new Date().toISOString()),
+    env.DB.prepare(`INSERT OR REPLACE INTO meta (k,v) VALUES ('planning_published_at', ?)`).bind(String(time)),
+  ]);
+  return new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
 }
 
 const uploadForm = (note = '') => `<!doctype html>

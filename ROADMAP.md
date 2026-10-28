@@ -537,6 +537,9 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-28: Nate's PC now publishes the planning page itself with `POST /planning/publish`, so nobody uploads
+  a file. It's signed with a non-exportable key in that PC's Windows key store; `wrangler.jsonc` holds only the
+  public half, and each publish must be newer than the last. Removed the "Update planning page" link from the hub.
 - 2026-10-28: Added `/planning`, Nate's household planning page, which only the editor can see. Viewers and
   signed-out visitors are redirected to `/fiddle`. The page is kept in D1 (`planning_page`) and uploaded at
   `/planning/upload`, so none of its numbers are in git. Signed-in editors now get a small Fiddle and Planning hub at

@@ -20,8 +20,11 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
 - `src/worker.js` is a Cloudflare Worker that serves the page, redirects `/` and `www` to `/fiddle`, and runs a small JSON API under `/fiddle/api/`.
 - `/planning` is Nate's household planning page, for the editor only. Everyone else, viewers included, is
   redirected to `/fiddle`. The page is one self-contained HTML file built on Nate's PC. It's stored in the D1
-  `planning_page` table and replaced at `/planning/upload`, so its financial numbers are never in this repo or
-  in `public/`, and backups leave it out. It's served `private, no-store` under a strict CSP.
+  `planning_page` table, so its financial numbers are never in this repo or in `public/`, and backups leave it out.
+  It's served `private, no-store` under a strict CSP.
+  - Nate's PC publishes it with `POST /planning/publish`, signed with a key that never leaves that PC. The site only
+    holds the public half (`PLANNING_PUBLISH_KEY` in `wrangler.jsonc`), and publishing can't read the page. Nobody
+    uploads anything by hand. `/planning/upload` is a manual fallback for the editor.
 - Site hub: signed-in editors get a small navigation bar (Fiddle, Planning) at the top of every page. The Worker
   adds it to each HTML response. Visitors and viewers get the files in `public/` unchanged.
 - Data lives in a Cloudflare D1 database (binding `DB`). The Worker creates its tables on first run and fills them from `src/seed.json` once, when the database is empty. After that the database is the source of truth; `seed.json` is never re-applied.
