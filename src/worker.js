@@ -11,7 +11,12 @@ import { ensurePopTables, importPopularity, popScores, popularityPayload, recomp
 const APEX = 'nategrimwood.com';
 const HOME = '/fiddle';
 const API = '/fiddle/api/';
+const PLANNING = '/planning';                // Nate's household planning page: owner only (see planning())
+const PLANNING_MAX_BYTES = 1_000_000;
 const COOKIE = 'tb_session';
+// Site-wide, so the session also reaches /planning. Sessions issued before Oct 28 2026 were scoped to /fiddle;
+// /data moves them over on the next visit (see sessionCookies()).
+const SESSION_PATH = '/';
 const CHALLENGE_COOKIE = 'tb_challenge';
 const SESSION_DAYS = 400;            // browsers cap cookie lifetime at 400 days
 const RENEW_BELOW_DAYS = 300;
@@ -63,7 +68,17 @@ export default {
         return secure(json({ error: 'Something went wrong on the server.' }, 500));
       }
     }
-    return secure(await env.ASSETS.fetch(request));
+    if (url.pathname === PLANNING || url.pathname.startsWith(PLANNING + '/')) {
+      try {
+        return secure(await planning(request, env, url));
+      } catch (e) {
+        const status = e instanceof HttpError ? e.status : 500;
+        if (status === 500) console.error(e);
+        return secure(new Response(status === 500 ? 'Something went wrong on the server.' : e.message,
+          { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } }));
+      }
+    }
+    return secure(await withHub(request, env, url));
   },
 
   // Daily Drive rescan (see "triggers" in wrangler.jsonc), so new recordings show up without pressing anything.
@@ -157,6 +172,9 @@ async function initDb(env) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, tune_id INTEGER NOT NULL, sheet_key TEXT NOT NULL,
       sheet_name TEXT NOT NULL DEFAULT '', rank INTEGER, stat TEXT NOT NULL DEFAULT '',
       synced_at TEXT NOT NULL DEFAULT '', UNIQUE (tune_id, sheet_key))`),
+    // The /planning page: one row holding the whole uploaded HTML file. Owner-only; never in exports.
+    db.prepare(`CREATE TABLE IF NOT EXISTS planning_page (
+      id INTEGER PRIMARY KEY CHECK (id = 1), html TEXT NOT NULL, updated_at TEXT NOT NULL)`),
   ]);
   const seeded = await db.prepare(`SELECT v FROM meta WHERE k = 'seeded'`).first('v');
   if (!seeded) {
@@ -260,8 +278,12 @@ async function readToken(ctx, kind, token) {
 }
 
 function getCookie(request, name) {
-  const m = (request.headers.get('cookie') || '').match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
-  return m ? m[1] : null;
+  return getCookies(request, name)[0] ?? null;
+}
+
+// Every value sent under a name: a browser holds one cookie per path, so it can send an old /fiddle session too.
+function getCookies(request, name) {
+  return [...(request.headers.get('cookie') || '').matchAll(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`, 'g'))].map(m => m[1]);
 }
 
 function setCookie(name, value, maxAgeSec, { path = HOME, sameSite = 'Lax' } = {}) {
@@ -269,17 +291,22 @@ function setCookie(name, value, maxAgeSec, { path = HOME, sameSite = 'Lax' } = {
 }
 
 async function readSession(ctx) {
-  const raw = getCookie(ctx.request, COOKIE);
-  if (!raw) return null;                       // visitors never touch the database for auth
-  const s = await readToken(ctx, 'session', raw);
-  // The role is looked up on every request, so removing an email from EDITOR_EMAILS or VIEWER_EMAILS ends its sessions.
-  const role = s && roleOf(ctx.env, s.email);
-  return role ? { ...s, role } : null;
+  // Visitors send no session cookie, so they never touch the database for auth.
+  for (const raw of getCookies(ctx.request, COOKIE)) {
+    const s = await readToken(ctx, 'session', raw);
+    // The role is looked up on every request, so removing an email from EDITOR_EMAILS or VIEWER_EMAILS ends its sessions.
+    const role = s && roleOf(ctx.env, s.email);
+    if (role) return { ...s, role };
+  }
+  return null;
 }
 
-async function sessionCookie(ctx, email) {
+// A fresh site-wide session, plus removal of any old one scoped to /fiddle. The token records its path (p) so /data
+// can tell an old session that still needs moving.
+async function sessionCookies(ctx, email) {
   const exp = Date.now() + SESSION_DAYS * 864e5;
-  return setCookie(COOKIE, await signToken(ctx, 'session', { exp, email }), SESSION_DAYS * 86400);
+  return [setCookie(COOKIE, await signToken(ctx, 'session', { exp, email, p: SESSION_PATH }), SESSION_DAYS * 86400, { path: SESSION_PATH }),
+          clearCookie(COOKIE, HOME)];
 }
 
 const clearCookie = (name, path = HOME) => setCookie(name, '', 0, { path });
@@ -298,7 +325,7 @@ async function takeChallenge(ctx, purpose) {
 }
 
 async function signedIn(ctx, email) {
-  return json({ ok: true, email }, 200, { cookies: [await sessionCookie(ctx, email), clearCookie(CHALLENGE_COOKIE, API + 'auth/')] });
+  return json({ ok: true, email }, 200, { cookies: [...await sessionCookies(ctx, email), clearCookie(CHALLENGE_COOKIE, API + 'auth/')] });
 }
 
 function deviceLabel(ua = '') {
@@ -404,7 +431,7 @@ async function authRoute(ctx, path, method, session) {
   if (path === 'auth/signout-others' && method === 'POST') {
     await env.DB.prepare(`UPDATE meta SET v = ? WHERE k = 'session_key'`).bind(randomId(32)).run();
     ctx.key = null;
-    return json({ ok: true }, 200, { cookies: [await sessionCookie(ctx, email)] });
+    return json({ ok: true }, 200, { cookies: await sessionCookies(ctx, email) });
   }
 
   throw new HttpError(404, 'No such API route.');
@@ -633,6 +660,118 @@ function publicTune(t) {
   return rest;
 }
 
+// ---------------------------------------------------------------- site hub and /planning
+
+// The site navigation, added to the top of every page, for the owner only: visitors and viewers get the pages
+// exactly as they are in public/. Static (not sticky), so it never covers a page's own sticky bars.
+const HUB_LINKS = [['Fiddle', HOME], ['Planning', PLANNING]];
+const HUB_CSS = `#site-hub{position:relative;z-index:20;display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0;
+padding:6px 12px;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f1f0ec;border-bottom:1px solid rgba(0,0,0,.1)}
+#site-hub a{color:#3b3a37;text-decoration:none;padding:3px 10px;border-radius:999px}
+#site-hub a:hover{background:rgba(0,0,0,.06)}
+#site-hub a[aria-current]{background:#2b2a27;color:#fff}
+#site-hub .end{margin-left:auto}
+@media (prefers-color-scheme:dark){#site-hub{background:#1c1c1b;border-bottom-color:rgba(255,255,255,.1)}
+#site-hub a{color:#d6d4ce}#site-hub a:hover{background:rgba(255,255,255,.08)}#site-hub a[aria-current]{background:#e9e7e1;color:#111}}`;
+
+function addHub(html, path) {
+  const here = href => path === href || path.startsWith(href + '/');
+  let links = HUB_LINKS.map(([label, href]) => `<a href="${href}"${here(href) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  if (here(PLANNING)) links += `<a class="end" href="${PLANNING}/upload">Update planning page</a>`;
+  const nav = `<style>${HUB_CSS}</style><nav id="site-hub" aria-label="Site">${links}</nav>`;
+  return /<body[^>]*>/i.test(html) ? html.replace(/<body[^>]*>/i, m => m + nav) : nav + html;
+}
+
+// An HTML response just for this person: never cached or revalidated against a copy someone else got.
+function privatePage(html, status = 200, base = undefined) {
+  const h = new Headers(base);
+  for (const k of ['etag', 'last-modified', 'content-length']) h.delete(k);
+  h.set('content-type', 'text/html; charset=utf-8');
+  h.set('cache-control', 'private, no-store');
+  return new Response(html, { status, headers: h });
+}
+
+// Files from public/. Only a signed-in owner opening a page costs anything extra (one session check).
+async function withHub(request, env, url) {
+  if (!/text\/html/.test(request.headers.get('accept') || '') || !getCookie(request, COOKIE)) return env.ASSETS.fetch(request);
+  let session = null;
+  try { session = await readSession({ env, request, url, key: null }); }
+  catch (e) { console.error('hub session', e); }
+  if (session?.role !== 'editor') return env.ASSETS.fetch(request);
+  // Without validators, so the browser can't keep the copy it cached while signed out (which has no hub).
+  const fresh = new Request(request);
+  fresh.headers.delete('if-none-match');
+  fresh.headers.delete('if-modified-since');
+  const res = await env.ASSETS.fetch(fresh);
+  if (!res.ok || !/^text\/html/.test(res.headers.get('content-type') || '')) return res;
+  return privatePage(addHub(await res.text(), url.pathname), res.status, res.headers);
+}
+
+// /planning: Nate's household planning page (spending, cut options, layoff safe-zone map). Owner only: everyone
+// else, signed in as a viewer or not, is sent to the tune book. The page, numbers and all, is one HTML file kept in
+// D1 and replaced through /planning/upload, so none of it is in the repo or in public/.
+async function planning(request, env, url) {
+  const method = request.method;
+  const read = method === 'GET' || method === 'HEAD';
+  const session = await readSession({ env, request, url, key: null });
+  if (session?.role !== 'editor') {
+    if (read) return new Response(null, { status: 302, headers: { location: url.origin + HOME, 'cache-control': 'no-store' } });
+    throw new HttpError(403, 'Only the owner can do that.');
+  }
+  await ensureDb(env);
+  const path = url.pathname.replace(/\/+$/, '');
+  if (path === PLANNING && read) {
+    const row = await env.DB.prepare(`SELECT html, updated_at FROM planning_page WHERE id = 1`).first();
+    return planningPage(row ? row.html : uploadForm('No planning page has been uploaded yet.'), url.pathname);
+  }
+  if (path === PLANNING + '/upload' && read) return planningPage(uploadForm(), url.pathname);
+  if (path === PLANNING + '/upload' && method === 'POST') {
+    checkSameOrigin(request, url);
+    const html = await uploadedPage(request);
+    await env.DB.prepare(`INSERT OR REPLACE INTO planning_page (id, html, updated_at) VALUES (1, ?, ?)`)
+      .bind(html, new Date().toISOString()).run();
+    return new Response(null, { status: 303, headers: { location: url.origin + PLANNING, 'cache-control': 'no-store' } });
+  }
+  throw new HttpError(404, 'No such page.');
+}
+
+// The planning page is self-contained (inline scripts and styles, no requests), so it is locked down to exactly that.
+function planningPage(html, path) {
+  const res = privatePage(addHub(html, path));
+  res.headers.set('content-security-policy', "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; " +
+    "img-src data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+  res.headers.set('x-robots-tag', 'noindex');
+  return res;
+}
+
+async function uploadedPage(request) {
+  if (Number(request.headers.get('content-length') || 0) > 2 * PLANNING_MAX_BYTES) throw new HttpError(413, 'That file is too big.');
+  const ct = request.headers.get('content-type') || '';
+  let html;
+  if (ct.includes('multipart/form-data')) {
+    const file = (await request.formData()).get('page');
+    if (!file || typeof file === 'string') throw new HttpError(400, 'Choose the page file first.');
+    html = await file.text();
+  } else if (ct.includes('text/html')) {
+    html = await request.text();
+  } else {
+    throw new HttpError(415, 'Send the page as an HTML file.');
+  }
+  if (enc.encode(html).length > PLANNING_MAX_BYTES) throw new HttpError(413, 'That file is too big.');
+  if (!/^\s*(<!doctype html|<html)/i.test(html)) throw new HttpError(400, "That doesn't look like an HTML page.");
+  return html;
+}
+
+const uploadForm = (note = '') => `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>Planning page</title>
+<style>body{margin:0;color-scheme:light dark;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:24px 16px}button{font:inherit;padding:6px 14px}</style></head>
+<body><main><h1>Planning page</h1>${note ? `<p>${note}</p>` : ''}
+<p>Upload the latest <code>spending_charts.html</code>. It replaces the page at /planning.</p>
+<form method="post" action="${PLANNING}/upload" enctype="multipart/form-data">
+<p><input type="file" name="page" accept=".html,text/html" required></p><p><button>Upload</button></p></form></main></body></html>`;
+
 // ---------------------------------------------------------------- API
 
 async function api(request, env, url) {
@@ -651,7 +790,9 @@ async function api(request, env, url) {
       popScores(env.DB).catch(e => { console.error('popularity scores', e); return {}; }),
     ]);
     const cookies = [];
-    if (reader && session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5) cookies.push(await sessionCookie(ctx, session.email));
+    if (reader && (session.exp - Date.now() < RENEW_BELOW_DAYS * 864e5 || session.p !== SESSION_PATH)) {
+      cookies.push(...await sessionCookies(ctx, session.email));
+    }
     const signin = { editingEnabled: editorEmails(env).length + viewerEmails(env).length > 0, googleClientId: env.GOOGLE_CLIENT_ID || null };
     return json(reader
       ? { editor, viewer, email: session.email, ...signin, tunes: tunes.results, popularity, open: open.results, working_notes: notes || '',
@@ -663,7 +804,7 @@ async function api(request, env, url) {
 
   if (path === 'logout' && method === 'POST') {
     checkSameOrigin(request, url);
-    return json({ ok: true }, 200, { cookies: [clearCookie(COOKIE)] });
+    return json({ ok: true }, 200, { cookies: [clearCookie(COOKIE, SESSION_PATH), clearCookie(COOKIE)] });
   }
 
   // GET /popularity: every tune's popularity score with the evidence behind it, for the public /fiddle/popularity page.

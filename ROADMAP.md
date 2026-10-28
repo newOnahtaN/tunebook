@@ -537,6 +537,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-28: Added `/planning`, Nate's household planning page, which only the editor can see. Viewers and
+  signed-out visitors are redirected to `/fiddle`. The page is kept in D1 (`planning_page`) and uploaded at
+  `/planning/upload`, so none of its numbers are in git. Signed-in editors now get a small Fiddle and Planning hub at
+  the top of every page; everyone else sees the pages unchanged. The session cookie is now site-wide (`Path=/`), and
+  old `/fiddle`-scoped sessions move over on the next page load. Tests cover the redirects, upload rights, the hub and
+  the cookie move. Built on Nate's PC with a fresh checkout.
 - 2026-10-18: Logged the Oct 15 Ritz jam (Seattle Old Time Buddies): Get Away from the Federals, Old Man Gone, Salt Spring,
   Ol' Bob and Kentucky Whiskey. Added three as new, fully researched "Not played yet" tunes: Get Away from the Federals
   (288; Mom Ruth's 1948 title for Seneca Square Dance), Ol' Bob (289; Garry Harrison's AEae reel from Red Prairie Dawn,

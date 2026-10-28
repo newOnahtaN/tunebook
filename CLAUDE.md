@@ -25,6 +25,11 @@
   in `src/worker.js` lists the few non-data routes they may read), so never add a viewer route without thought.
   Don't put anything in editor-readable data that a viewer shouldn't see.
 
+- `/planning` is Nate's household finances, and it is **editor-only, never viewer-readable**. Viewers can see his fiddle
+  data, but not this. The page is stored in D1 (`planning_page`) and uploaded at `/planning/upload`. Never commit
+  that page or any of its numbers to this repo, `public/` or test fixtures, and never add it to exports or `/data`.
+  It's built outside this repo, in Nate's household-finance work.
+
 - **Never play audio or video in the browser pane.** It comes out of Nate's speakers. To check a recording, load
   metadata only (a muted `Audio` with `preload = 'metadata'`, never `.play()`), use YouTube's oEmbed for links, and
   never click Play buttons on the site.

@@ -5,6 +5,8 @@ import worker from './worker.js';
 
 const sessionKey = randomBytes(32);
 const editorEmail = 'editor@example.test';
+const viewerEmail = 'viewer@example.test';
+const assetPage = '<!doctype html><html><head><title>Tune book</title></head><body class="book"><p>public-asset-page</p></body></html>';
 const reference = (id, origin, kind = 'recording') => ({
   id, tune_id: 1, kind, origin,
   title: `${origin === 'research' ? 'public' : 'private'}-ref-${id}`,
@@ -39,6 +41,7 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
     edits: [],
     pop_scores: [],
     pop_evidence: [],
+    planning_page: [],
   };
   if (!highInterestColumn) delete tables.tunes[0].high_interest;
   const meta = new Map([
@@ -59,6 +62,8 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
           if (/^SELECT v FROM meta WHERE k = /.test(sql)) {
             const key = parameters[0] ?? sql.match(/WHERE k = '([^']+)'/)[1];
             row = meta.has(key) ? { v: meta.get(key) } : null;
+          } else if (sql === 'SELECT html, updated_at FROM planning_page WHERE id = 1') {
+            row = structuredClone(tables.planning_page[0] ?? null);
           } else {
             const table = sql.match(/^SELECT (?:\*|id) FROM (tunes|edits) WHERE id = \?$/)?.[1];
             assert.ok(table, `Unexpected first: ${sql}`);
@@ -110,6 +115,10 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
             tables.tunes = tables.tunes.filter(t => t.id !== parameters[0]);
             return { success: true };
           }
+          if (sql === 'INSERT OR REPLACE INTO planning_page (id, html, updated_at) VALUES (1, ?, ?)') {
+            tables.planning_page = [{ id: 1, html: parameters[0], updated_at: parameters[1] }];
+            return { success: true };
+          }
           if (sql === 'UPDATE edits SET undone = 1 WHERE id = ?') {
             tables.edits.find(e => e.id === parameters[0]).undone = 1;
             return { success: true };
@@ -121,11 +130,19 @@ function environment({ schemaVersion = '9', highInterestColumn = true } = {}) {
     },
     async batch(statements) { return Promise.all(statements.map(statement => statement.run())); },
   };
-  return { DB, EDITOR_EMAILS: editorEmail, tables, meta, statements };
+  const assetRequests = [];
+  const ASSETS = {
+    async fetch(request) {
+      assetRequests.push(request);
+      return new Response(assetPage, { headers: { 'content-type': 'text/html', etag: '"asset-etag"', 'cache-control': 'public, max-age=0, must-revalidate' } });
+    },
+  };
+  return { DB, ASSETS, EDITOR_EMAILS: editorEmail, VIEWER_EMAILS: viewerEmail, tables, meta, statements, assetRequests };
 }
 
-function sessionCookie(email = editorEmail, exp = Date.now() + 400 * 864e5) {
-  const payload = Buffer.from(JSON.stringify({ email, exp })).toString('base64url');
+// Sessions issued before /planning have no path field (p); newer ones are site-wide (p: '/').
+function sessionCookie(email = editorEmail, exp = Date.now() + 400 * 864e5, extra = {}) {
+  const payload = Buffer.from(JSON.stringify({ email, exp, ...extra })).toString('base64url');
   const signature = createHmac('sha256', sessionKey).update(`session.${payload}`).digest('base64url');
   return `tb_session=${payload}.${signature}`;
 }
@@ -327,4 +344,150 @@ test('backups still carry the full research text', async () => {
   const json = await (await get('export.json', sessionCookie())).json();
   assert.equal(json.research[0].history, 'Synthetic history text');
   assert.deepEqual(json.research[0].sources, ['https://example.test/research']);
+});
+
+// ---------------------------------------------------------------- /planning and the site hub
+
+const planningHtml = '<!doctype html><html><head><title>Plan</title></head><body><p>private-planning-number 123,456</p></body></html>';
+
+async function page(path, cookie, env = environment(), headers = {}) {
+  const h = { accept: 'text/html,application/xhtml+xml', ...headers };
+  if (cookie) h.cookie = cookie;
+  return worker.fetch(new Request(`https://nategrimwood.com${path}`, { headers: h }), env);
+}
+
+async function upload(env, cookie, { html = planningHtml, origin = 'https://nategrimwood.com' } = {}) {
+  const form = new FormData();
+  form.append('page', new Blob([html], { type: 'text/html' }), 'spending_charts.html');
+  const headers = { origin };
+  if (cookie) headers.cookie = cookie;
+  return worker.fetch(new Request('https://nategrimwood.com/planning/upload', { method: 'POST', headers, body: form }), env);
+}
+
+const outsiders = [
+  ['signed out', undefined],
+  ['an invalid session', 'tb_session=invalid.signature'],
+  ['an expired editor session', sessionCookie(editorEmail, Date.now() - 1000)],
+  ['a signed-in viewer', sessionCookie(viewerEmail)],
+  ['an unlisted account', sessionCookie('visitor@example.test')],
+];
+
+for (const [who, cookie] of outsiders) {
+  test(`/planning sends ${who} to the tune book without the stored page`, async () => {
+    const env = environment();
+    env.tables.planning_page = [{ id: 1, html: planningHtml, updated_at: 'x' }];
+    for (const path of ['/planning', '/planning/', '/planning/upload', '/planning/anything']) {
+      const response = await page(path, cookie, env);
+      assert.equal(response.status, 302, path);
+      assert.equal(response.headers.get('location'), 'https://nategrimwood.com/fiddle');
+      assert.equal(response.headers.get('cache-control'), 'no-store');
+      assert.ok(!(await response.text()).includes('private-planning'));
+    }
+  });
+}
+
+test('the editor gets the stored planning page, privately and with the hub', async () => {
+  const env = environment();
+  env.tables.planning_page = [{ id: 1, html: planningHtml, updated_at: 'x' }];
+  const response = await page('/planning', sessionCookie(editorEmail, undefined, { p: '/' }), env);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.match(response.headers.get('content-security-policy'), /default-src 'none'/);
+  const html = await response.text();
+  assert.match(html, /private-planning-number/);
+  assert.match(html, /<body><style>[^]*<nav id="site-hub"[^]*<a href="\/planning" aria-current="page">Planning<\/a>/);
+});
+
+test('before any upload the editor sees the upload form', async () => {
+  const response = await page('/planning', sessionCookie());
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /No planning page has been uploaded yet/);
+  assert.match(html, /<form method="post" action="\/planning\/upload" enctype="multipart\/form-data">/);
+});
+
+test('the editor can upload the planning page, and only the editor sees it', async () => {
+  const env = environment();
+  const response = await upload(env, sessionCookie());
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get('location'), 'https://nategrimwood.com/planning');
+  assert.equal(env.tables.planning_page[0].html, planningHtml);
+  assert.match(await (await page('/planning', sessionCookie(), env)).text(), /private-planning-number/);
+  for (const [, cookie] of outsiders) {
+    assert.ok(!(await (await page('/planning', cookie, env)).text()).includes('private-planning'));
+  }
+});
+
+test('viewers, outsiders and cross-site requests cannot upload a planning page', async () => {
+  const env = environment();
+  for (const [who, cookie] of outsiders) {
+    const response = await upload(env, cookie);
+    assert.equal(response.status, 403, who);
+  }
+  assert.equal((await upload(env, sessionCookie(), { origin: 'https://other.example.test' })).status, 403);
+  assert.deepEqual(env.tables.planning_page, []);
+});
+
+test('an upload that is not an HTML page is refused', async () => {
+  const env = environment();
+  const response = await upload(env, sessionCookie(), { html: '{"not":"html"}' });
+  assert.equal(response.status, 400);
+  assert.deepEqual(env.tables.planning_page, []);
+});
+
+test('the planning page is never part of a backup', async () => {
+  const env = environment();
+  env.tables.planning_page = [{ id: 1, html: planningHtml, updated_at: 'x' }];
+  const json = await (await get('export.json', sessionCookie(), env)).text();
+  assert.ok(!json.includes('private-planning'));
+  assert.ok(!env.statements.some(sql => /FROM planning_page/.test(sql)));
+});
+
+test('the editor gets the hub on every page, freshly fetched and never cached', async () => {
+  const env = environment();
+  const response = await page('/fiddle', sessionCookie(), env, { 'if-none-match': '"asset-etag"' });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.equal(response.headers.get('etag'), null);
+  assert.equal(env.assetRequests[0].headers.get('if-none-match'), null);
+  const html = await response.text();
+  assert.match(html, /<body class="book"><style>[^]*<nav id="site-hub"/);
+  assert.match(html, /<a href="\/fiddle" aria-current="page">Fiddle<\/a><a href="\/planning">Planning<\/a><\/nav>/);
+  assert.match(html, /public-asset-page/);
+});
+
+for (const [who, cookie] of outsiders) {
+  test(`${who} gets the public pages unchanged, with no hub`, async () => {
+    const env = environment();
+    const response = await page('/fiddle', cookie, env, { 'if-none-match': '"asset-etag"' });
+    assert.equal(await response.text(), assetPage);
+    assert.equal(response.headers.get('etag'), '"asset-etag"');
+    assert.equal(env.assetRequests[0].headers.get('if-none-match'), '"asset-etag"');
+  });
+}
+
+test('the apex still redirects to the tune book', async () => {
+  const response = await page('/', sessionCookie());
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get('location'), 'https://nategrimwood.com/fiddle');
+});
+
+test('an old /fiddle session moves to a site-wide cookie on the next data load', async () => {
+  const cookies = (await get('data', sessionCookie())).headers.getSetCookie();
+  assert.ok(cookies.some(c => /^tb_session=[^;]+\.[^;]+; Path=\/; Max-Age=34560000;/.test(c)), cookies.join('\n'));
+  assert.ok(cookies.some(c => /^tb_session=; Path=\/fiddle; Max-Age=0;/.test(c)), cookies.join('\n'));
+  const moved = (await get('data', sessionCookie(editorEmail, undefined, { p: '/' }))).headers.getSetCookie();
+  assert.deepEqual(moved, []);
+});
+
+test('a browser holding both an old and a new session cookie is still signed in', async () => {
+  const both = `tb_session=invalid.signature; ${sessionCookie(editorEmail, undefined, { p: '/' })}`;
+  assert.equal((await page('/planning', both)).status, 200);
+});
+
+test('signing out clears both the site-wide and the old /fiddle session cookie', async () => {
+  const response = await write(environment(), 'POST', 'logout', {});
+  const cookies = response.headers.getSetCookie();
+  assert.ok(cookies.some(c => /^tb_session=; Path=\/; Max-Age=0;/.test(c)));
+  assert.ok(cookies.some(c => /^tb_session=; Path=\/fiddle; Max-Age=0;/.test(c)));
 });

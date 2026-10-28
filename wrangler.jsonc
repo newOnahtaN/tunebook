@@ -1,5 +1,5 @@
 {
-  // Cloudflare Worker for nategrimwood.com/fiddle
+  // Cloudflare Worker for nategrimwood.com: /fiddle (the tune book) and /planning (editor only)
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tunebook",
   "main": "src/worker.js",

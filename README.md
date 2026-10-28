@@ -18,11 +18,19 @@ Nate's fiddle tune book, served at <https://nategrimwood.com/fiddle>.
   See [ROADMAP A5](ROADMAP.md#a5-local-session-data-from-community-tune-lists--m-per-sync-formerly-s5)
   for source coverage, identity holds and safe resync rules.
 - `src/worker.js` is a Cloudflare Worker that serves the page, redirects `/` and `www` to `/fiddle`, and runs a small JSON API under `/fiddle/api/`.
+- `/planning` is Nate's household planning page, for the editor only. Everyone else, viewers included, is
+  redirected to `/fiddle`. The page is one self-contained HTML file built on Nate's PC. It's stored in the D1
+  `planning_page` table and replaced at `/planning/upload`, so its financial numbers are never in this repo or
+  in `public/`, and backups leave it out. It's served `private, no-store` under a strict CSP.
+- Site hub: signed-in editors get a small navigation bar (Fiddle, Planning) at the top of every page. The Worker
+  adds it to each HTML response. Visitors and viewers get the files in `public/` unchanged.
 - Data lives in a Cloudflare D1 database (binding `DB`). The Worker creates its tables on first run and fills them from `src/seed.json` once, when the database is empty. After that the database is the source of truth; `seed.json` is never re-applied.
 - Editing: sign in with Google or a passkey. Every edit saves immediately and is logged in the `edits` table, which powers "Recent changes" and undo.
   - Google: the page shows a "Sign in with Google" button using the public client ID in `wrangler.jsonc` (`GOOGLE_CLIENT_ID`, Google Cloud project "Tune Book"). The Worker checks Google's signature and only accepts the accounts in `EDITOR_EMAILS` (can edit) and `VIEWER_EMAILS` (invited readers: they see everything the editor sees, including private notes and Drive recordings, but every write route returns 403 for them; removing an address ends its sessions immediately). Passkeys, Drive connection and session management are editor-only. For a viewer to sign in, the Google Cloud OAuth consent screen must be published (or list them as a test user). No client secret is involved.
   - Passkeys: once signed in, "Sign-in and passkeys" (bottom of the page) adds a passkey for this device. Passkeys are stored in the `passkeys` table and checked in `src/auth.js` with WebCrypto (no dependencies).
   - Sessions last 400 days and renew themselves. They're signed with a random key in `meta.session_key`; "Sign out on all other devices" replaces that key.
+    The cookie is site-wide (`Path=/`) so it reaches `/planning`. Older sessions scoped to `/fiddle` move over the
+    next time a page loads `/fiddle/api/data`.
 - Payload size: `/fiddle/api/data` leaves out the long research text (histories, source links, recording notes)
   and sends `history_len`, `sources_n` and `note_len` instead. A tune's card fetches the text from
   `GET /fiddle/api/tunes/:id/detail` when it opens, and the search box loads `GET /fiddle/api/search-index`
