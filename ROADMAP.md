@@ -537,6 +537,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-30: Reviewed `/planning` internet exposure from the Windows workstation against current main.
+  No confirmed public-read bypass found in the reviewed routes. Live signed-out requests to the page and
+  scenarios API, including an invalid session on the page, redirect without caching. Existing owner/viewer,
+  publishing and export regression tests pass. Remaining hardening considerations: long-lived sessions and
+  sharing an origin with the tune book. Cloudflare account controls, deployed private HTML and historical
+  copies were not audited; this is a scoped assessment, not a guarantee. No application or live data changes.
 - 2026-10-28: Saved scenarios for `/planning`: an editor-only API (`/planning/api/scenarios`) and a
   `planning_scenarios` table, so named settings follow Nate between devices. The page's CSP now allows
   `connect-src 'self'` and nothing else.
