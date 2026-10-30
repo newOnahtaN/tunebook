@@ -1,0 +1,274 @@
+{
+ "new-york": {
+  "New York": [
+   "Fairytale Of New York , The [jig]",
+   "Gangs Of New York [waltz]",
+   "New York, The [jig]",
+   "Sgoil Lionacliet Pipe Band's Welcome To New York [reel]",
+   "New York (alias)",
+   "Boys Of New York, The (alias)",
+   "Boys Of New York, The (alias)",
+   "New York, The (alias)",
+   "Ireland In New York (alias)",
+   "New York, The (alias)",
+   "New York (alias)",
+   "New York (alias)",
+   "New York Harbour (alias)"
+  ],
+  "Brooklyn": [
+   "Flowers Of Brooklyn, The [reel]"
+  ],
+  "Manhattan": [
+   "Manhattan [reel]"
+  ],
+  "Bronx": [
+   "Pride Of The Bronx, The [reel]",
+   "Trip To The Bronx [hornpipe]"
+  ],
+  "Newark": [
+   "Newark Bay [jig]"
+  ],
+  "Long Island": [
+   "Long Island [jig]",
+   "Long Island [waltz]",
+   "Long Island [reel]"
+  ],
+  "Staten Island": [
+   "Staten Island [hornpipe]"
+  ],
+  "Broadway": [
+   "Broadway, The [polka]",
+   "Humors Of Broadway [reel]",
+   "Fulham Broadway (alias)",
+   "Broadway, The (alias)"
+  ],
+  "Queens": [
+   "Gypsy Queens? [reel]",
+   "Queens County Lasses, The (alias)"
+  ]
+ },
+ "los-angeles": {
+  "Hollywood": [
+   "Hollywood [jig]"
+  ],
+  "Long Beach": [
+   "A Great Big Sea Hove In Long Beach [polka]"
+  ]
+ },
+ "chicago": {
+  "Chicago": [
+   "Boys From Chicago, The [reel]",
+   "Chicago Conneely, The [reel]",
+   "Chicago, The [jig]",
+   "Chicago, The [reel]",
+   "Joe Murphy's Return From Chicago [waltz]",
+   "Paddy's In Chicago [hornpipe]",
+   "Chicago, The (alias)",
+   "Joe Murphy's Return From Chicago (alias)",
+   "Chicago, The (alias)"
+  ]
+ },
+ "dallas-fort-worth": {
+  "Denton": [
+   "Upper Denton [hornpipe]"
+  ]
+ },
+ "houston": {},
+ "atlanta": {
+  "Atlanta": [
+   "Atlanta Schottische, The [barndance]",
+   "Atlanta, The [hornpipe]",
+   "Tonn Atlantaċ (alias)",
+   "Atlanta Hornpipe (alias)"
+  ]
+ },
+ "washington-dc": {
+  "Washington": [
+   "George Washington's Favourite Cotillion [barndance]",
+   "Washington Square Park [three-two]",
+   "Washington, The [hornpipe]",
+   "Washington's [march]",
+   "Washington's March [jig]",
+   "Washington Quickstep March, The (alias)",
+   "Washington (alias)",
+   "Washington Hornpipe, The (alias)"
+  ],
+  "Potomac": [
+   "Drums Along The Potomac (alias)"
+  ],
+  "Mount Vernon": [
+   "Mount Vernon [barndance]"
+  ]
+ },
+ "miami": {},
+ "philadelphia": {
+  "Philadelphia": [
+   "Philadelphia (alias)"
+  ],
+  "Philly": [
+   "West Philly, The (alias)"
+  ],
+  "Delaware": [
+   "Crossing The Delaware [reel]",
+   "Delaware (alias)"
+  ],
+  "Camden": [
+   "Return To Camden Town, The [reel]",
+   "Farewell To Camden Town (alias)"
+  ]
+ },
+ "phoenix": {
+  "Phoenix": [
+   "Phoenix, The [reel]",
+   "Phoenix, The [polka]",
+   "Phoenix, The [reel]",
+   "Phoenix (alias)"
+  ],
+  "Arizona": [
+   "Arizona [reel]"
+  ]
+ },
+ "boston": {
+  "Boston": [
+   "Anyone Should Go To Boston [reel]",
+   "Beaujolais In Boston [reel]",
+   "Billy's Trip To Boston [polka]",
+   "Boston Blues [reel]",
+   "Boston Boys [reel]",
+   "Boston Hop, The [polka]",
+   "Boston Life [jig]",
+   "Boston Ruby, The [march]",
+   "Boston Urban Ceilidh, The [reel]",
+   "Boston-Sligo, The [reel]",
+   "Boston, The [reel]",
+   "Going To Boston [polka]",
+   "I'm Shipping Up To Boston [slide]",
+   "Leaving For Boston [waltz]",
+   "Post Road To Boston, The [reel]",
+   "Road To Boston [polka]",
+   "Sandy MacIntyre's Trip To Boston [reel]",
+   "Trip To Boston, The [reel]",
+   "Boston, The (alias)",
+   "Boston Rattlers' (alias)",
+   "Boston Two-Step (alias)",
+   "Salute To Boston (alias)",
+   "Salute To Boston (alias)"
+  ],
+  "Cambridge": [
+   "Cambridge Caravan Catastrophy [reel]",
+   "Cambridge Road [hornpipe]",
+   "Cambridge, The [hornpipe]",
+   "Road To Cambridge, The [reel]"
+  ],
+  "Charlestown": [
+   "Old Road To Charlestown, The [reel]",
+   "Charlestown (alias)"
+  ],
+  "Quincy": [
+   "Quincy Dillon's High D [reel]"
+  ],
+  "Dorchester": [
+   "Dorchester, The [hornpipe]"
+  ],
+  "Roxbury": [
+   "Pride Of Roxbury (alias)"
+  ],
+  "Gloucester": [
+   "Gloucester, The [hornpipe]",
+   "Gloucester (alias)"
+  ]
+ },
+ "riverside": {
+  "Riverside": [
+   "Riverside [jig]"
+  ],
+  "Ontario": [
+   "Ontario Swing [reel]",
+   "Les Cinq Jumelles De L'Ontario (alias)"
+  ]
+ },
+ "san-francisco": {
+  "San Francisco": [
+   "Dr. Angus & Emily MacDonald's Trip To San Francisco [jig]",
+   "San Francisco, The [reel]"
+  ],
+  "Berkeley": [
+   "Trip To Berkeley [jig]"
+  ],
+  "Golden Gate": [
+   "Golden Gate [waltz]"
+  ],
+  "Frisco": [
+   "Frisco [hornpipe]",
+   "Frisco, The (alias)"
+  ]
+ },
+ "detroit": {
+  "Detroit": [
+   "Detroit [jig]"
+  ],
+  "Windsor": [
+   "Trip To Windsor, The [reel]"
+  ],
+  "Michigan": [
+   "Michigan IO [\"slip jig\"]",
+   "Trip To Michigan, The [barndance]",
+   "Flowers Of Michigan, The (alias)"
+  ]
+ },
+ "seattle": {
+  "Seattle": [
+   "Seattle, The (alias)",
+   "Peggy On The Seattle (alias)"
+  ],
+  "Tacoma": [
+   "Le Port De Tacoma (alias)"
+  ],
+  "Bellevue": [
+   "Maid Of Bellevue, The [jig]"
+  ]
+ },
+ "minneapolis": {
+  "Minneapolis": [
+   "Streets Of Minneapolis [reel]"
+  ],
+  "St Paul": [
+   "Reel St Paul [reel]",
+   "Reel St Paul (alias)"
+  ],
+  "St. Paul": [
+   "Reel St. Paul (alias)"
+  ],
+  "Minnesota": [
+   "Minnesota 6/8 Two Step, The [jig]",
+   "Minnesota, The [mazurka]",
+   "Return To Minnesota [reel]"
+  ],
+  "Mississippi": [
+   "Mississippi Sawyer [reel]"
+  ]
+ },
+ "tampa": {
+  "Clearwater": [
+   "Clearwater, The [reel]"
+  ]
+ },
+ "san-diego": {},
+ "denver": {
+  "Denver": [
+   "Denver The Dancer (alias)"
+  ],
+  "Colorado": [
+   "Colorado [reel]"
+  ],
+  "Aurora": [
+   "Aurora [\"slip jig\"]"
+  ]
+ },
+ "orlando": {
+  "Orlando": [
+   "Orlando's Return [march]",
+   "Trip To Orlando, The [jig]"
+  ]
+ }
+}

@@ -1,0 +1,287 @@
+{
+ "grand": 3415.599000000001,
+ "tradGrand": 2649.4689999999996,
+ "eventsN": 1502,
+ "ranked": [
+  [
+   "boston",
+   64.8,
+   349
+  ],
+  [
+   "san-francisco",
+   58.3,
+   318
+  ],
+  [
+   "washington-dc",
+   39.1,
+   295
+  ],
+  [
+   "seattle",
+   38.3,
+   214
+  ],
+  [
+   "minneapolis",
+   36.4,
+   175
+  ],
+  [
+   "san-diego",
+   32.4,
+   118
+  ],
+  [
+   "denver",
+   27,
+   117
+  ],
+  [
+   "philadelphia",
+   24.2,
+   189
+  ],
+  [
+   "chicago",
+   21,
+   248
+  ],
+  [
+   "tampa",
+   17.1,
+   123
+  ],
+  [
+   "los-angeles",
+   16.7,
+   268
+  ],
+  [
+   "atlanta",
+   12.9,
+   136
+  ],
+  [
+   "new-york",
+   12.6,
+   294
+  ],
+  [
+   "phoenix",
+   11.6,
+   92
+  ],
+  [
+   "miami",
+   11.2,
+   108
+  ],
+  [
+   "houston",
+   10.5,
+   127
+  ],
+  [
+   "orlando",
+   10,
+   81
+  ],
+  [
+   "detroit",
+   8.1,
+   52
+  ],
+  [
+   "dallas-fort-worth",
+   7.2,
+   95
+  ],
+  [
+   "riverside",
+   2.5,
+   19
+  ]
+ ],
+ "predR": [
+  {
+   "n": "Median household income",
+   "r": 0.8364521211413344,
+   "rs": 0.7383458646616541,
+   "rh": -0.1258221369766865
+  },
+  {
+   "n": "Adults with a bachelor's degree",
+   "r": 0.821168977370622,
+   "rs": 0.8541353383458646,
+   "rh": 0.048317123343030614
+  },
+  {
+   "n": "Owned folk buildings per million",
+   "r": 0.5819356808496764,
+   "rs": 0.6030075187969924,
+   "rh": 0.3105575828150987
+  },
+  {
+   "n": "Irish ancestry",
+   "r": 0.5766838891851737,
+   "rs": 0.5864661654135338,
+   "rh": 0.02903617516797508
+  },
+  {
+   "n": "Folk radio hours a week",
+   "r": 0.5736317829716736,
+   "rs": 0.37142857142857144,
+   "rh": 0.07933272969904377
+  },
+  {
+   "n": "Latitude",
+   "r": 0.5134612974686735,
+   "rs": 0.4932330827067669,
+   "rh": 0.05269546804100565
+  },
+  {
+   "n": "Nordic ancestry",
+   "r": 0.3124284641806,
+   "rs": 0.5548872180451128,
+   "rh": 0.3284322030411791
+  },
+  {
+   "n": "Median age",
+   "r": 0.21702139005835866,
+   "rs": 0.20601503759398496,
+   "rh": -0.01962694513459931
+  },
+  {
+   "n": "Foreign-born share",
+   "r": 0.02783507313235817,
+   "rs": -0.013533834586466165,
+   "rh": -0.06943435753279319
+  },
+  {
+   "n": "Population",
+   "r": -0.25345801859148925,
+   "rs": -0.21353383458646616,
+   "rh": -0.31258947157102246
+  },
+  {
+   "n": "Population growth since 2020",
+   "r": -0.45083740549394613,
+   "rs": -0.4766917293233083,
+   "rh": 0.32208241614094674
+  },
+  {
+   "n": "Domestic migration 2021–25",
+   "r": -0.4539513475704174,
+   "rs": -0.44661654135338347,
+   "rh": 0.1852886550331592
+  },
+  {
+   "n": "Hispanic share",
+   "r": -0.45927842535167124,
+   "rs": -0.4842105263157895,
+   "rh": -0.10325853312843244
+  }
+ ],
+ "satRows": [
+  [
+   "Boulder County",
+   65,
+   198,
+   38
+  ],
+  [
+   "Ann Arbor (Washtenaw Co.)",
+   32,
+   87,
+   12
+  ],
+  [
+   "Athens (Clarke Co.)",
+   12,
+   96,
+   21
+  ]
+ ],
+ "freeAll": 70.66192501961268,
+ "since2010": 204,
+ "since2020": 134,
+ "founded": 441,
+ "dead": 623,
+ "kindRows": [
+  {
+   "label": "Festivals",
+   "value": 15,
+   "note": "n=68"
+  },
+  {
+   "label": "Bluegrass & old-time jams",
+   "value": 10,
+   "note": "n=19"
+  },
+  {
+   "label": "Clubs & coffeehouses",
+   "value": 11,
+   "note": "n=135"
+  },
+  {
+   "label": "Irish & pub sessions",
+   "value": 5,
+   "note": "n=126"
+  },
+  {
+   "label": "Radio shows",
+   "value": 29.5,
+   "note": "n=26"
+  },
+  {
+   "label": "Fiddle contests",
+   "value": 25,
+   "note": "n=7"
+  },
+  {
+   "label": "Contra & dance series",
+   "value": 9,
+   "note": "n=30"
+  }
+ ],
+ "whyCount": [
+  {
+   "label": "Pub/venue owner, landlord or rent",
+   "value": 122
+  },
+  {
+   "label": "COVID-19",
+   "value": 48
+  },
+  {
+   "label": "Organizer died, retired or moved",
+   "value": 46
+  },
+  {
+   "label": "Demolition or redevelopment",
+   "value": 27
+  },
+  {
+   "label": "Money or attendance",
+   "value": 38
+  },
+  {
+   "label": "Fire, storm or flood",
+   "value": 14
+  }
+ ],
+ "listedR": 0.8860828405394674,
+ "noContest": [
+  "Chicago",
+  "Houston",
+  "Philadelphia",
+  "Inland Empire",
+  "SF Bay",
+  "Detroit",
+  "Seattle",
+  "Tampa Bay",
+  "Orlando"
+ ]
+}

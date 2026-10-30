@@ -1,0 +1,182 @@
+{
+  "atlanta": {
+    "cbsa": "12060",
+    "name": "Atlanta-Sandy Springs-Roswell, GA",
+    "pop2020": 6106816,
+    "pop2025": 6482182,
+    "growth_pct": 6.15,
+    "domestic_mig_2021_25": 67335,
+    "intl_mig_2021_25": 180745
+  },
+  "boston": {
+    "cbsa": "14460",
+    "name": "Boston-Cambridge-Newton, MA-NH",
+    "pop2020": 4944719,
+    "pop2025": 5034221,
+    "growth_pct": 1.81,
+    "domestic_mig_2021_25": -151023,
+    "intl_mig_2021_25": 220093
+  },
+  "chicago": {
+    "cbsa": "16980",
+    "name": "Chicago-Naperville-Elgin, IL-IN",
+    "pop2020": 9454432,
+    "pop2025": 9434123,
+    "growth_pct": -0.21,
+    "domestic_mig_2021_25": -358531,
+    "intl_mig_2021_25": 276257
+  },
+  "dallas-fort-worth": {
+    "cbsa": "19100",
+    "name": "Dallas-Fort Worth-Arlington, TX",
+    "pop2020": 7638294,
+    "pop2025": 8477157,
+    "growth_pct": 10.98,
+    "domestic_mig_2021_25": 251508,
+    "intl_mig_2021_25": 328354
+  },
+  "denver": {
+    "cbsa": "19740",
+    "name": "Denver-Aurora-Centennial, CO",
+    "pop2020": 2963813,
+    "pop2025": 3092037,
+    "growth_pct": 4.33,
+    "domestic_mig_2021_25": -33545,
+    "intl_mig_2021_25": 95647
+  },
+  "detroit": {
+    "cbsa": "19820",
+    "name": "Detroit-Warren-Dearborn, MI",
+    "pop2020": 4392378,
+    "pop2025": 4390913,
+    "growth_pct": -0.03,
+    "domestic_mig_2021_25": -87955,
+    "intl_mig_2021_25": 94071
+  },
+  "houston": {
+    "cbsa": "26420",
+    "name": "Houston-Pasadena-The Woodlands, TX",
+    "pop2020": 7150227,
+    "pop2025": 7904627,
+    "growth_pct": 10.55,
+    "domestic_mig_2021_25": 131367,
+    "intl_mig_2021_25": 385680
+  },
+  "los-angeles": {
+    "cbsa": "31080",
+    "name": "Los Angeles-Long Beach-Anaheim, CA",
+    "pop2020": 13204693,
+    "pop2025": 12844441,
+    "growth_pct": -2.73,
+    "domestic_mig_2021_25": -812324,
+    "intl_mig_2021_25": 353723
+  },
+  "miami": {
+    "cbsa": "33100",
+    "name": "Miami-Fort Lauderdale-West Palm Beach, FL",
+    "pop2020": 6138329,
+    "pop2025": 6391072,
+    "growth_pct": 4.12,
+    "domestic_mig_2021_25": -366729,
+    "intl_mig_2021_25": 588969
+  },
+  "minneapolis": {
+    "cbsa": "33460",
+    "name": "Minneapolis-St. Paul-Bloomington, MN-WI",
+    "pop2020": 3690272,
+    "pop2025": 3790295,
+    "growth_pct": 2.71,
+    "domestic_mig_2021_25": -38899,
+    "intl_mig_2021_25": 73726
+  },
+  "new-york": {
+    "cbsa": "35620",
+    "name": "New York-Newark-Jersey City, NY-NJ",
+    "pop2020": 20083400,
+    "pop2025": 20112448,
+    "growth_pct": 0.14,
+    "domestic_mig_2021_25": -1201272,
+    "intl_mig_2021_25": 985459
+  },
+  "orlando": {
+    "cbsa": "36740",
+    "name": "Orlando-Kissimmee-Sanford, FL",
+    "pop2020": 2673372,
+    "pop2025": 2957672,
+    "growth_pct": 10.63,
+    "domestic_mig_2021_25": 58323,
+    "intl_mig_2021_25": 183030
+  },
+  "philadelphia": {
+    "cbsa": "37980",
+    "name": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",
+    "pop2020": 6245056,
+    "pop2025": 6329118,
+    "growth_pct": 1.35,
+    "domestic_mig_2021_25": -76727,
+    "intl_mig_2021_25": 133467
+  },
+  "phoenix": {
+    "cbsa": "38060",
+    "name": "Phoenix-Mesa-Chandler, AZ",
+    "pop2020": 4851295,
+    "pop2025": 5228938,
+    "growth_pct": 7.78,
+    "domestic_mig_2021_25": 171992,
+    "intl_mig_2021_25": 127610
+  },
+  "riverside": {
+    "cbsa": "40140",
+    "name": "Riverside-San Bernardino-Ontario, CA",
+    "pop2020": 4601615,
+    "pop2025": 4769007,
+    "growth_pct": 3.64,
+    "domestic_mig_2021_25": 30184,
+    "intl_mig_2021_25": 60967
+  },
+  "san-diego": {
+    "cbsa": "41740",
+    "name": "San Diego-Chula Vista-Carlsbad, CA",
+    "pop2020": 3298648,
+    "pop2025": 3282248,
+    "growth_pct": -0.5,
+    "domestic_mig_2021_25": -133070,
+    "intl_mig_2021_25": 57817
+  },
+  "san-francisco": {
+    "cbsa": "41860",
+    "name": "San Francisco-Oakland-Fremont, CA",
+    "pop2020": 4753651,
+    "pop2025": 4630041,
+    "growth_pct": -2.6,
+    "domestic_mig_2021_25": -343116,
+    "intl_mig_2021_25": 177048
+  },
+  "seattle": {
+    "cbsa": "42660",
+    "name": "Seattle-Tacoma-Bellevue, WA",
+    "pop2020": 4018766,
+    "pop2025": 4161883,
+    "growth_pct": 3.56,
+    "domestic_mig_2021_25": -107029,
+    "intl_mig_2021_25": 174326
+  },
+  "tampa": {
+    "cbsa": "45300",
+    "name": "Tampa-St. Petersburg-Clearwater, FL",
+    "pop2020": 3175282,
+    "pop2025": 3418895,
+    "growth_pct": 7.67,
+    "domestic_mig_2021_25": 144218,
+    "intl_mig_2021_25": 111196
+  },
+  "washington-dc": {
+    "cbsa": "47900",
+    "name": "Washington-Arlington-Alexandria, DC-VA-MD-WV",
+    "pop2020": 6278627,
+    "pop2025": 6465724,
+    "growth_pct": 2.98,
+    "domestic_mig_2021_25": -208058,
+    "intl_mig_2021_25": 262675
+  }
+}

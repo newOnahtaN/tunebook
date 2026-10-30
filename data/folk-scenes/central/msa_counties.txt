@@ -1,0 +1,20 @@
+atlanta: Barrow County, GA; Butts County, GA; Carroll County, GA; Clayton County, GA; Coweta County, GA; Dawson County, GA; DeKalb County, GA; Douglas County, GA; Fayette County, GA; Forsyth County, GA; Fulton County, GA; Gwinnett County, GA; Heard County, GA; Henry County, GA; Jasper County, GA; Lumpkin County, GA; Meriwether County, GA; Morgan County, GA; Newton County, GA; Pickens County, GA; Pike County, GA; Rockdale County, GA; Spalding County, GA; Walton County, GA; Bartow County, GA; Cherokee County, GA; Cobb County, GA; Haralson County, GA; Paulding County, GA
+boston: Norfolk County, MA; Plymouth County, MA; Suffolk County, MA; Essex County, MA; Middlesex County, MA; Rockingham County, NH; Strafford County, NH
+chicago: Cook County, IL; DuPage County, IL; Grundy County, IL; McHenry County, IL; Will County, IL; DeKalb County, IL; Kane County, IL; Kendall County, IL; Lake County, IL; Jasper County, IN; Lake County, IN; Newton County, IN; Porter County, IN
+dallas-fort-worth: Collin County, TX; Dallas County, TX; Denton County, TX; Ellis County, TX; Hunt County, TX; Kaufman County, TX; Rockwall County, TX; Johnson County, TX; Parker County, TX; Tarrant County, TX; Wise County, TX
+denver: Adams County, CO; Arapahoe County, CO; Broomfield County, CO; Clear Creek County, CO; Denver County, CO; Douglas County, CO; Elbert County, CO; Gilpin County, CO; Jefferson County, CO; Park County, CO
+detroit: Wayne County, MI; Lapeer County, MI; Livingston County, MI; Macomb County, MI; Oakland County, MI; St. Clair County, MI
+houston: Austin County, TX; Brazoria County, TX; Chambers County, TX; Fort Bend County, TX; Galveston County, TX; Harris County, TX; Liberty County, TX; Montgomery County, TX; San Jacinto County, TX; Waller County, TX
+los-angeles: Orange County, CA; Los Angeles County, CA
+miami: Broward County, FL; Miami-Dade County, FL; Palm Beach County, FL
+minneapolis: Anoka County, MN; Carver County, MN; Chisago County, MN; Dakota County, MN; Hennepin County, MN; Isanti County, MN; Le Sueur County, MN; Mille Lacs County, MN; Ramsey County, MN; Scott County, MN; Sherburne County, MN; Washington County, MN; Wright County, MN; Pierce County, WI; St. Croix County, WI
+new-york: Middlesex County, NJ; Monmouth County, NJ; Ocean County, NJ; Somerset County, NJ; Nassau County, NY; Suffolk County, NY; Essex County, NJ; Hunterdon County, NJ; Morris County, NJ; Sussex County, NJ; Union County, NJ; Bergen County, NJ; Hudson County, NJ; Passaic County, NJ; Bronx County, NY; Kings County, NY; New York County, NY; Putnam County, NY; Queens County, NY; Richmond County, NY; Rockland County, NY; Westchester County, NY
+orlando: Lake County, FL; Orange County, FL; Osceola County, FL; Seminole County, FL
+philadelphia: Burlington County, NJ; Camden County, NJ; Gloucester County, NJ; Bucks County, PA; Chester County, PA; Montgomery County, PA; Delaware County, PA; Philadelphia County, PA; New Castle County, DE; Cecil County, MD; Salem County, NJ
+phoenix: Maricopa County, AZ; Pinal County, AZ
+riverside: Riverside County, CA; San Bernardino County, CA
+san-diego: San Diego County, CA
+san-francisco: Alameda County, CA; Contra Costa County, CA; San Francisco County, CA; San Mateo County, CA; Marin County, CA
+seattle: Snohomish County, WA; King County, WA; Pierce County, WA
+tampa: Pinellas County, FL; Hernando County, FL; Hillsborough County, FL; Pasco County, FL
+washington-dc: Arlington County, VA; Clarke County, VA; Culpeper County, VA; Fairfax County, VA; Fauquier County, VA; Loudoun County, VA; Prince William County, VA; Rappahannock County, VA; Spotsylvania County, VA; Stafford County, VA; Warren County, VA; Alexandria city, VA; Fairfax city, VA; Falls Church city, VA; Fredericksburg city, VA; Manassas city, VA; Manassas Park city, VA; Jefferson County, WV; Frederick County, MD; Montgomery County, MD; District of Columbia, DC; Charles County, MD; Prince George's County, MD

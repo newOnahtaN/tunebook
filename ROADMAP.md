@@ -523,6 +523,14 @@ A weekly scheduled session that checks /fiddle/gaps and fills core gaps without 
 unattended run to write research without the browser sign-in (e.g. a dedicated API key). Nate chose to skip this
 for now (Sep 26 2026).
 
+### F12. Folk scenes of the 20 biggest US metros — `shipped` (Oct 30 2026, research report) · L
+
+A deep, sourced survey of every recurring session, jam, dance, singing and heritage practice in the 20 largest
+metros, with a data-driven report on what predicts a scene. It lives in `data/folk-scenes/` (report, 20 dossiers,
+data and build scripts) and is not published on the site. Possible next steps: publish the report at a public URL,
+refresh the census yearly, extend it to Portland and other Northwest metros, or use the per-city event data to
+suggest sessions when Nate travels.
+
 ---
 
 ## Open data questions
@@ -537,6 +545,12 @@ for now (Sep 26 2026).
 
 ## Log
 
+- 2026-10-30: Folk scenes report (F12). Ten parallel research sessions, two metros each, wrote sourced dossiers and
+  event censuses for the 20 largest US metros. Follow-up studies covered community-owned folk buildings, contra in
+  2019 vs. 2026 and fiddle contests, alongside Census/ACS, thesession.org and NEA Heritage Fellows data. Result:
+  `data/folk-scenes/report/index.html` (about 3,400 meetings a month in 1,502 series; Boston is densest, the
+  Inland Empire thinnest; education and income are the strongest predictors). Research only: no site or database changes.
+  Built on Nate's Windows workstation.
 - 2026-10-28: Saved scenarios for `/planning`: an editor-only API (`/planning/api/scenarios`) and a
   `planning_scenarios` table, so named settings follow Nate between devices. The page's CSP now allows
   `connect-src 'self'` and nothing else.

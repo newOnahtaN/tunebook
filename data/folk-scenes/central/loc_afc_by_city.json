@@ -1,0 +1,102 @@
+{
+  "new-york": {
+    "search": 6134,
+    "dates": "2000 to 2027=1096;1900 to 1999=4932",
+    "audio": 1381
+  },
+  "los-angeles": {
+    "search": 77,
+    "dates": "2000 to 2027=38;1900 to 1999=39",
+    "audio": 29
+  },
+  "chicago": {
+    "search": 1348,
+    "dates": "2000 to 2027=40;1900 to 1999=1305;1800 to 1899=1",
+    "audio": 549
+  },
+  "dallas-fort-worth": {
+    "search": 176,
+    "audio": 12,
+    "dates": "2000 to 2027=9;1900 to 1999=166"
+  },
+  "houston": {
+    "search": 245,
+    "audio": 145,
+    "dates": "2000 to 2027=84;1900 to 1999=161"
+  },
+  "atlanta": {
+    "search": 106,
+    "dates": "2000 to 2027=42;1900 to 1999=65",
+    "audio": 23
+  },
+  "washington-dc": {
+    "search": 0,
+    "dates": "=0",
+    "audio": 0
+  },
+  "miami": {
+    "search": 193,
+    "dates": "2000 to 2027=190;1900 to 1999=4",
+    "audio": 13
+  },
+  "philadelphia": {
+    "search": 29,
+    "dates": "2000 to 2027=5;1900 to 1999=23",
+    "audio": 10
+  },
+  "phoenix": {
+    "search": 44,
+    "dates": "2000 to 2027=13;1900 to 1999=31",
+    "audio": 13
+  },
+  "boston": {
+    "search": 21,
+    "dates": "2000 to 2027=2;1900 to 1999=17",
+    "audio": 9
+  },
+  "riverside": {
+    "search": 0,
+    "dates": "=0",
+    "audio": 0
+  },
+  "san-francisco": {
+    "search": 307,
+    "dates": "2000 to 2027=7;1900 to 1999=300",
+    "audio": 83
+  },
+  "detroit": {
+    "search": 169,
+    "dates": "2000 to 2027=24;1900 to 1999=143",
+    "audio": 80
+  },
+  "seattle": {
+    "search": 91,
+    "dates": "2000 to 2027=49;1900 to 1999=42",
+    "audio": 64
+  },
+  "minneapolis": {
+    "search": 14,
+    "audio": 10,
+    "dates": "2000 to 2027=8;1900 to 1999=6"
+  },
+  "tampa": {
+    "search": 66,
+    "audio": 3,
+    "dates": "2000 to 2027=3;1900 to 1999=63"
+  },
+  "san-diego": {
+    "search": 51,
+    "dates": "2000 to 2027=39;1900 to 1999=14",
+    "audio": 37
+  },
+  "denver": {
+    "search": 18,
+    "audio": 3,
+    "dates": "1900 to 1999=18"
+  },
+  "orlando": {
+    "search": 5,
+    "dates": "2000 to 2027=5",
+    "audio": 5
+  }
+}

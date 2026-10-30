@@ -1,0 +1,225 @@
+{
+  "method_notes": "Compiled via 4 parallel research passes (web_search + direct web_fetch of contest/association primary sources) for the 20 largest US Census MSAs, Oct 2026. 'Active' requires evidence of a 2024, 2025, or 2026 edition from a primary or clearly reliable secondary source. Distances are driving-miles from the metro's core city unless noted. Several claims surfaced only by AI-search-summary (not independently fetched) are flagged inline as 'unverified'. 'none found' means targeted searches turned up nothing, not proof of absence. Some flagship events (Bear on the Square/Dahlonega GA, Everglades Bluegrass Festival/Miami, Detroit & Pleasanton CA Highland Games) feature live fiddling but a formal judged contest element could not be confirmed for 2024-2026 and are noted as such rather than listed as confirmed contests.",
+  "by_metro": {
+    "new-york": {
+      "active": [
+        {"name": "Fiddle and Folk Festival 'Pick of the Crop' Contest", "town": "East Setauket, NY (Suffolk Co.)", "founded": 2012, "month": "September", "style": "open/old-time/Americana", "sanction": "none (Port Jefferson Arts Council)", "url": "https://www.portjeffarts.org/fiddle-folk-festival"},
+        {"name": "Comhaltas Mid-Atlantic Region Fleadh (2024 edition)", "town": "Parsippany-Troy Hills, NJ (Morris Co.) -- rotates; 2025 moved to Princeton NJ (outside MSA)", "founded": 1975, "month": "April/May", "style": "Irish Fleadh-style fiddle (fidil), All-Ireland Fleadh qualifier", "sanction": "Comhaltas Ceoltoiri Eireann", "url": "https://ccemidatlantic.com/"}
+      ],
+      "defunct": [],
+      "nearest_outside": {"name": "Fiddlin' Day / Howell Living History Farm contest (Hunterdon Folk Exchange)", "miles": 36, "url": "https://howellfarm.org/fiddlin-day"},
+      "fiddlers_assn": [
+        {"name": "New York State Old Tyme Fiddlers' Association (chapters all far upstate, none in metro counties)", "per_month": null, "url": "https://www.nysotfa.com/nysotfa"},
+        {"name": "Hunterdon Folk Exchange, NJ (runs Howell Farm contest; frequency not found)", "per_month": null, "url": "https://howellfarm.org/fiddlin-day"}
+      ]
+    },
+    "los-angeles": {
+      "active": [
+        {"name": "Topanga Banjo-Fiddle Contest & Folk Festival", "town": "Calabasas, CA (King Gillette Ranch, LA County) -- founded in Topanga Canyon", "founded": 1961, "month": "May", "style": "open/old-time/bluegrass", "sanction": "none (independent nonprofit)", "url": "https://www.topangabanjofiddle.org/"}
+      ],
+      "defunct": [
+        {"name": "Topanga Banjo-Fiddle Contest (county-ordinance forced relocation out of LA County)", "years": "1970-1990 displaced from Topanga after Altamont-related county ordinance; returned to Santa Monica Mountains/LA County by 1990", "why": "LA County ordinance restricting outdoor gatherings post-Altamont; later returned, not permanently defunct", "url": "https://en.wikipedia.org/wiki/Topanga_Banjo_and_Fiddle_Contest"}
+      ],
+      "nearest_outside": {"name": "not applicable - active contest inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "CSOTFA District 4 (Orange County)", "per_month": 1, "url": "http://www.csotfa.org/districts.htm"},
+        {"name": "CSOTFA Districts 2/7 (nominally LA County) -- no published meeting schedule, likely dormant", "per_month": null, "url": "http://www.csotfa.org/districts.htm"}
+      ]
+    },
+    "chicago": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "Indiana Fiddlers' Gathering, Battle Ground, IN (workshops/jams; formal contest division unconfirmed) -- or Illinois State Fair Fiddle & Banjo Contest, Springfield, IL (confirmed judged contest, ~200 mi)", "miles": 117, "url": "https://www.indianafiddlersgathering.org/"},
+      "fiddlers_assn": [
+        {"name": "Illinois Old Time Fiddlers Association (based Effingham, IL, ~250 mi away, not in metro)", "per_month": null, "url": "https://www.findglocal.com/US/Effingham/512256348939645/Illinois-Old-Time-Fiddlers-Association"},
+        {"name": "Chicago Area Fiddlers (informal Fiddle Hangout forum, not a chartered chapter)", "per_month": null, "url": "https://www.fiddlehangout.com/group/chicagoareafiddlers"}
+      ]
+    },
+    "dallas-fort-worth": {
+      "active": [
+        {"name": "Bob Wills Fiddle Festival & Contest", "town": "Greenville, TX (Hunt Co.)", "founded": 2015, "month": "October/November", "style": "Texas contest-style / Western Swing", "sanction": "none formal; recognized on TOTFA calendar", "url": "https://www.bobwillsfest.com/about/"},
+        {"name": "Fort Worth Stock Show & Rodeo Fiddle Showdown", "town": "Fort Worth, TX (Tarrant Co.)", "founded": 2016, "month": "January", "style": "Texas contest-style (youth, ages 14-18, TX residents)", "sanction": "informal link to Texas Fiddle Clinic (champion prize)", "url": "https://www.fwssr.com/p/competitions--contests/fiddle-showdown1"}
+      ],
+      "defunct": [
+        {"name": "State Fair of Texas old-time fiddling contest", "years": "early-to-mid 20th century; no longer on current programming", "why": "exact end date not found; not in current State Fair or TOTFA schedule", "url": "https://www.dmagazine.com/frontburner/2019/09/the-long-troubled-and-often-bizarre-history-of-the-state-fair-of-texas/"}
+      ],
+      "nearest_outside": {"name": "not applicable - active contests inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "Texas Old Time Fiddlers Association (TOTFA) -- statewide, no DFW chapter/standing jam confirmed", "per_month": null, "url": "https://www.totfa.org/"}
+      ]
+    },
+    "houston": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "no single contest confidently pinned as nearest; TOTFA circuit stops (Seguin ~160 mi, Blanco ~180 mi) are closest identified", "miles": 160, "url": "https://www.totfa.org/links/links.htm"},
+      "fiddlers_assn": [
+        {"name": "Texas Old Time Fiddlers Association (TOTFA) -- statewide, no confirmed Houston chapter/jam", "per_month": null, "url": "https://www.totfa.org/"}
+      ]
+    },
+    "atlanta": {
+      "active": [
+        {"name": "Bear on the Square Mountain Festival (fiddle-contest status post-2020 unconfirmed; current program shows concerts/jam/showcase, not clearly a judged contest)", "town": "Dahlonega, GA (Lumpkin Co.)", "founded": 1997, "month": "April", "style": "old-time/bluegrass Appalachian", "sanction": "none identified", "url": "https://bearonthesquare.org/mainstage/"}
+      ],
+      "defunct": [
+        {"name": "Georgia Old-Time Fiddlers' Convention(s)", "years": "1913-1935", "why": "Great Depression-era decline and country-music industry's center of gravity shifting to Nashville/commercial recording (no confirmed direct Henry Ford role)", "url": "https://www.georgiaencyclopedia.org/articles/arts-culture/georgia-old-time-fiddlers-conventions/"}
+      ],
+      "nearest_outside": {"name": "Georgia State Fiddlers' Convention, Blairsville, GA (Union Co.)", "miles": 99, "url": "https://georgiastatefiddlersconvention.org/"},
+      "fiddlers_assn": [
+        {"name": "No current chartered 'Georgia Old Time Fiddlers Association' found; Georgia State Fiddlers' Convention appears informally run", "per_month": null, "url": "https://georgiastatefiddlersconvention.org/"}
+      ]
+    },
+    "washington-dc": {
+      "active": [
+        {"name": "Potomac Valley Scottish Fiddle Competition (Virginia Scottish Games)", "town": "The Plains, VA (Fauquier Co., Great Meadow)", "founded": null, "month": "August/September (Labor Day weekend)", "style": "Scottish, US National Scottish Fiddle Championship qualifier", "sanction": "Scottish FIRE (Scottish Fiddling Revival Ltd.)", "url": "https://scottishfiddlingrevival.com/2025/08/31/2025-potomac-valley-scottish-fiddle-competition/"}
+      ],
+      "defunct": [],
+      "nearest_outside": {"name": "Galax 'Old Fiddlers' Convention' (old-time/bluegrass style; nearest major old-time convention, though far)", "miles": 321, "url": "https://www.oldfiddlersconvention.com/history.htm"},
+      "fiddlers_assn": [
+        {"name": "FSGW Takoma Park Old Time Jam, Washington DC", "per_month": 1, "url": "https://www.fsgw.org/Takoma-Park-Old-Time-Jam"},
+        {"name": "Old Time Frederick (Downtown Frederick Jam), Frederick Co., MD", "per_month": 2, "url": "https://sites.google.com/view/old-time-frederick/"},
+        {"name": "Comhaltas O'Neill-Malcom Branch (DC/MD/VA Irish fiddle)", "per_month": null, "url": "https://www.ccepotomac.org/"}
+      ]
+    },
+    "miami": {
+      "active": [
+        {"name": "Southeast Florida Scottish Festival & Highland Games fiddling competition", "town": "Plantation, FL (Broward Co.)", "founded": null, "month": "late February/early March", "style": "Scottish, Scottish FIRE-adjacent", "sanction": "Scottish FIRE (probable, not independently confirmed for this event)", "url": "https://www.scottishbanner.com/2025/02/12/41st-annual-southeast-florida-scottish-festival-and-games/"}
+      ],
+      "defunct": [],
+      "nearest_outside": {"name": "Florida State Fiddle Contest / Florida Folk Festival, White Springs, FL", "miles": 393, "url": "https://www.floridastateparks.org/parks-and-trails/stephen-foster-folk-culture-center-state-park/florida-folk-festival/banjo-fiddle-contest"},
+      "fiddlers_assn": [
+        {"name": "No Florida State Fiddlers Association chapter found in Miami metro; South Florida Bluegrass Association (not fiddle-specific) active since 1971", "per_month": 1, "url": "https://southfloridabluegrass.org/"}
+      ]
+    },
+    "philadelphia": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "Comhaltas Mid-Atlantic Region Fleadh, Princeton, NJ (2025 edition; Irish Fleadh-style)", "miles": 45, "url": "https://ccemidatlantic.com/blogs/mid-atlantic-news/posts/7575074/comhaltas-ceoltoiri-eireann-mid-atlantic-region-celebrates-2025-fleadh"},
+      "fiddlers_assn": [
+        {"name": "Old Time Fiddlers' Association of Pennsylvania (HQ far western PA, no Philadelphia chapter found)", "per_month": null, "url": "https://www.bizapedia.com/pa/old-time-fiddlers-association-of-pennsylvania.html"},
+        {"name": "Comhaltas Philadelphia-Delaware Valley branch (Irish-style, feeds Mid-Atlantic Fleadh)", "per_month": null, "url": "https://cce-dv.com/get-involved/"}
+      ]
+    },
+    "phoenix": {
+      "active": [
+        {"name": "Wickenburg Bluegrass Festival & Fiddle Championship", "town": "Wickenburg, AZ (Maricopa Co.)", "founded": 1979, "month": "November", "style": "old-time/contest-style", "sanction": "Arizona Old Time Fiddlers Association (AOTFA) circuit", "url": "https://ffotm.org/event/wickenburg-bluegrass-festival/"},
+        {"name": "Grande Fiddle Championship", "town": "Casa Grande, AZ (Pinal Co.)", "founded": null, "month": "varies (AOTFA calendar)", "style": "old-time/contest-style", "sanction": "AOTFA", "url": "https://arizonaoldtimefiddlers.org/images/Sept%20~%20Oct%202025.pdf"},
+        {"name": "Laveen Folk Festival", "town": "Laveen, AZ (Maricopa Co.)", "founded": null, "month": "November", "style": "old-time/contest-style", "sanction": "AOTFA-affiliated", "url": "http://www.arizonaoldtimefiddlers.org/images/Nov%20Dec%202025.pages.pdf"}
+      ],
+      "defunct": [],
+      "nearest_outside": {"name": "not applicable - active contests inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "Arizona Old Time Fiddlers Association (AOTFA), founded 1975, Payson HQ", "per_month": null, "url": "http://arizonaoldtimefiddlers.org/"},
+        {"name": "Phoenix Old Time Music Society (monthly jams, Glendale/North Mountain)", "per_month": 3, "url": "https://www.azoldtimejam.com/"}
+      ]
+    },
+    "boston": {
+      "active": [
+        {"name": "Comhaltas Boston Branch (Hanafin-Cooley-Reynolds) -- Irish Fleadh-style, feeds Mid-Atlantic Fleadh/All-Ireland pathway", "town": "Boston, MA (Suffolk Co.)", "founded": 1975, "month": "year-round school/competitions", "style": "Irish Fleadh-style", "sanction": "Comhaltas Ceoltoiri Eireann", "url": "https://www.bostonirish.com/arts/2026/comhaltas-boston-branch-celebrates-50-years"}
+      ],
+      "defunct": [
+        {"name": "Northeast Fiddlers' Association (NEFA) annual contest (regional predecessor, held in VT not MA)", "years": "1966-2008 (Woodbury/Middlebury/Montpelier/Barre VT)", "why": "ceased in 2008, reason not specified in source", "url": "https://nefiddlers.org/nefa-history"}
+      ],
+      "nearest_outside": {"name": "New England Regional Scottish Fiddle Competition, Loon Mountain, NH (US Nat'l Scottish Fiddle Championship qualifier)", "miles": 115, "url": "https://nhscot.org/wp-content/uploads/2025-Fiddle-Information.pdf"},
+      "fiddlers_assn": [
+        {"name": "No Massachusetts Old Time Fiddlers Association district found; Boston Scottish Fiddle Club active (jams/workshops, no contest)", "per_month": null, "url": "https://www.bsfc.org/"}
+      ]
+    },
+    "riverside": {
+      "active": [],
+      "defunct": [
+        {"name": "Southern California Old-Time Fiddlers' Association (LA-based, Signal Hill monthly jam)", "years": "refused to affiliate with CSOTFA in April 1970 (appointed own officers/board instead); no current website found, appears defunct/dormant", "why": "chose independence from statewide CSOTFA district system in 1970", "url": "https://www.csotfad8.org/history-of-csotfa"}
+      ],
+      "nearest_outside": {"name": "Topanga Banjo & Fiddle Contest, Calabasas, CA (LA County)", "miles": 72, "url": "https://www.topangabanjofiddle.org/event-info"},
+      "fiddlers_assn": [
+        {"name": "None -- no CSOTFA district or equivalent currently covers Riverside/San Bernardino; only informal weekly Inland Empire Bluegrass Jam (not contest-affiliated)", "per_month": 4, "url": "https://www.jamfinder.org/jams/ca-riverside-fairmount-park-bluegrass/"}
+      ]
+    },
+    "san-francisco": {
+      "active": [],
+      "defunct": [
+        {"name": "Berkeley Old-Time Fiddlers' Convention ('rutabaga prize' joke contest)", "years": "1968-c.1970 (3 editions, jokingly billed '35th/17th/22nd Annual')", "why": "began as satirical one-off event; ended after ~1970, no later editions found", "url": "https://julianwinston.com/music/berkeley_1968.php"},
+        {"name": "Cloverdale Old Time Fiddle Festival (Sonoma Co., CSOTFA District 10 -- de facto Bay Area regional contest)", "years": "~1978-2021/2022 (ran ~35+ years; last confirmed '43rd' ~2020)", "why": "Cloverdale Historical Society board cancelled it due to lack of interest and financial losses", "url": "https://californiabluegrass.org/what-is-a-fiddle-festival/"}
+      ],
+      "nearest_outside": {"name": "California State Old Time Fiddlers Association State Championship (2025: Lodi, CA)", "miles": 85, "url": "https://csotfa.org/index_htm_files/Soundpost_2025_Contest_Edition.pdf"},
+      "fiddlers_assn": [
+        {"name": "CSOTFA District 9 (Alameda/Contra Costa/East Bay)", "per_month": 1, "url": "https://csotfa9.org/"},
+        {"name": "Santa Clara Valley Fiddlers Association (independent, South Bay-adjacent)", "per_month": null, "url": "https://www.fiddlers.org/"},
+        {"name": "CSOTFA District 10 (Sonoma/Lake, adjacent to Marin)", "per_month": null, "url": "http://csotfa10.org/"}
+      ]
+    },
+    "detroit": {
+      "active": [],
+      "defunct": [
+        {"name": "Henry Ford-era old-time fiddle contests ('Henry Ford Gold Cup', Dearborn/Detroit network)", "years": "1925-1926", "why": "network of local/regional Ford-dealership-tied contests, not a unified ongoing contest; no direct continuous descendant survives", "url": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/C42F37BE1EC7AADBE330E597646E1707/S1752196310000167a.pdf/henry_fords_dance_revival_and_fiddle_contests_myth_and_reality.pdf"}
+      ],
+      "nearest_outside": {"name": "Michigan Fiddlers Association annual Fiddlers Convention, Hastings, MI (Barry Co.)", "miles": 128, "url": "https://www.michiganfiddlers.com/events/michigan-fiddlers-association-events"},
+      "fiddlers_assn": [
+        {"name": "Michigan Fiddlers Association (statewide, HQ Hastings/Dorr -- west MI, not Detroit; no Detroit chapter found)", "per_month": null, "url": "https://www.michiganfiddlers.com/home"}
+      ]
+    },
+    "seattle": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "Washington State Fiddle Championships (WOTFA District 10), Ridgefield, WA (Clark Co.)", "miles": 154, "url": "https://wotfa.org/report/district-9-june-july-august-2025/"},
+      "fiddlers_assn": [
+        {"name": "Washington Old Time Fiddlers Association (WOTFA) District 6 - King County", "per_month": null, "url": "https://wotfa.org/district-6/"},
+        {"name": "WOTFA District 8 - Pierce County, monthly jam (3rd Sunday)", "per_month": 1, "url": "https://wotfa.org/district-8/"},
+        {"name": "WOTFA District 16 - Snohomish County, 2nd & 4th Friday jams", "per_month": 2, "url": "https://wotfa.org/district-16/"}
+      ]
+    },
+    "minneapolis": {
+      "active": [
+        {"name": "MSFA Fiddle Contest ('LeDuc Fiddle Contest')", "town": "Hastings, MN (Dakota Co.)", "founded": null, "month": "September", "style": "old-time/traditional (waltz + hoedown required)", "sanction": "Minnesota State Fiddlers Association (MSFA, founded 1986)", "url": "https://fiddlemn.com/upcoming-fiddle-contests"},
+        {"name": "MinneApple Fiddling Contest", "town": "Minnetrista, MN (Hennepin Co., Gale Woods Farm)", "founded": null, "month": "October", "style": "old-time contest-fiddling, community festival", "sanction": "Three Rivers Park District Fall Fest", "url": "https://www.threeriversparks.org/fallfest"}
+      ],
+      "defunct": [
+        {"name": "Minnesota State Old Time Fiddle Championship (flagship MSFA state championship)", "years": "~1983-2025 (43rd annual held Aug 2025 in Mountain Iron, MN -- outside the Minneapolis MSA); on hiatus for 2026", "why": "reported 'lack of funding' per AI-search summaries of fiddlemn.com/findglocal.com; not independently confirmed via direct fetch -- organizers reportedly hope to resume", "url": "https://fiddlemn.com/f/givemn-2026"}
+      ],
+      "nearest_outside": {"name": "not applicable - active contests inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "Minnesota State Fiddlers Association (MSFA), founded 1986 -- runs both in-MSA contests; no separate 'chapter' structure", "per_month": null, "url": "https://fiddlemn.com/"}
+      ]
+    },
+    "tampa": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "Florida Fiddlers Convention, O'Leno State Park, High Springs, FL", "miles": 137, "url": "https://flafiddlers.wordpress.com/2025-florida-fiddlers-convention/"},
+      "fiddlers_assn": [
+        {"name": "Bay Area Fiddlers Association (BAFA), independent old-time club, weekly jam, Largo Library Cultural Center (Pinellas Co.) -- not a confirmed FSFA chapter", "per_month": 4, "url": "https://herrickhomepage.com/wp/bay-area-fiddlers/"}
+      ]
+    },
+    "san-diego": {
+      "active": [
+        {"name": "Julian Family Fiddle Camp / Fiddle Pickin' Contest", "town": "Julian, CA (San Diego Co.)", "founded": 2011, "month": "May", "style": "Bluegrass/Old-Time/Texas-contest taught; contest open to public", "sanction": "promoted via California Bluegrass Association", "url": "https://www.familyfiddlecamp.com/"}
+      ],
+      "defunct": [
+        {"name": "Balboa Park Old Time Banjo & Fiddle Contests ('rutabaga prize' joke contests)", "years": "1970s, ~15 editions", "why": "Balboa Park officials stopped providing power for the sound system", "url": "https://sandiegotroubadour.com/fiddle-contests/"}
+      ],
+      "nearest_outside": {"name": "not applicable - active contest inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "No active CSOTFA district confirmed for San Diego County (claimed 'District 7' not verifiable on official CSOTFA site)", "per_month": null, "url": "https://www.csotfa.org/districts.htm"},
+        {"name": "San Diego Old Time Fiddlers Jam (independent, 1st & 3rd Thursdays, Round Table Pizza)", "per_month": 2, "url": "https://folkworks.org/miscellaneous/old-time-jams/"}
+      ]
+    },
+    "denver": {
+      "active": [
+        {"name": "Colorado Fiddle Championships", "town": "Denver, CO (National Western Stock Show complex, Denver Co.)", "founded": 2005, "month": "January", "style": "old-time/contest fiddling", "sanction": "Colorado Old Time Fiddlers' Association (COTFA)", "url": "https://www.coloradofiddlers.org/calendar/"},
+        {"name": "Scottish Fiddle Competition of Colorado", "town": "Lakewood, CO (Jefferson Co.)", "founded": null, "month": "October", "style": "Scottish (youth grades 3-12)", "sanction": "Scottish Fiddle Club of Colorado / Colorado Elks Association; possible Scottish FIRE link unconfirmed", "url": "https://www.coloradofiddlers.org/event/13th-annual-scottish-fiddle-competition/"}
+      ],
+      "defunct": [],
+      "nearest_outside": {"name": "not applicable - active contests inside MSA", "miles": null, "url": ""},
+      "fiddlers_assn": [
+        {"name": "Colorado Old Time Fiddlers' Association (COTFA) -- Denver-area jams: Cap Hill Old-Time Jam (1st & 3rd Mondays)", "per_month": 2, "url": "https://www.coloradofiddlers.org/2026-schedule/"},
+        {"name": "Swallow Hill Old-Time Jam, Denver (3rd Sundays)", "per_month": 1, "url": "https://swallowhillmusic.org/jams"}
+      ]
+    },
+    "orlando": {
+      "active": [],
+      "defunct": [],
+      "nearest_outside": {"name": "Florida Fiddlers Convention, O'Leno State Park, High Springs, FL", "miles": 130, "url": "https://flafiddlers.wordpress.com/2025-florida-fiddlers-convention/"},
+      "fiddlers_assn": [
+        {"name": "No Florida State Fiddlers Association chapter found; only informal weekly 'Orlando Wednesday Tunes' jam", "per_month": 4, "url": "http://www.nettally.com/fiddler/Jams.html"}
+      ]
+    }
+  }
+}

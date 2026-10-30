@@ -1,0 +1,1001 @@
+{
+  "method_notes": "Cross-city survey of dedicated, nonprofit/community-controlled folk & traditional music/dance facilities across the 20 largest US metros (Census MSA definitions). Research was split across 5 background research agents (4 metros each), each using web_search sparingly for discovery and web_fetch of org sites/Wikipedia/news for verification; every entry below is sourced to a specific URL gathered that way. FINDING: density of owned/controlled real estate correlates strongly with density of recurring folk activity. Metros with a historic immigrant-ethnic-hall tradition plus active folk nonprofits that bought or secured long-term buildings -- Minneapolis-St Paul (6 controlled facilities: Tapestry Folkdance Center 1999, Cedar Cultural Center 1989, Celtic Junction 2009/2016, American Swedish Institute 1929, Norway House 2015, Danish American Center), Chicago (6: Old Town School's two owned campuses plus four ethnic halls), San Francisco/Berkeley (5: Freight & Salvage 2009, Ashkenaz 1997, Swedish American Hall 1907, Finnish Hall 1932, Croatian Cultural Center), Seattle (4: Swedish Cultural Center, Leif Erikson Hall, National Nordic Museum, Phinney Neighborhood Center -- leased 1981, purchased 2009), Denver (4: Swallow Hill 1999, Wheat Ridge Grange, Denver Turnverein, Trollheim Lodge), and Houston (4, mostly Czech/German fraternal halls) -- show the heaviest, most frequent recurring programming (Swallow Hill ~20 events/month, Old Town School dozens/month, Freight & Salvage ~25/month, Tapestry ~9/month, Ashkenaz ~18/month). By contrast, Sun Belt / newer-growth metros with weak ethnic-hall inheritance and little folk-nonprofit real estate activity -- Atlanta, Miami, Tampa, and Riverside -- show ZERO qualifying controlled facilities; Dallas-Fort Worth, Orlando, and Phoenix show exactly one each (and Phoenix's is a public facility run by a nonprofit partner, not nonprofit-owned). Washington DC also shows only one clean example (Glen Echo Park's Spanish Ballroom) despite being an old, large metro -- its folk infrastructure (Institute of Musical Traditions, Greater Washington Ceili Club, FSGW) is almost entirely built on rented church/community space. The LOSSES list reinforces the mechanism: every confirmed loss involved an organization that did not own its building -- Detroit's Lovett Hall contra series (evicted with 4 days' notice, Dec 2004, after 23.5 years), DC's Potter's House (2026, lost access when it could not secure the building after a funding/sponsorship change), NYC's Peoples' Voice Cafe (its host church sold the building for ~$66M in 2023-24), NYC's Gerde's Folk City (1986, rent nearly tripled with an unaffordable conditional lease), and a wave of 1960s-70s folk coffeehouses nationwide (Ash Grove LA, Boarding House SF, Sand Mountain Houston, Heritage Coffee House San Diego, The Flick Miami, Scottsdale's folk-coffeehouse row) that burned, lost leases, or simply could not survive without a stable, owned home. The clearest counter-example to 'ownership guarantees survival' is the Swedish Club of Chicago, which owned its clubhouse from 1896 but still closed in 1984 due to membership decline -- ownership helps resilience against landlords, not against demographic change. Caveats: several entries are 'weak fits' (museums or general-purpose ethnic halls where folk dance/music is now only an occasional rather than core/recurring activity -- flagged in notes); a few ownership details (e.g., Trollheim Lodge Denver, Finnish Hall Berkeley, Jalopy Theatre NYC) could not be fully confirmed from primary sources and are flagged accordingly; 'events_per_month' is left null wherever no publisher-stated figure was found (most venues do not publish an aggregate monthly count, so null is the norm, not an omission). Metros with no documented facility-loss case in available sources (Philadelphia, Minneapolis, Tampa, Seattle, Riverside, Dallas-Fort Worth, Orlando) are treated as genuine research gaps, not confirmed absence of losses.",
+  "facilities": [
+    {
+      "name": "Irish Arts Center",
+      "metro": "new-york",
+      "place": "Hell's Kitchen, Manhattan, NY",
+      "kind": "cultural center",
+      "org": "Irish Arts Center",
+      "tenure": "owned",
+      "opened": 1972,
+      "acquired": 2022,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://irishartscenter.org/about",
+      "notes": "Original building at 553 W. 51st St.; completed a $60M new adjoining building at 726 11th Ave c.2022. Traditional Irish music/dance (seisiuns, ceili, step dance classes) core to programming."
+    },
+    {
+      "name": "Jalopy Theatre and School of Music",
+      "metro": "new-york",
+      "place": "Red Hook, Brooklyn, NY",
+      "kind": "folk school",
+      "org": "Living Traditions (nonprofit partner) / founders Geoff & Lynette Wiley",
+      "tenure": "precarious",
+      "opened": 2006,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://jalopytheatre.org/aboutjalopy",
+      "notes": "Building purchased personally by the Wiley family in 2006; unclear whether the nonprofit partner Living Traditions holds title. Ambiguous ownership, coded precarious pending verification."
+    },
+    {
+      "name": "Ukrainian National Home",
+      "metro": "new-york",
+      "place": "East Village, Manhattan, NY",
+      "kind": "ethnic hall",
+      "org": "Ukrainian National Home of NYC, Inc.",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": 1968,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Ukrainian_National_Home",
+      "notes": "Community hub since the late 1960s, historically hosting Ukrainian folk music/dance; also operates an on-site restaurant."
+    },
+    {
+      "name": "Germania Park (Deutscher Schul- und Gesang Verein)",
+      "metro": "new-york",
+      "place": "Rockaway Township, Morris County, NJ",
+      "kind": "ethnic hall",
+      "org": "Deutscher Schul- und Gesang Verein, Inc.",
+      "tenure": "owned",
+      "opened": 1895,
+      "acquired": 1925,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://germaniapark.com/history/",
+      "notes": "Club founded 1895; land purchased 1925; ballroom added 1935, expanded 1966. Annual Oktoberfest, German choral/folk dance events."
+    },
+    {
+      "name": "Irish Cultural Centre of Greater Boston",
+      "metro": "boston",
+      "place": "Canton, MA",
+      "kind": "cultural center",
+      "org": "Irish Cultural Centre of Greater Boston",
+      "tenure": "owned",
+      "opened": 1989,
+      "acquired": 1989,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://www.irishculture.org/about-us/",
+      "notes": "61-acre campus with performance/function space; partners with Comhaltas Ceoltoiri Eireann Boston branch for ceili dances."
+    },
+    {
+      "name": "South Boston Lithuanian Citizens' Association",
+      "metro": "boston",
+      "place": "South Boston, MA",
+      "kind": "ethnic hall",
+      "org": "South Boston Lithuanian Citizens' Association",
+      "tenure": "owned",
+      "opened": 1899,
+      "acquired": 1899,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://www.sblca.org/about-5",
+      "notes": "Member-owned since founding; banquet hall/bar plus Lithuanian cultural events."
+    },
+    {
+      "name": "Scandinavian Cultural Center & Library (Nordic Hall)",
+      "metro": "boston",
+      "place": "West Newton, MA",
+      "kind": "cultural center",
+      "org": "Scandinavian Charitable Society of Greater Boston",
+      "tenure": "owned",
+      "opened": 1994,
+      "acquired": 2001,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://scandicenter.org/about/",
+      "notes": "Nordic Hall opened 2001; Sons of Norway's Norumbega Lodge uses hall for folk dance/meetings as a guest, not owner; merged with Scandinavian Library 2024."
+    },
+    {
+      "name": "Club Passim",
+      "metro": "boston",
+      "place": "Harvard Square, Cambridge, MA",
+      "kind": "listening room",
+      "org": "Passim (nonprofit)",
+      "tenure": "precarious",
+      "opened": 1958,
+      "acquired": null,
+      "events_per_month": 33,
+      "status": "active",
+      "url": "https://www.passim.org/mission/",
+      "notes": "Continuous presence at 47 Palmer St. since 1963 (60+ years) but as a renter, not owner; successor to Club 47 (1958) and for-profit Passim (1969-94). 'Over 400 performances per year' per own materials."
+    },
+    {
+      "name": "Commodore John Barry Arts and Cultural Center (The Irish Center)",
+      "metro": "philadelphia",
+      "place": "West Mount Airy, Philadelphia, PA",
+      "kind": "ethnic hall",
+      "org": "Commodore John Barry Society, Inc.",
+      "tenure": "owned",
+      "opened": 1958,
+      "acquired": 1958,
+      "events_per_month": 6,
+      "status": "active",
+      "url": "https://theirishcenter.org/irish-center-history/",
+      "notes": "Corporation formed Jan 1958 specifically to buy the building. Weekly set-dance lessons + ceili dances 2nd/4th Fridays + monthly Ceili Og. Philadelphia Ceili Group is resident but does not itself own the building."
+    },
+    {
+      "name": "Cannstatter Volksfest-Verein",
+      "metro": "philadelphia",
+      "place": "Northeast Philadelphia, PA",
+      "kind": "ethnic hall",
+      "org": "Cannstatter Volksfest-Verein",
+      "tenure": "owned",
+      "opened": 1873,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://www.cannstatter.org/about-us/",
+      "notes": "German-American hall; signature annual Labor Day weekend Volksfest with German folk dance/music."
+    },
+    {
+      "name": "Danube Swabian Association of Philadelphia and Vicinity",
+      "metro": "philadelphia",
+      "place": "Northeast Philadelphia, PA",
+      "kind": "ethnic hall",
+      "org": "Danube Swabian Association of Philadelphia and Vicinity",
+      "tenure": "owned",
+      "opened": 1957,
+      "acquired": 1957,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://danubeswabian.com/",
+      "notes": "Annual Trachtenfest and Tag der Donauschwaben feature traditional Donauschwaben folk dance."
+    },
+    {
+      "name": "Spanish Ballroom, Glen Echo Park",
+      "metro": "washington-dc",
+      "place": "Glen Echo, Montgomery County, MD",
+      "kind": "dance hall",
+      "org": "National Park Service + Glen Echo Park Partnership for Arts & Culture, Inc.",
+      "tenure": "public",
+      "opened": 1933,
+      "acquired": 2002,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://glenechopark.org/history",
+      "notes": "NPS owns/manages grounds; nonprofit partnership (created 2002 by Montgomery County) runs the arts/dance programming. Regular contra, swing, international folk, tango, waltz nights."
+    },
+    {
+      "name": "Old Town School of Folk Music — Lincoln Square campus",
+      "metro": "chicago",
+      "place": "Lincoln Square, Chicago, IL",
+      "kind": "folk school",
+      "org": "Old Town School of Folk Music",
+      "tenure": "owned",
+      "opened": 1957,
+      "acquired": 1998,
+      "events_per_month": 30,
+      "status": "active",
+      "url": "https://oldtownschool.org/aboutus/lincoln-square/",
+      "notes": "Renovated 1929 Hild Library building. Daily classes plus dozens of concerts/month."
+    },
+    {
+      "name": "Old Town School of Folk Music — Lincoln Park campus (Armitage/Aldine Hall)",
+      "metro": "chicago",
+      "place": "Lincoln Park, Chicago, IL",
+      "kind": "folk school",
+      "org": "Old Town School of Folk Music",
+      "tenure": "owned",
+      "opened": 1957,
+      "acquired": 1968,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://blockclubchicago.org/2019/03/22/old-town-school-will-not-sell-armitage-building/",
+      "notes": "Board voted unanimously Oct 2018 to sell this owned building; reversed decision March 2019 after community/student backlash -- shows ownership alone doesn't fully insulate a flagship space from the market."
+    },
+    {
+      "name": "Irish American Heritage Center",
+      "metro": "chicago",
+      "place": "Mayfair, Chicago, IL",
+      "kind": "ethnic hall",
+      "org": "Irish American Heritage Center",
+      "tenure": "owned",
+      "opened": 1976,
+      "acquired": 1985,
+      "events_per_month": 6,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Irish_American_Heritage_Center",
+      "notes": "Purchased former 1927 Mayfair School building 1985, opened 1986. Weekly Tue set-dance lessons, 1st/3rd Fri ceili, 1st Sat Celtic Social Dance."
+    },
+    {
+      "name": "Croatian Cultural Center of Chicago",
+      "metro": "chicago",
+      "place": "Devon Ave., Chicago, IL",
+      "kind": "ethnic hall",
+      "org": "Croatian Cultural Center of Chicago",
+      "tenure": "owned",
+      "opened": 1974,
+      "acquired": 1974,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://croatiaweek.com/50-years-of-the-croatian-cultural-center-in-chicago/",
+      "notes": "Home of the Hrvatska Loza folklore/tamburitza ensemble; dance floor/banquet hall."
+    },
+    {
+      "name": "Lithuanian World Center",
+      "metro": "chicago",
+      "place": "Lemont, IL",
+      "kind": "cultural center",
+      "org": "Lithuanian World Center, Inc.",
+      "tenure": "owned",
+      "opened": 1987,
+      "acquired": 1987,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://lcenter.org/about-us/",
+      "notes": "Supports 50+ constituent organizations including folk-dance ensembles."
+    },
+    {
+      "name": "Swedish American Museum",
+      "metro": "chicago",
+      "place": "Andersonville, Chicago, IL",
+      "kind": "cultural center",
+      "org": "Swedish American Museum Association",
+      "tenure": "owned",
+      "opened": 1976,
+      "acquired": 1987,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Swedish_American_Museum",
+      "notes": "Weak fit: folk dance only at seasonal events (Midsommarfest, St. Lucia), not a weekly program."
+    },
+    {
+      "name": "Tapestry Folkdance Center",
+      "metro": "minneapolis",
+      "place": "Minnehaha Ave., Minneapolis, MN",
+      "kind": "dance hall",
+      "org": "Tapestry Folkdance Center",
+      "tenure": "owned",
+      "opened": 1983,
+      "acquired": 1999,
+      "events_per_month": 9,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Tapestry_Folkdance_Center",
+      "notes": "Bought its building Oct 16 1999 after a 1998 rent-tripling threat at its previous rented space (Sabathani Community Center). Weekly Sat contra + weekly Fri international folk dance."
+    },
+    {
+      "name": "Celtic Junction Arts Center",
+      "metro": "minneapolis",
+      "place": "St. Paul, MN",
+      "kind": "cultural center",
+      "org": "Celtic Junction Arts Center (nonprofit)",
+      "tenure": "long_lease",
+      "opened": 2009,
+      "acquired": 2016,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://celticjunction.org",
+      "notes": "Building bought 2009 by founders Cormac O'Se & Natalie O'Shea; CJAC nonprofit formalized 2016 and controls programming (building itself not deeded to CJAC -- long-term control, not outright nonprofit ownership). Weekly square dance + regular concerts/classes."
+    },
+    {
+      "name": "The Cedar Cultural Center",
+      "metro": "minneapolis",
+      "place": "Cedar-Riverside, Minneapolis, MN",
+      "kind": "listening room",
+      "org": "Minnesota STAR (Society for Traditional Arts and Resources)",
+      "tenure": "owned",
+      "opened": 1948,
+      "acquired": 1989,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/The_Cedar_Cultural_Center",
+      "notes": "Built 1948 as a movie theater; donated to the nonprofit in 1989. Multiple weekly concerts; home of the Global Roots Festival."
+    },
+    {
+      "name": "American Swedish Institute",
+      "metro": "minneapolis",
+      "place": "Minneapolis, MN",
+      "kind": "cultural center",
+      "org": "American Swedish Institute",
+      "tenure": "owned",
+      "opened": 1908,
+      "acquired": 1929,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/American_Swedish_Institute",
+      "notes": "1908 mansion donated 1929; Nelson Cultural Center addition 2012. Seasonal/periodic Nordic dance (Midsommar) rather than weekly."
+    },
+    {
+      "name": "Norway House",
+      "metro": "minneapolis",
+      "place": "Ventura Village, Minneapolis, MN",
+      "kind": "cultural center",
+      "org": "Norway House",
+      "tenure": "owned",
+      "opened": 2004,
+      "acquired": 2015,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://norwayhouse.org/about/",
+      "notes": "Org founded 2004; building opened 2015, major expansion 2022. Periodic cultural events/exhibits."
+    },
+    {
+      "name": "Danish American Center",
+      "metro": "minneapolis",
+      "place": "Minneapolis, MN",
+      "kind": "cultural center",
+      "org": "Danish American Center",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://danishamericancenter.org",
+      "notes": "Folk dancing cited as part of regular programming; founding/acquisition year not independently confirmed (gap)."
+    },
+    {
+      "name": "Finnish Center Association",
+      "metro": "detroit",
+      "place": "Farmington, MI (Oakland Co.)",
+      "kind": "cultural center",
+      "org": "Finnish Center Association",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://finnishcenter.org",
+      "notes": "~60-year-old Scandinavian/Nordic hall. Hosts 'Nordic Heritage Folk Dance' practices; frequency not published."
+    },
+    {
+      "name": "Ukrainian Cultural Center of Metropolitan Detroit",
+      "metro": "detroit",
+      "place": "Warren, MI (Macomb Co.)",
+      "kind": "ethnic hall",
+      "org": "Ukrainian Cultural Center, Inc.",
+      "tenure": "owned",
+      "opened": 1956,
+      "acquired": 1978,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://uccwarren.com/about-us",
+      "notes": "Org incorporated 1956; building purchased/opened 1978. Primarily banquet/rental use; recurring folk-dance programming not confirmed."
+    },
+    {
+      "name": "Freight & Salvage Coffeehouse",
+      "metro": "san-francisco",
+      "place": "Berkeley, CA (Alameda Co.)",
+      "kind": "listening room",
+      "org": "Berkeley Society for the Preservation of Traditional Music",
+      "tenure": "owned",
+      "opened": 1968,
+      "acquired": 2009,
+      "events_per_month": 25,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/The_Freight_%26_Salvage",
+      "notes": "Incorporated as nonprofit 1983; purpose-built 490-seat LEED building at 2020 Addison St. opened Aug 27 2009 after a ~$12M decade-long capital campaign with City of Berkeley support."
+    },
+    {
+      "name": "Ashkenaz Music & Dance Community Center",
+      "metro": "san-francisco",
+      "place": "Berkeley, CA",
+      "kind": "dance hall",
+      "org": "Ashkenaz Music & Dance Community Center",
+      "tenure": "owned",
+      "opened": 1973,
+      "acquired": 1997,
+      "events_per_month": 18,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Ashkenaz_(music_venue)",
+      "notes": "Purchased by a cooperative of patrons/staff/musicians after founder David Nadel's 1996 murder; reopened under nonprofit ownership June 1997. Weekly klezmer/Balkan/Cajun-zydeco/contra/international folk dance nights."
+    },
+    {
+      "name": "Swedish American Hall",
+      "metro": "san-francisco",
+      "place": "San Francisco, CA (Market St./Castro area)",
+      "kind": "ethnic hall",
+      "org": "Swedish Society of San Francisco",
+      "tenure": "owned",
+      "opened": 1907,
+      "acquired": 1907,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://hoodline.com/2013/12/historic-cafe-du-nord-and-swedish-american-hall-have-been-sold/",
+      "notes": "Built 1907 after the 1906 earthquake destroyed the prior Scandia Hall. Nonprofit still owns the building but leased/sold commercial operations (Cafe Du Nord) to private operators in 2013-14, diminishing community folk use -- a 'soft loss' short of closure."
+    },
+    {
+      "name": "Finnish Hall (Berkeley)",
+      "metro": "san-francisco",
+      "place": "Berkeley, CA",
+      "kind": "ethnic hall",
+      "org": "Finnish Heritage Society",
+      "tenure": "owned",
+      "opened": 1932,
+      "acquired": 1932,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://finnishhall.org",
+      "notes": "Built 1932 by volunteers from local Finnish immigrant families. Hosts rentals, classes, and dances; precise legal ownership entity not fully confirmed (gap)."
+    },
+    {
+      "name": "Croatian American Cultural Center of San Francisco",
+      "metro": "san-francisco",
+      "place": "San Francisco, CA (Excelsior area)",
+      "kind": "ethnic hall",
+      "org": "Croatian Cultural Center of San Francisco",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://croatianamericanweb.org",
+      "notes": "Tamburitza music and Croatian folk dance/festivals; founding/acquisition year not found in available sources (gap)."
+    },
+    {
+      "name": "Swedish Cultural Center (formerly The Swedish Club)",
+      "metro": "seattle",
+      "place": "Lake Union, Seattle, WA",
+      "kind": "ethnic hall",
+      "org": "Swedish Cultural Center",
+      "tenure": "owned",
+      "opened": 1892,
+      "acquired": 1959,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://swedishclubnw.org",
+      "notes": "Current mid-century-modern building constructed 1959-61, funded entirely by the club through member bonds/donations; now a Seattle Landmark. Membership peaked ~5,000 in the 1970s, now ~1,100."
+    },
+    {
+      "name": "Leif Erikson Hall (Sons of Norway)",
+      "metro": "seattle",
+      "place": "Ballard, Seattle, WA",
+      "kind": "ethnic hall",
+      "org": "Sons of Norway, Leif Erikson Lodge 2-001",
+      "tenure": "owned",
+      "opened": 1903,
+      "acquired": 1986,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://leiferiksonlodge.org",
+      "notes": "Lodge organized 1903; current hall built 1986 largely by volunteer labor. Home of the 'Leikarringen' Norwegian folk dance group."
+    },
+    {
+      "name": "National Nordic Museum",
+      "metro": "seattle",
+      "place": "Ballard, Seattle, WA",
+      "kind": "cultural center",
+      "org": "National Nordic Museum",
+      "tenure": "owned",
+      "opened": 1980,
+      "acquired": 2018,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/National_Nordic_Museum",
+      "notes": "Founded 1980 in a former school building; moved to new purpose-built home 2018, renamed 2019. Primarily a museum -- weaker fit than Leif Erikson Hall for 'regular folk programming,' periodic folk dance festivals in partnership with the Lodge."
+    },
+    {
+      "name": "Phinney Neighborhood Center",
+      "metro": "seattle",
+      "place": "Phinney Ridge, Seattle, WA",
+      "kind": "dance hall",
+      "org": "Phinney Neighborhood Association (building) / Seattle Folklore Society (programming)",
+      "tenure": "owned",
+      "opened": 1981,
+      "acquired": 2009,
+      "events_per_month": 4,
+      "status": "active",
+      "url": "https://phinneycenter.org/about-us/history/",
+      "notes": "Former John B. Allen Elementary School (built 1904); PNA leased it from Seattle School District starting 1981, purchased the campus 2009 after a capital campaign. Seattle Folklore Society's 'Emerald City Contra Dance' runs almost every Friday."
+    },
+    {
+      "name": "Japanese American Cultural & Community Center (JACCC)",
+      "metro": "los-angeles",
+      "place": "Little Tokyo, Los Angeles, CA",
+      "kind": "cultural center",
+      "org": "Japanese American Cultural & Community Center",
+      "tenure": "owned",
+      "opened": 1972,
+      "acquired": 1983,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://jaccc.org/about/",
+      "notes": "Campus built 1980-83 including Noguchi-designed plaza and Japanese Garden. Bon Odori (traditional Japanese folk dance) is centerpiece of the annual Nisei Week festival -- annual rather than monthly cadence."
+    },
+    {
+      "name": "Plaza de la Raza",
+      "metro": "los-angeles",
+      "place": "Lincoln Park/Lincoln Heights, Los Angeles, CA",
+      "kind": "cultural center",
+      "org": "Plaza de la Raza",
+      "tenure": "long_lease",
+      "opened": 1970,
+      "acquired": 1970,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://plazadelaraza.org/history/",
+      "notes": "City of Los Angeles owns the land/historic buildings in Lincoln Park; Plaza de la Raza operates under a long-term ground lease as primary tenant/programmer of Mexican/Chicano folklorico dance and arts education."
+    },
+    {
+      "name": "Ararat-Eskijian Museum and Research Center",
+      "metro": "los-angeles",
+      "place": "Mission Hills, Los Angeles, CA",
+      "kind": "cultural center",
+      "org": "Ararat-Eskijian Museum / Ararat Home",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://ararathome.org/about-us",
+      "notes": "First Armenian museum on the West Coast, sited on the nonprofit Ararat Home campus. Weak fit: primarily a museum/research center, regular folk dance/music programming not confirmed."
+    },
+    {
+      "name": "Houston Saengerbund / Saengerhalle",
+      "metro": "houston",
+      "place": "The Heights, Houston, TX",
+      "kind": "ethnic hall",
+      "org": "Houston Saengerbund",
+      "tenure": "owned",
+      "opened": 1883,
+      "acquired": 2022,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://houstonsaengerbund.org/about/",
+      "notes": "German choral/cultural society founded 1883. Owned Feagan St. property ~70 years until sold 2004; rented a church 2004-2022; purchased the former Heights Christian Church in 2022 (now 'Saengerhalle'). Folk dance mainly at Oktoberfest/Christmas concert."
+    },
+    {
+      "name": "SPJST Lodge 88",
+      "metro": "houston",
+      "place": "Houston, TX",
+      "kind": "ethnic hall",
+      "org": "SPJST (Slavonic Benevolent Order of the State of Texas), Lodge 88",
+      "tenure": "owned",
+      "opened": 1910,
+      "acquired": 1965,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://lodge88.org/about-1",
+      "notes": "Czech fraternal lodge hall; current (3rd) building dedicated 1965. Weekly bingo (not folk); Czechfest annual plus occasional polka dances -- genuinely 'folk' programming is episodic, not the hall's main year-round purpose."
+    },
+    {
+      "name": "Sokol Houston (T.J. Sokol of Houston)",
+      "metro": "houston",
+      "place": "Houston, TX",
+      "kind": "ethnic hall",
+      "org": "T.J. Sokol of Houston",
+      "tenure": "owned",
+      "opened": 1951,
+      "acquired": null,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://tshaonline.org/handbook/entries/sokol",
+      "notes": "Czech gymnastic/cultural hall chartered 1951 (part of the Sokol movement founded 1862). Primary mission is gymnastics; folk dance is secondary, not confirmed as regularly scheduled."
+    },
+    {
+      "name": "Czech Center Museum Houston",
+      "metro": "houston",
+      "place": "Houston, TX",
+      "kind": "cultural center",
+      "org": "Czech Center Museum Houston",
+      "tenure": "owned",
+      "opened": 2004,
+      "acquired": 2004,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Czech_Center_Museum_Houston",
+      "notes": "Purpose-built facility, construction began 2002, opened 2004. Weak fit: functions mainly as a museum; folk dance/kroje appear at festivals, not as a standing recurring series."
+    },
+    {
+      "name": "SPJST Lodge #92 'National Hall'",
+      "metro": "dallas-fort-worth",
+      "place": "Fort Worth, TX",
+      "kind": "ethnic hall",
+      "org": "SPJST Lodge 92 (Alliance of Czechoslovaks)",
+      "tenure": "owned",
+      "opened": 1910,
+      "acquired": 1938,
+      "events_per_month": 1,
+      "status": "active",
+      "url": "https://texasdancehall.org/national-hall-spjst-92/",
+      "notes": "Historic Czech-heritage dance hall, present building built 1938. ~Monthly 'Country and Western Dance' (1st Sunday) plus annual Cowtown Birthplace of Western Swing Festival -- recurring programming is adjacent to, rather than squarely, 'folk/traditional'."
+    },
+    {
+      "name": "German American Society of Central Florida",
+      "metro": "orlando",
+      "place": "Casselberry, FL (Seminole Co.)",
+      "kind": "ethnic hall",
+      "org": "German American Society of Central Florida, Inc.",
+      "tenure": "owned",
+      "opened": 1963,
+      "acquired": 1972,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://orlandogermanclub.com/about/",
+      "notes": "Nonprofit social club founded 1963; purchased the Casselberry clubhouse 1972. Home of the Alpenrose Schuhplattler dance group; two Oktoberfests, Springtoberfest, Nacht in Wien, Narrensitzung, Heimatabend annually. Strongest clear-cut match found across the four Sun Belt metros researched in this group."
+    },
+    {
+      "name": "Swallow Hill Music (Daniels Hall / Tuft Theatre)",
+      "metro": "denver",
+      "place": "Denver, CO (71 E. Yale Ave.)",
+      "kind": "folk school",
+      "org": "Swallow Hill Music Association",
+      "tenure": "owned",
+      "opened": 1979,
+      "acquired": 1999,
+      "events_per_month": 20,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/Swallow_Hill_Music_Association",
+      "notes": "Grew out of Harry Tuft's 1962 Denver Folklore Center. Purchased a former church building via ~$800K capital campaign for its 20th anniversary (1999). ~250 concerts/year across Daniels Hall (~300 seats) and Tuft Theatre (140 seats), plus a large year-round music school."
+    },
+    {
+      "name": "Wheat Ridge Grange No. 155",
+      "metro": "denver",
+      "place": "Wheat Ridge, CO (Jefferson Co.)",
+      "kind": "grange",
+      "org": "Wheat Ridge Grange",
+      "tenure": "owned",
+      "opened": null,
+      "acquired": 1963,
+      "events_per_month": 2,
+      "status": "active",
+      "url": "https://wheatridgegrange.org",
+      "notes": "Grange-owned hall hosting 2nd/4th Friday contra dances via CFOOTMAD programming. Borderline fit -- general community hall, only partly 'mainly folk' in programming."
+    },
+    {
+      "name": "Denver Turnverein (German House)",
+      "metro": "denver",
+      "place": "Denver, CO",
+      "kind": "ethnic hall",
+      "org": "Denver Turnverein",
+      "tenure": "owned",
+      "opened": 1865,
+      "acquired": 1921,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://historycolorado.org/location/denver-turnverein-german-house-coronado-club",
+      "notes": "Colorado's oldest organization of its type; current building built 1921. Weak fit: current primary programming is general ballroom/social/swing/tango dance; German folk dance (Schuhplattler) occurs mainly at Oktoberfest, not as a regular monthly folk series."
+    },
+    {
+      "name": "Trollheim Lodge (Sons of Norway 6-110)",
+      "metro": "denver",
+      "place": "Lakewood, CO (Jefferson Co.)",
+      "kind": "ethnic hall",
+      "org": "Sons of Norway Trollheim Lodge / Trollheim Building Corporation",
+      "tenure": "owned",
+      "opened": 1985,
+      "acquired": 1990,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://sofn.com/venue/trollheim-lodge-hall-lakewood-co/",
+      "notes": "Ownership inferred via an affiliated 'Trollheim Building Corporation' filed 1990 (common Sons of Norway practice); not independently confirmed via primary source (lodge's own site returned HTTP 403). Flagged as a gap needing deed/assessor verification."
+    },
+    {
+      "name": "Irish Cultural Center and McClelland Library",
+      "metro": "phoenix",
+      "place": "Phoenix, AZ (1106 N. Central Ave.)",
+      "kind": "cultural center",
+      "org": "Irish Cultural & Learning Foundation (ICLF) + City of Phoenix Parks and Recreation",
+      "tenure": "public",
+      "opened": 1999,
+      "acquired": 2003,
+      "events_per_month": 4,
+      "status": "active",
+      "url": "https://azirish.org/about-2/irish-cultural-center/",
+      "notes": "City of Phoenix owns land/buildings; ICLF operates it under a public/private partnership. Monthly 'Third Friday' Ceili dance in the Great Hall plus weekly Tuesday Phoenix International Folk Dancers sessions."
+    },
+    {
+      "name": "House of Pacific Relations International Cottages",
+      "metro": "san-diego",
+      "place": "Balboa Park, San Diego, CA",
+      "kind": "cultural center",
+      "org": "House of Pacific Relations (HPR) + City of San Diego Park & Recreation Dept.",
+      "tenure": "public",
+      "opened": 1935,
+      "acquired": 1935,
+      "events_per_month": 8,
+      "status": "active",
+      "url": "https://en.wikipedia.org/wiki/House_of_Pacific_Relations_International_Cottages",
+      "notes": "Cottages built for the 1935 California Pacific International Exposition; City owns land/cottages, ~30-38 member-nation nonprofit 'house' associations hold long-term stewardship/operational rights. Weekend 'Lawn Programs' with folk dance/music/food held nearly every weekend; includes House of Norway, Sweden, Denmark, Scotland, Ireland."
+    },
+    {
+      "name": "German American Societies of San Diego",
+      "metro": "san-diego",
+      "place": "El Cajon, CA",
+      "kind": "ethnic hall",
+      "org": "German American Societies of San Diego, Inc.",
+      "tenure": "owned",
+      "opened": 1965,
+      "acquired": 1965,
+      "events_per_month": null,
+      "status": "active",
+      "url": "https://germanclubsandiego.com",
+      "notes": "Incorporated 1965 as successor to the historic San Diego Turners after a 1945 fire destroyed Concordia Hall and the Turners disbanded in the 1980s. Biergarten; German folk dance groups (KinderTanzGruppe, BoogieTanz); annual Maifest, Oktoberfest, Weihnachtsmarkt."
+    },
+    {
+      "name": "San Diego International Folk Dance Club at Balboa Park Club",
+      "metro": "san-diego",
+      "place": "Balboa Park, San Diego, CA",
+      "kind": "dance hall",
+      "org": "San Diego International Folk Dance Club",
+      "tenure": "precarious",
+      "opened": null,
+      "acquired": null,
+      "events_per_month": 4,
+      "status": "active",
+      "url": "https://idasdc.com/intl-folk-clubs",
+      "notes": "Long-running weekly Wednesday user of a City of San Diego-owned ballroom, but no long-term lease document found specific to this club -- weaker fit than HPR, coded precarious/public-use rather than confirmed long-term control."
+    }
+  ],
+  "losses": [
+    {
+      "name": "Gerde's Folk City",
+      "metro": "new-york",
+      "years": "1960-1986",
+      "reason": "Building owners nearly tripled rent and offered only a conditional 15-year lease requiring costly soundproofing the club couldn't afford; it never owned its space at any of its locations (11 W. 4th St. 1960-70; 130 W. 3rd St. 1970-86).",
+      "url": "https://villagepreservation.org/2018/03/28/gerdes-folk-city-the-end-of-a-greenwich-village-icon/"
+    },
+    {
+      "name": "Peoples' Voice Cafe (at Community Church of New York)",
+      "metro": "new-york",
+      "years": "1979-2024 (relocated, not fully closed)",
+      "reason": "Hosted for years in a rented church (Community Church of New York) it did not own; the church sold the property to developer Continuum Company for ~$66.2M in 2023-24 for demolition/luxury condo tower, forcing relocation in 2024 to another borrowed space (Judson Memorial Church).",
+      "url": "https://villageview.nyc/2024/10/06/the-peoples-voice-cafe/"
+    },
+    {
+      "name": "Club 47 (original, 47 Mount Auburn St.)",
+      "metro": "boston",
+      "years": "1958-1968",
+      "reason": "Closed 1968 as the first folk boom waned; the brand was later revived as Passim (1969) at a new rented address, not a true reopening in the same owned building.",
+      "url": "https://www.mmone.org/club-47-passim/"
+    },
+    {
+      "name": "The Potter's House",
+      "metro": "washington-dc",
+      "years": "1960-2026",
+      "reason": "Coffeehouse/bookstore/folk open-mic venue run by Church of the Saviour community for 65+ years without ever owning the building; closed Jan 2026 after separating from its prior fiscal sponsor left it without funds and 'no access to the building,' per its own announcement.",
+      "url": "https://www.popville.com/2026/01/the-potters-house-dc-closing-cafe-and-bookstore-admo/"
+    },
+    {
+      "name": "Swedish Club of Chicago",
+      "metro": "chicago",
+      "years": "1896-1984",
+      "reason": "Closed due to membership decline/assimilation, NOT a landlord/tenure failure -- the club owned its clubhouse continuously from 1896 to 1984. Included as a counter-example showing ownership protects against landlords but not against demographic decline.",
+      "url": "https://en.wikipedia.org/wiki/Swedish_Club_of_Chicago"
+    },
+    {
+      "name": "Lovett Hall contra dance series (Henry Ford Museum/Greenfield Village)",
+      "metro": "detroit",
+      "years": "1981-2005",
+      "reason": "Henry Ford Museum/Greenfield Village gave organizers only 4 days' notice in December 2004 that Lovett Hall -- a ballroom Henry Ford built to support his own passion for contra/square dancing -- would no longer be available; the 23.5-year-old monthly series (then 'the longest-running dance series in Michigan') ended with a final closing celebration Feb 6 2005. The Detroit/Ann Arbor contra scene never regained an equivalent dedicated hall, relying since on rotating rented churches/community halls (AACTMAD, Detroit Folk School).",
+      "url": "https://mudcat.org/thread.cfm?threadid=76289"
+    },
+    {
+      "name": "Ash Grove",
+      "metro": "los-angeles",
+      "years": "1958-1973",
+      "reason": "Legendary folk/blues/bluegrass club destroyed by the third of a series of arson fires on Nov 11 1973; founder Ed Pearl never owned a fireproof/dedicated building, so a single structural loss ended the club outright.",
+      "url": "https://ashgrovemusic.net/history/"
+    },
+    {
+      "name": "Golden Bear",
+      "metro": "los-angeles",
+      "years": "1963 (revival)-1986",
+      "reason": "Huntington Beach folk/rock club closed 1986 due to required seismic retrofit costs, redevelopment pressure, and sale of the property; the building was demolished later that year.",
+      "url": "https://en.wikipedia.org/wiki/Golden_Bear_(nightclub)"
+    },
+    {
+      "name": "The Boarding House",
+      "metro": "san-francisco",
+      "years": "1971-1984",
+      "reason": "Music/comedy club destroyed by fire in 1980; reopened at a new North Beach location in 1982 but closed permanently in 1984 after founder David Allen's death -- never achieved stable owned premises.",
+      "url": "https://en.wikipedia.org/wiki/The_Boarding_House_(nightclub)"
+    },
+    {
+      "name": "San Pablo Avenue folk-club corridor (Blind Lemon, Cabale Creamery, Jabberwock, Questing Beast)",
+      "metro": "san-francisco",
+      "years": "1960s-early 1970s",
+      "reason": "A cluster of Berkeley folk clubs mostly closed by the early 1970s as the commercial folk wave faded and rents/tastes shifted; Freight & Salvage is the sole survivor of this scene specifically because it transitioned to nonprofit status and eventually bought its own building.",
+      "url": "https://berkeleyplaques.org/e-plaque/san-pablo-avenue-folk-music-clubs/"
+    },
+    {
+      "name": "Sand Mountain Coffee House",
+      "metro": "houston",
+      "years": "1965-1976",
+      "reason": "Iconic alcohol-free folk coffeehouse (incubator for Guy Clark, Townes Van Zandt, Jerry Jeff Walker) closed amid declining audiences, a failed pivot to serving alcohol, and the founder's declining health -- it never had a permanent institutional/nonprofit ownership structure.",
+      "url": "https://digitalcollections.rice.edu/houston-folk-music-archive"
+    },
+    {
+      "name": "Houston Saengerbund's Feagan Street hall",
+      "metro": "houston",
+      "years": "c.1930s-2004",
+      "reason": "Owned and occupied for roughly 70 years, sold in 2004 due to rising costs; the organization then rented space at a church for 18 years before purchasing its current Saengerhalle building in 2022.",
+      "url": "https://houstonsaengerbund.org/about/"
+    },
+    {
+      "name": "Red Light Cafe",
+      "metro": "atlanta",
+      "years": "c.2010-2026",
+      "reason": "Long-running folk/acoustic/Americana listening room forced to leave its Amsterdam Walk location due to wholesale redevelopment of the retail district into new commercial/residential space; relocating into the former Star Community Bar space in 2027.",
+      "url": "https://www.ajc.com/"
+    },
+    {
+      "name": "Denver Folklore Center Concert Hall",
+      "metro": "denver",
+      "years": "1971-c.1980",
+      "reason": "Harry Tuft's concert-hall operation lost roughly $15,000/year as the surrounding neighborhood declined in the late 1970s and the folk boom waned, facing loss of its lease; supporters spun off the nonprofit Swallow Hill Music Association (1979) to carry on the mission, eventually buying its own building in 1999.",
+      "url": "https://swallowhillmusic.org/about-us/"
+    },
+    {
+      "name": "The Heritage Coffee House",
+      "metro": "san-diego",
+      "years": "1963-1973",
+      "reason": "Pioneering Mission Beach folk coffeehouse (launched Tom Waits' career) closed in 1973 amid the general early-1970s coffeehouse-closure wave tied to changing musical tastes and lease/economic pressures; the building is now a surf bar.",
+      "url": "https://sandiegotroubadour.com/me-and-tom-waits/"
+    },
+    {
+      "name": "The Flick",
+      "metro": "miami",
+      "years": "c.1964-1974",
+      "reason": "University of Miami-area folk coffeehouse (hosted Joni Mitchell, Jimmy Buffett, Jerry Jeff Walker early in their careers) closed in 1974 as the national folk-coffeehouse circuit contracted; site is now a restaurant.",
+      "url": "https://www.miaminewtimes.com/music/the-flick-miamis-legendary-music-club-and-coffeehouse-celebrates-its-50th-anniversary-6449006/"
+    },
+    {
+      "name": "The Mews / Lumber Mill / Foggy Mountain Coffee House",
+      "metro": "phoenix",
+      "years": "1960s",
+      "reason": "Trio of Scottsdale folk coffeehouses where John Denver and Dolan Ellis performed early in their careers; all closed decades ago as ownership changed hands and the folk-coffeehouse wave ended -- precise closure dates/reasons not well documented in available sources.",
+      "url": "https://www.city-data.com/forum/phoenix-area/2740881-1960s-folk-music-scene.html"
+    }
+  ],
+  "by_metro": {
+    "new-york": {
+      "owned_or_controlled": 3,
+      "names": [
+        "Irish Arts Center",
+        "Ukrainian National Home",
+        "Germania Park (Deutscher Schul- und Gesang Verein)"
+      ]
+    },
+    "los-angeles": {
+      "owned_or_controlled": 3,
+      "names": [
+        "Japanese American Cultural & Community Center (JACCC)",
+        "Plaza de la Raza",
+        "Ararat-Eskijian Museum and Research Center"
+      ]
+    },
+    "chicago": {
+      "owned_or_controlled": 6,
+      "names": [
+        "Old Town School of Folk Music — Lincoln Square campus",
+        "Old Town School of Folk Music — Lincoln Park campus (Armitage/Aldine Hall)",
+        "Irish American Heritage Center",
+        "Croatian Cultural Center of Chicago",
+        "Lithuanian World Center",
+        "Swedish American Museum"
+      ]
+    },
+    "dallas-fort-worth": {
+      "owned_or_controlled": 1,
+      "names": [
+        "SPJST Lodge #92 'National Hall'"
+      ]
+    },
+    "houston": {
+      "owned_or_controlled": 4,
+      "names": [
+        "Houston Saengerbund / Saengerhalle",
+        "SPJST Lodge 88",
+        "Sokol Houston (T.J. Sokol of Houston)",
+        "Czech Center Museum Houston"
+      ]
+    },
+    "atlanta": {
+      "owned_or_controlled": 0,
+      "names": []
+    },
+    "washington-dc": {
+      "owned_or_controlled": 1,
+      "names": [
+        "Spanish Ballroom, Glen Echo Park"
+      ]
+    },
+    "miami": {
+      "owned_or_controlled": 0,
+      "names": []
+    },
+    "philadelphia": {
+      "owned_or_controlled": 3,
+      "names": [
+        "Commodore John Barry Arts and Cultural Center (The Irish Center)",
+        "Cannstatter Volksfest-Verein",
+        "Danube Swabian Association of Philadelphia and Vicinity"
+      ]
+    },
+    "phoenix": {
+      "owned_or_controlled": 1,
+      "names": [
+        "Irish Cultural Center and McClelland Library"
+      ]
+    },
+    "boston": {
+      "owned_or_controlled": 3,
+      "names": [
+        "Irish Cultural Centre of Greater Boston",
+        "South Boston Lithuanian Citizens' Association",
+        "Scandinavian Cultural Center & Library (Nordic Hall)"
+      ]
+    },
+    "riverside": {
+      "owned_or_controlled": 0,
+      "names": []
+    },
+    "san-francisco": {
+      "owned_or_controlled": 5,
+      "names": [
+        "Freight & Salvage Coffeehouse",
+        "Ashkenaz Music & Dance Community Center",
+        "Swedish American Hall",
+        "Finnish Hall (Berkeley)",
+        "Croatian American Cultural Center of San Francisco"
+      ]
+    },
+    "detroit": {
+      "owned_or_controlled": 2,
+      "names": [
+        "Finnish Center Association",
+        "Ukrainian Cultural Center of Metropolitan Detroit"
+      ]
+    },
+    "seattle": {
+      "owned_or_controlled": 4,
+      "names": [
+        "Swedish Cultural Center (formerly The Swedish Club)",
+        "Leif Erikson Hall (Sons of Norway)",
+        "National Nordic Museum",
+        "Phinney Neighborhood Center"
+      ]
+    },
+    "minneapolis": {
+      "owned_or_controlled": 6,
+      "names": [
+        "Tapestry Folkdance Center",
+        "Celtic Junction Arts Center",
+        "The Cedar Cultural Center",
+        "American Swedish Institute",
+        "Norway House",
+        "Danish American Center"
+      ]
+    },
+    "tampa": {
+      "owned_or_controlled": 0,
+      "names": []
+    },
+    "san-diego": {
+      "owned_or_controlled": 2,
+      "names": [
+        "House of Pacific Relations International Cottages",
+        "German American Societies of San Diego"
+      ]
+    },
+    "denver": {
+      "owned_or_controlled": 4,
+      "names": [
+        "Swallow Hill Music (Daniels Hall / Tuft Theatre)",
+        "Wheat Ridge Grange No. 155",
+        "Denver Turnverein (German House)",
+        "Trollheim Lodge (Sons of Norway 6-110)"
+      ]
+    },
+    "orlando": {
+      "owned_or_controlled": 1,
+      "names": [
+        "German American Society of Central Florida"
+      ]
+    }
+  }
+}

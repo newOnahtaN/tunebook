@@ -1,0 +1,5050 @@
+{
+ "as_of": "2026-10",
+ "method_notes": "Purpose: one consistent, directory-based yardstick of recurring folk activity across the 20 largest US metros (Census 2023 CBSA counties from msa_counties.txt). Only items located in those counties are counted (San Jose/Santa Clara, Boulder, Ann Arbor, Baltimore and Connecticut are excluded). Geography: towns were matched to Census 2023 Gazetteer place/county-subdivision internal points (national files) or to the directory's own coordinates, then assigned to counties by point-in-polygon against counties.geojson. Neighborhood names (e.g. Jamaica Plain, Brooklyn, Studio City) used directory coordinates or were mapped to their parent city. No Nominatim/Census-geocoder calls were needed. Frequency conversion: weekly = 4.33/month; every other week = 2.17; \"1st and 3rd\" = 2; \"1st, 3rd and 5th\" = 2.33; fifth-weekday only = 0.33; monthly = 1; \"1st or 2nd\" (one of) = 1; trycontra annual_freq/12. Seasonal series are counted at their in-season rate unless the directory gives an annual count. contra (PRIMARY): trycontra.com dances_locs.json (Jeff Kaufman's Try Contra; file Last-Modified 2026-10-26). Structured lat/lng, annual frequency and inactive flags; covers all 20 metros consistently. It lists no series names (name left blank; url identifies the series). Inactive entries are listed but excluded from totals. Coverage is selective (~1 entry per organizer series; e.g. only 5 Bay Area entries), so treat as a floor. contra_contradancelinks (SECONDARY, STALE): contradancelinks.com per-state pages, as requested. Every page says \"As of January 1, 2021\" and the latest dated listings are 2021-2022, so the venue section is a cumulative archive mixing current, defunct and one-off events. Only venue entries whose text states an explicit recurring frequency and whose title is not a one-off/workshop/festival were kept (heuristic parse, spot-checked); entries saying suspended/discontinued are flagged inactive and excluded. Squares/waltz/Scandinavian-only entries are excluded; ECD entries are counted separately. The Massachusetts/CT/RI page (schedule.html) was blocked by the corporate web filter (category \"malware\"), so Boston includes only its New Hampshire counties here. Colorado is linked to the external Colorado Contra Online venue page (dancingtheweb.com, itself last updated ~2023), used for Denver. venue_entries_in_metro_total shows how many raw venue entries the page has for the metro. sacred_harp: Sacred Harp Musical Heritage Association \"2025 Minutes and 2026 Directory\", Local Singings section (fasola.org/minutes, SacredHarpMinutesOnline2025.pdf), plus the one in-metro \"Fifth Weekend (Regular Singings)\" entry (Old Chicora/Lithia FL). This is the directory fasola.org points to; shapenotesingings.com/regular-singings/ (also linked) lists groups only with links, and has some misaligned rows. \"book\" is as printed; where none is printed it says so (most are presumably The Sacred Harp). \"Most Sundays\" counted as 3.5/month; \"most months\" as 0.9. Only regular local singings are counted (no annual all-day singings/conventions). The NYC line \"New York City Singings: Information\" is a pointer, not a singing, and is not counted. Out-of-CBSA singings excluded: Palo Alto (Santa Clara), Boulder, Ann Arbor, Baltimore, Princeton/Lawrenceville (Mercer NJ), Douglassville (Berks PA), Northfield MN, Whidbey Island, Kingston/Woodstock NY. rscds: groups = RSCDS branches and affiliated groups as mirrored on my.strathspey.org/groups/country/US/ (entries \"generated automatically from public information on the RSCDS web site\"); rscds.org itself returned a Cloudflare challenge/403. classes = adult and youth country-dance classes (not Highland/step/performance teams) taken from each branch's current class page where reachable (pages fetched Oct 30 2026), else from the branch description in the directory. weekly_class_count = per_month_total/4.33. Gaps noted per metro. morris: Tradfolk \"Morris teams of the world\" Google My Map (tradfolk.co/the-morris-map, KML export; practice location and night per team) located by town, plus team lists from the North American Morris Dance Organization regional pages (morrisdance.org, last edited 2021) where the NAMDO list gives a placeable location (state heading + place name or a shared club domain). NAMDO teams in the same state whose town cannot be determined from the directories are listed under namdo_listed_in_state_location_unknown and NOT counted. Teams NAMDO marks Ceased are excluded from team_count. americanmorrisnews.org, the Morris Ring and Open Morris sites did not resolve, and Wikipedia has no \"List of morris dance sides\" article. Coverage is incomplete (Tradfolk is UK-centric; NAMDO is a 2021 snapshot). comhaltas: comhaltas.ie branch listings (21 pages of the Dokan branch directory, which carries geocoded addresses). 41 US listings in total. ccena.org and other CCE North America sites did not resolve. Some well-known branches may be missing or listed under an officer/region name; the Midwest Regional Secretary listing is shown but excluded. cdss_calendar (PARTIAL): CDSS online events calendar via its public REST API, all events dated 2026-11-01..2026-11-30 (261 events nationally), online-only events excluded. Self-submitted by organizers, so it badly undercounts most metros (e.g. Boston 3 and Washington DC 1 in-person events for the month) and is included only as a cross-check and for English country dance. Not collected: international folk dance (folkdancefootnotes / Folk Dance Federation listings are regional, not national) and bluegrass jams (bluegrassjamfinder.com returned a 114-byte placeholder page). Treat these as missing, not zero.",
+ "directories": {
+  "contra": {
+   "source_url": "https://www.trycontra.com/dances_locs.json",
+   "status": "current (file modified 2026-10-26); selective coverage",
+   "unit": "recurring contra series; per_month = dances per month",
+   "by_metro": {
+    "atlanta": {
+     "series": [
+      {
+       "name": "",
+       "town": "Decatur GA",
+       "county": "DeKalb County, GA",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Fridays",
+       "url": "http://www.contradance.org",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Atlanta GA",
+       "county": "Fulton County, GA",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Tuesdays",
+       "url": "https://contradance.org/trolleybarn",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 8.66
+    },
+    "boston": {
+     "series": [
+      {
+       "name": "",
+       "town": "Cambridge MA",
+       "county": "Middlesex County, MA",
+       "per_month": 1.75,
+       "annual_freq": 21,
+       "weekdays": "Sundays",
+       "url": "http://www.bidadance.org/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Melrose MA",
+       "county": "Middlesex County, MA",
+       "per_month": 0.33,
+       "annual_freq": 4,
+       "weekdays": "Saturdays",
+       "url": "https://dance.manystrings6.com/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Concord MA",
+       "county": "Middlesex County, MA",
+       "per_month": 2.08,
+       "annual_freq": 25,
+       "weekdays": "Mondays",
+       "url": "http://mondaycontras.com/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Concord MA",
+       "county": "Middlesex County, MA",
+       "per_month": 2.08,
+       "annual_freq": 25,
+       "weekdays": "Thursdays",
+       "url": "https://www.neffa.org/thursday-contras/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Carlisle MA",
+       "county": "Middlesex County, MA",
+       "per_month": 0.67,
+       "annual_freq": 8,
+       "weekdays": "Fridays",
+       "url": "https://www.facebook.com/groups/244173362410949/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Jamaica Plain MA",
+       "county": "Suffolk County, MA",
+       "per_month": 0.42,
+       "annual_freq": 5,
+       "weekdays": "Saturdays",
+       "url": "http://www.lcfd.org/jp/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Lexington MA",
+       "county": "Middlesex County, MA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Fridays",
+       "url": "https://trillian.mit.edu/~jc/rj/index.cgi",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Gloucester MA",
+       "county": "Essex County, MA",
+       "per_month": 0.42,
+       "annual_freq": 5,
+       "weekdays": "Saturdays",
+       "url": "https://www.facebook.com/CapeAnnContraDance/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Arlington MA",
+       "county": "Middlesex County, MA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Sundays",
+       "url": "https://www.kofc109.com/contra",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Arlington MA",
+       "county": "Middlesex County, MA",
+       "per_month": 0.67,
+       "annual_freq": 8,
+       "weekdays": "Sundays",
+       "url": "https://www.facebook.com/p/Arlington-Barn-Dance-61557476804409/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Groton MA",
+       "county": "Middlesex County, MA",
+       "per_month": 0.67,
+       "annual_freq": 8,
+       "weekdays": "Saturdays",
+       "url": "https://grotongrange.org/events/contra-dance/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Bridgewater MA",
+       "county": "Plymouth County, MA",
+       "per_month": 0.92,
+       "annual_freq": 11,
+       "weekdays": "Fridays and Saturdays",
+       "url": "https://www.facebook.com/bridgewatercommunitydance/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Durham NH",
+       "county": "Strafford County, NH",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "https://www.facebook.com/groups/116174444022/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "East Derry NH",
+       "county": "Rockingham County, NH",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Fridays",
+       "url": "http://www.wordworthy2.org",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Newfields NH",
+       "county": "Rockingham County, NH",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Fridays",
+       "url": "https://seacoastcontra.com/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Dover NH",
+       "county": "Strafford County, NH",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Fridays",
+       "url": "https://www.facebook.com/groups/1003765254297548",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 16,
+     "per_month_total": 16.01
+    },
+    "chicago": {
+     "series": [
+      {
+       "name": "",
+       "town": "Chicago IL",
+       "county": "Cook County, IL",
+       "per_month": 4.17,
+       "annual_freq": 50,
+       "weekdays": "Mondays",
+       "url": "http://www.chicagobarndance.org/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Chicago IL",
+       "county": "Cook County, IL",
+       "per_month": 0.83,
+       "annual_freq": 10,
+       "weekdays": "Saturdays",
+       "url": "https://www.facebook.com/QueerContraChicago/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Chicago IL",
+       "county": "Cook County, IL",
+       "per_month": 0.83,
+       "annual_freq": 10,
+       "weekdays": "Fridays",
+       "url": "https://uchicagofac.wixsite.com/contra",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Glen Ellyn IL",
+       "county": "DuPage County, IL",
+       "per_month": 0.83,
+       "annual_freq": 10,
+       "weekdays": "Sundays",
+       "url": "http://foxvalleyfolk.com/barndance/",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Downers Grove IL",
+       "county": "DuPage County, IL",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "https://www.plankroad.org/BarnDances.html",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Valparaiso IN",
+       "county": "Porter County, IN",
+       "per_month": 0.67,
+       "annual_freq": 8,
+       "weekdays": "Saturdays",
+       "url": "http://valpo.chicagobarndance.com/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 6,
+     "per_month_total": 8.33
+    },
+    "dallas-fort-worth": {
+     "series": [
+      {
+       "name": "",
+       "town": "Carrollton TX",
+       "county": "Denton County, TX",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.nttds.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1
+    },
+    "denver": {
+     "series": [
+      {
+       "name": "",
+       "town": "Denver CO",
+       "county": "Denver County, CO",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Fridays",
+       "url": "http://www.cfootmad.org",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Denver CO",
+       "county": "Denver County, CO",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.cfootmad.org",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Denver CO",
+       "county": "Denver County, CO",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.cfootmad.org",
+       "inactive": false,
+       "gender_free": true
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 4
+    },
+    "detroit": {
+     "series": [
+      {
+       "name": "",
+       "town": "Troy MI",
+       "county": "Oakland County, MI",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.octds.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1
+    },
+    "houston": {
+     "series": [
+      {
+       "name": "",
+       "town": "Houston TX",
+       "county": "Harris County, TX",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Saturdays",
+       "url": "http://www.hatds.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 2
+    },
+    "los-angeles": {
+     "series": [
+      {
+       "name": "",
+       "town": "Anaheim CA",
+       "county": "Orange County, CA",
+       "per_month": 0.92,
+       "annual_freq": 11,
+       "weekdays": "Saturdays",
+       "url": "http://www.thelivingtradition.org/tltbodydance.html",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Los Angeles CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Fridays",
+       "url": "https://www.sccdc.org/contra/california-twirl/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Pasadena CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 2.25,
+       "annual_freq": 27,
+       "weekdays": "Saturdays",
+       "url": "https://www.sccdc.org/contra/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 4.17
+    },
+    "miami": {
+     "series": [
+      {
+       "name": "",
+       "town": "Boca Raton FL",
+       "county": "Palm Beach County, FL",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "https://www.facebook.com/southfloridacontradance/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1
+    },
+    "minneapolis": {
+     "series": [
+      {
+       "name": "",
+       "town": "Minneapolis MN",
+       "county": "Hennepin County, MN",
+       "per_month": 5,
+       "annual_freq": 60,
+       "weekdays": "Mondays and Saturdays",
+       "url": "https://www.tapestryfolkdance.org/contra",
+       "inactive": false,
+       "gender_free": false
+      },
+      {
+       "name": "",
+       "town": "Minneapolis MN",
+       "county": "Hennepin County, MN",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Mondays",
+       "url": "https://www.facebook.com/groups/twincitiesqueercontra",
+       "inactive": false,
+       "gender_free": true
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 6
+    },
+    "new-york": {
+     "series": [
+      {
+       "name": "",
+       "town": "Chatham NJ",
+       "county": "Morris County, NJ",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Saturdays",
+       "url": "https://folkproject.org/swingin-tern/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "New York NY",
+       "county": "Kings County, NY",
+       "per_month": 2.92,
+       "annual_freq": 35,
+       "weekdays": "Saturdays",
+       "url": "http://cdny.org/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Brooklyn NY",
+       "county": "Kings County, NY",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Sundays",
+       "url": "http://www.brooklyncontra.org/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Smithtown NY",
+       "county": "Suffolk County, NY",
+       "per_month": 0.92,
+       "annual_freq": 11,
+       "weekdays": "Sundays",
+       "url": "http://www.litma.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 4,
+     "per_month_total": 7.84
+    },
+    "orlando": {
+     "series": [
+      {
+       "name": "",
+       "town": "Orlando FL",
+       "county": "Orange County, FL",
+       "per_month": 4,
+       "annual_freq": 48,
+       "weekdays": "Fridays",
+       "url": "https://orlandocontra.org/",
+       "inactive": false,
+       "gender_free": true
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 4
+    },
+    "philadelphia": {
+     "series": [
+      {
+       "name": "",
+       "town": "Arden DE",
+       "county": "New Castle County, DE",
+       "per_month": 0.83,
+       "annual_freq": 10,
+       "weekdays": "Sundays",
+       "url": "https://www.facebook.com/groups/ardencontra/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Mt. Airy PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Thursdays",
+       "url": "http://www.thursdaycontra.com/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Mt. Airy PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 0.75,
+       "annual_freq": 9,
+       "weekdays": "Saturdays",
+       "url": "http://www.thursdaycontra.com/ThirdSaturday.html",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Philadelphia PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.thursdaycontra.com/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Swarthmore PA",
+       "county": "Delaware County, PA",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Tuesdays",
+       "url": "https://ParkAvenueContra.org",
+       "inactive": false,
+       "gender_free": true
+      }
+     ],
+     "series_count": 5,
+     "per_month_total": 8.91
+    },
+    "phoenix": {
+     "series": [
+      {
+       "name": "",
+       "town": "Phoenix AZ",
+       "county": "Maricopa County, AZ",
+       "per_month": 1.83,
+       "annual_freq": 22,
+       "weekdays": "Fridays and Saturdays",
+       "url": "http://www.phxtmd.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1.83
+    },
+    "riverside": {
+     "series": [],
+     "series_count": 0,
+     "per_month_total": 0
+    },
+    "san-diego": {
+     "series": [
+      {
+       "name": "",
+       "town": "San Diego CA",
+       "county": "San Diego County, CA",
+       "per_month": 2.25,
+       "annual_freq": 27,
+       "weekdays": "Wednesdays and Saturdays",
+       "url": "https://sdfolkheritage.org/contradance/",
+       "inactive": false,
+       "gender_free": true
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 2.25
+    },
+    "san-francisco": {
+     "series": [
+      {
+       "name": "",
+       "town": "Berkeley CA",
+       "county": "Alameda County, CA",
+       "per_month": 2.25,
+       "annual_freq": 27,
+       "weekdays": "Wednesdays",
+       "url": "http://www.bacds.org/series/contra/berkeley_wed/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "San Francisco CA",
+       "county": "San Francisco County, CA",
+       "per_month": 2,
+       "annual_freq": 24,
+       "weekdays": "Wednesdays",
+       "url": "https://bacds.org/series/contra/san_francisco_wed/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Hayward CA",
+       "county": "Alameda County, CA",
+       "per_month": 1.25,
+       "annual_freq": 15,
+       "weekdays": "Sundays",
+       "url": "https://sfbaycontra.org/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Oakland CA",
+       "county": "Alameda County, CA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.queercontradance.org/circleleft.html",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "San Rafael CA",
+       "county": "Marin County, CA",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Saturdays",
+       "url": "http://www.nbcds.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 5,
+     "per_month_total": 7.5
+    },
+    "seattle": {
+     "series": [
+      {
+       "name": "",
+       "town": "Seattle WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Thursdays",
+       "url": "http://seattledance.org/contra/lakecity",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Seattle WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Fridays",
+       "url": "http://seattledance.org/contra/emeraldcity",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Tacoma WA",
+       "county": "Pierce County, WA",
+       "per_month": 0.83,
+       "annual_freq": 10,
+       "weekdays": "Saturdays",
+       "url": "http://www.tacomacontradance.org/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 9.49
+    },
+    "tampa": {
+     "series": [
+      {
+       "name": "",
+       "town": "Tampa FL",
+       "county": "Hillsborough County, FL",
+       "per_month": 3,
+       "annual_freq": 36,
+       "weekdays": "Fridays and Saturdays",
+       "url": "http://www.tampabaycontra.com/",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 3
+    },
+    "washington-dc": {
+     "series": [
+      {
+       "name": "",
+       "town": "Glen Echo MD",
+       "county": "Montgomery County, MD",
+       "per_month": 4.33,
+       "annual_freq": 52,
+       "weekdays": "Fridays",
+       "url": "http://fridaynightdance.org/",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Silver Spring MD",
+       "county": "Montgomery County, MD",
+       "per_month": 1,
+       "annual_freq": 12,
+       "weekdays": "Thursdays",
+       "url": "https://carpediemarts.org/dance-with-us",
+       "inactive": false,
+       "gender_free": true
+      },
+      {
+       "name": "",
+       "town": "Shepherdstown WV",
+       "county": "Jefferson County, WV",
+       "per_month": 0.75,
+       "annual_freq": 9,
+       "weekdays": "Saturdays",
+       "url": "http://smad.us",
+       "inactive": false,
+       "gender_free": false
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 6.08
+    }
+   }
+  },
+  "contra_contradancelinks": {
+   "source_url": "http://www.contradancelinks.com/ (schedule_XX.html state pages; Colorado via http://www.dancingtheweb.com/coloradocontra/ccovenue.htm)",
+   "status": "stale (pages say \"As of January 1, 2021\"); MA/CT/RI page blocked; lower-bound heuristic parse",
+   "unit": "recurring contra (and separately ECD) series",
+   "by_metro": {
+    "atlanta": {
+     "series": [
+      {
+       "name": "Decatur - Tuesday",
+       "town": "Decatur, GA",
+       "county": "DeKalb County, GA",
+       "kind": "contra",
+       "per_month": 2.33,
+       "freq_text": "1st, 3rd and 5th tuesdays",
+       "url": "http://www.contradance.org",
+       "page": "schedule_GA.html#DecaturTuesday",
+       "inactive": false
+      },
+      {
+       "name": "Decatur - Friends of L'Arche Atlanta",
+       "town": "Decatur, GA",
+       "county": "DeKalb County, GA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "fourth saturday",
+       "url": "http://www.friendsoflarcheatlanta.org",
+       "page": "schedule_GA.html#DecaturLArche",
+       "inactive": false
+      },
+      {
+       "name": "Decatur - Quicksilver",
+       "town": "Decatur, GA",
+       "county": "DeKalb County, GA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.qcdancers.org/",
+       "page": "schedule_GA.html#DecaturQuicksilver",
+       "inactive": false
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 4.33,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 56
+    },
+    "boston": {
+     "series": [
+      {
+       "name": "Chester",
+       "town": "Chester, NH",
+       "county": "Rockingham County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st saturdays",
+       "url": "",
+       "page": "schedule_NH.html#ChesterNH",
+       "inactive": false
+      },
+      {
+       "name": "Dover",
+       "town": "Dover, NH",
+       "county": "Strafford County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st thursdays",
+       "url": "http://www.nhcountrydance.com/music/lamprey.html",
+       "page": "schedule_NH.html#DoverNH",
+       "inactive": false
+      },
+      {
+       "name": "Exeter",
+       "town": "Exeter, NH",
+       "county": "Rockingham County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.exeteruu.org/events",
+       "page": "schedule_NH.html#Exeter",
+       "inactive": false
+      },
+      {
+       "name": "Kingston",
+       "town": "Kingston, NH",
+       "county": "Rockingham County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturdays",
+       "url": "",
+       "page": "schedule_NH.html#KingstonNH",
+       "inactive": false
+      },
+      {
+       "name": "Londonderry",
+       "town": "Londonderry, NH",
+       "county": "Rockingham County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd fridays",
+       "url": "http://tinyurl.com/yctdxhvy",
+       "page": "schedule_NH.html#Londonderry",
+       "inactive": false
+      },
+      {
+       "name": "Newfields",
+       "town": "Newfields, NH",
+       "county": "Rockingham County, NH",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "last friday",
+       "url": "http://seacoastcontra.com/",
+       "page": "schedule_NH.html#NewfieldsSeacoast",
+       "inactive": false
+      }
+     ],
+     "series_count": 6,
+     "per_month_total": 6,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 21,
+     "note": "Massachusetts schedule page (schedule.html) was blocked by the corporate web filter, so Boston only includes the Rockingham/Strafford NH part of the metro."
+    },
+    "chicago": {
+     "series": [
+      {
+       "name": "Morris",
+       "town": "Morris, IL",
+       "county": "Grundy County, IL",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "4th tuesday; 2nd tuesday",
+       "url": "",
+       "page": "schedule_IL.html#Morris",
+       "inactive": false
+      },
+      {
+       "name": "Warrenville - Fermilab - 2nd Sunday",
+       "town": "Warrenville, IL",
+       "county": "DuPage County, IL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd sunday",
+       "url": "http://orgs.fnal.gov/folkclub/",
+       "page": "schedule_IL.html#Warrenville2ndSun",
+       "inactive": false
+      },
+      {
+       "name": "Warrenville - Fermilab - 3rd Sunday",
+       "town": "Warrenville, IL",
+       "county": "DuPage County, IL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd sunday",
+       "url": "http://orgs.fnal.gov/folkclub/",
+       "page": "schedule_IL.html#Warrenville3rdSun",
+       "inactive": false
+      }
+     ],
+     "series_count": 3,
+     "per_month_total": 4,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 49
+    },
+    "dallas-fort-worth": {
+     "series": [
+      {
+       "name": "Dallas",
+       "town": "Dallas, TX",
+       "county": "Dallas County, TX",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd saturday",
+       "url": "http://www.nttds.org",
+       "page": "schedule_TX.html#Dallas",
+       "inactive": false
+      },
+      {
+       "name": "Dallas - 2nd Saturday - Open Band and Calling",
+       "town": "Dallas, TX",
+       "county": "Dallas County, TX",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.nttds.org",
+       "page": "schedule_TX.html#Dallas2ndSatOpen",
+       "inactive": false
+      },
+      {
+       "name": "Fort Worth",
+       "town": "Fort Worth, TX",
+       "county": "Tarrant County, TX",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturdays",
+       "url": "http://www.nttds.org",
+       "page": "schedule_TX.html#FortWorth",
+       "inactive": false
+      },
+      {
+       "name": "Irving",
+       "town": "Irving, TX",
+       "county": "Dallas County, TX",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.nttds.org",
+       "page": "schedule_TX.html#Irving",
+       "inactive": false
+      }
+     ],
+     "series_count": 4,
+     "per_month_total": 4,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 24
+    },
+    "denver": {
+     "series": [
+      {
+       "name": "Denver contra (CFOOTMAD)",
+       "town": "Denver, CO",
+       "county": "Denver County, CO",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "2nd and 4th Fridays",
+       "url": "http://www.dancingtheweb.com/coloradocontra/ccovenue.htm",
+       "page": "ccovenue.htm",
+       "inactive": false
+      },
+      {
+       "name": "Hands Across contra (CFOOTMAD)",
+       "town": "Denver, CO",
+       "county": "Denver County, CO",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th Saturdays",
+       "url": "http://www.dancingtheweb.com/coloradocontra/ccovenue.htm",
+       "page": "ccovenue.htm",
+       "inactive": false
+      },
+      {
+       "name": "Experience Sense & Sensibility (ECD)",
+       "town": "Denver, CO",
+       "county": "Denver County, CO",
+       "kind": "english_country",
+       "per_month": 1,
+       "freq_text": "Monthly dance",
+       "url": "http://www.dancingtheweb.com/coloradocontra/ccovenue.htm",
+       "page": "ccovenue.htm",
+       "inactive": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 3,
+     "ecd_series_count": 1,
+     "ecd_per_month_total": 1,
+     "venue_entries_in_metro_total": 0
+    },
+    "detroit": {
+     "series": [
+      {
+       "name": "Troy",
+       "town": "Troy, MI",
+       "county": "Oakland County, MI",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturday",
+       "url": "http://www.octds.org/",
+       "page": "schedule_MI.html#TroyMI",
+       "inactive": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 19
+    },
+    "houston": {
+     "series": [
+      {
+       "name": "Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "1st and 3rd saturdays",
+       "url": "http://www.hatds.org",
+       "page": "schedule_TX.html#Houston",
+       "inactive": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 2,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 9
+    },
+    "los-angeles": {
+     "series": [
+      {
+       "name": "Anaheim",
+       "town": "Anaheim, CA",
+       "county": "Orange County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturday",
+       "url": "http://www.thelivingtradition.org/tltbodydance.html",
+       "page": "schedule_CA.html#Anaheim",
+       "inactive": false
+      },
+      {
+       "name": "Brentwood - 1st Saturdays",
+       "town": "Brentwood (Los Angeles), CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#Brentwood1stSa",
+       "inactive": false
+      },
+      {
+       "name": "Brentwood - 2nd Saturday",
+       "town": "Brentwood (Los Angeles), CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#Brentwood2ndSat",
+       "inactive": false
+      },
+      {
+       "name": "Claremont - CONTRAversial",
+       "town": "Claremont, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://contraversial.weebly.com",
+       "page": "schedule_CA.html#ClaremontColleges",
+       "inactive": false
+      },
+      {
+       "name": "Culver City - 4th Saturday",
+       "town": "Culver City, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#CulverCity4thSa",
+       "inactive": false
+      },
+      {
+       "name": "La Verne",
+       "town": "La Verne, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st sunday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#LaVerne",
+       "inactive": false
+      },
+      {
+       "name": "Lancaster",
+       "town": "Lancaster, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd or 4th saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#Lancaster",
+       "inactive": false
+      },
+      {
+       "name": "Los Angeles - 2nd Saturday",
+       "town": "Los Angeles, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#LosAngeles2ndSat",
+       "inactive": false
+      },
+      {
+       "name": "Los Angeles - California Twirl",
+       "town": "Los Angeles, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#LosAngelesCaliforniaTwirl",
+       "inactive": false
+      },
+      {
+       "name": "Pasadena",
+       "town": "Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 0.33,
+       "freq_text": "5th saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#Pasadena",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 3rd Friday",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd friday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadena3rdF",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 3rd Saturday",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadena3rdSa",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 4th Saturday",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadena4thSa",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 2nd Saturday",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadena2ndSat",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 1st Friday Dance Parties",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "first friday",
+       "url": "https://www.facebook.com/FirstFridayDanceParties",
+       "page": "schedule_CA.html#SouthPasadena1stFridayDanceParties",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - 1st Saturday",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st saturday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadena1stSat",
+       "inactive": false
+      },
+      {
+       "name": "South Pasadena - California Twirl",
+       "town": "South Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#SouthPasadenaCaliforniaTwirl",
+       "inactive": false
+      }
+     ],
+     "series_count": 17,
+     "per_month_total": 16.33,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 67
+    },
+    "miami": {
+     "series": [
+      {
+       "name": "Boca Raton - Michael's Body Scenes - 1st Saturdays",
+       "town": "Boca Raton, FL",
+       "county": "Palm Beach County, FL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st saturdays",
+       "url": "http://www.southfloridacontradance.com",
+       "page": "schedule_FL.html#BocaRatonMichaels1stSat",
+       "inactive": false
+      },
+      {
+       "name": "Boca Raton - Michael's Body Scenes - 3rd Sundays",
+       "town": "Boca Raton, FL",
+       "county": "Palm Beach County, FL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd sundays",
+       "url": "http://www.southfloridacontradance.com",
+       "page": "schedule_FL.html#BocaRatonMichaels3rdSun",
+       "inactive": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 2,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 6
+    },
+    "minneapolis": {
+     "series": [
+      {
+       "name": "Minneapolis - Tapestry Center - Challenge Dances",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd sundays",
+       "url": "http://www.tapestryfolkdance.org/",
+       "page": "schedule_MN.html#MinneapolisTapestryChallenge",
+       "inactive": false
+      },
+      {
+       "name": "Minneapolis - Tapestry Center - Family",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "kind": "family/community",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "https://www.tapestrydance.org/",
+       "page": "schedule_MN.html#MinneapolisTapestryFamily",
+       "inactive": false
+      },
+      {
+       "name": "St. Paul",
+       "town": "St. Paul, MN",
+       "county": "Ramsey County, MN",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "first friday",
+       "url": "http://www.thecelticjunction.com/",
+       "page": "schedule_MN.html#StPaul1stFri",
+       "inactive": false
+      },
+      {
+       "name": "River Falls",
+       "town": "River Falls, WI",
+       "county": "Pierce County, WI",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th or 3rd saturday",
+       "url": "http://www.riverfallscab.org/communitybarndances.php",
+       "page": "schedule_WI.html#RiverFalls",
+       "inactive": false
+      }
+     ],
+     "series_count": 4,
+     "per_month_total": 4,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 30
+    },
+    "new-york": {
+     "series": [
+      {
+       "name": "East Hanover - Swingin' Tern",
+       "town": "East Hanover, NJ",
+       "county": "Morris County, NJ",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "1st and 3rd saturdays",
+       "url": "http://www.folkproject.org/",
+       "page": "schedule_NJ.html#SwinginTern",
+       "inactive": false
+      },
+      {
+       "name": "New York City - Village Contra",
+       "town": "New York City, NY",
+       "county": "New York County, NY",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.villagecontra.org/",
+       "page": "schedule_NY.html#NYCVillage",
+       "inactive": false
+      },
+      {
+       "name": "Smithtown - LITMA",
+       "town": "Smithtown, NY",
+       "county": "Suffolk County, NY",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "2nd & 4th friday",
+       "url": "http://www.litma.org",
+       "page": "schedule_NY.html#Smithtown",
+       "inactive": false
+      },
+      {
+       "name": "Water Mill - LITMA",
+       "town": "Water Mill, NY",
+       "county": "Suffolk County, NY",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st saturdays",
+       "url": "http://www.litma.org",
+       "page": "schedule_NY.html#WaterMill",
+       "inactive": false
+      },
+      {
+       "name": "Westbury - Family Dance - LITMA",
+       "town": "Westbury, NY",
+       "county": "Nassau County, NY",
+       "kind": "family/community",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.litma.org",
+       "page": "schedule_NY.html#Westbury",
+       "inactive": false
+      }
+     ],
+     "series_count": 5,
+     "per_month_total": 7,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 90
+    },
+    "orlando": {
+     "series": [],
+     "series_count": 0,
+     "per_month_total": 0,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 1
+    },
+    "philadelphia": {
+     "series": [
+      {
+       "name": "Arden, Delaware",
+       "town": "Arden, DE",
+       "county": "New Castle County, DE",
+       "kind": "contra",
+       "per_month": 2,
+       "freq_text": "first sunday; third sundays",
+       "url": "http://ardenclub.org/gilds/contradance/",
+       "page": "schedule_DE.html#Arden",
+       "inactive": false
+      },
+      {
+       "name": "Philadelphia, Pennsylvania - Thursdays",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "kind": "contra",
+       "per_month": 4.33,
+       "freq_text": "weekly",
+       "url": "http://www.thursdaycontra.com/",
+       "page": "schedule_PA.html#PhiladelphiaThurs",
+       "inactive": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 6.33,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 63
+    },
+    "phoenix": {
+     "series": [
+      {
+       "name": "Phoenix - 1st or 2nd Saturday",
+       "town": "Phoenix, AZ",
+       "county": "Maricopa County, AZ",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "https://www.phxtmd.org",
+       "page": "schedule_AZ.html#Phoenix12Sat",
+       "inactive": false
+      },
+      {
+       "name": "Phoenix - 4th Friday",
+       "town": "Phoenix, AZ",
+       "county": "Maricopa County, AZ",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th friday",
+       "url": "https://www.phxtmd.org",
+       "page": "schedule_AZ.html#Phoenix4thSat",
+       "inactive": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 2,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 11
+    },
+    "riverside": {
+     "series": [
+      {
+       "name": "Riverside",
+       "town": "Riverside, CA",
+       "county": "Riverside County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st sunday",
+       "url": "http://www.caldancecoop.org",
+       "page": "schedule_CA.html#Riverside",
+       "inactive": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 1,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 4
+    },
+    "san-diego": {
+     "series": [
+      {
+       "name": "San Diego",
+       "town": "San Diego, CA",
+       "county": "San Diego County, CA",
+       "kind": "contra",
+       "per_month": 4,
+       "freq_text": "1st and 3rd fridays; 2nd and 4th saturdays; 2nd saturday",
+       "url": "http://www.sandiegocontra.org",
+       "page": "schedule_CA.html#SanDiego",
+       "inactive": false
+      }
+     ],
+     "series_count": 1,
+     "per_month_total": 4,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 8
+    },
+    "san-francisco": {
+     "series": [
+      {
+       "name": "Atherton - Woodshed",
+       "town": "Atherton, CA",
+       "county": "San Mateo County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "second tuesday",
+       "url": "http://www.bacds.org",
+       "page": "schedule_CA.html#AthertonWoodshed",
+       "inactive": false
+      },
+      {
+       "name": "Berkeley - BACDS",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "kind": "contra",
+       "per_month": 2.33,
+       "freq_text": "1st, 3rd and 5th wednesdays",
+       "url": "http://www2.abcstuff.com/BACDS/",
+       "page": "schedule_CA.html#Berkeley",
+       "inactive": false
+      },
+      {
+       "name": "Hayward",
+       "town": "Hayward, CA",
+       "county": "Alameda County, CA",
+       "kind": "contra",
+       "per_month": 1.33,
+       "freq_text": "4th sunday; 5th sundays",
+       "url": "http://www.bacds.org",
+       "page": "schedule_CA.html#Hayward",
+       "inactive": false
+      },
+      {
+       "name": "Oakland",
+       "town": "Oakland, CA",
+       "county": "Alameda County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd fridays",
+       "url": "http://www2.abcstuff.com/BACDS/",
+       "page": "schedule_CA.html#Oakland",
+       "inactive": false
+      },
+      {
+       "name": "San Francisco",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "kind": "contra",
+       "per_month": 3,
+       "freq_text": "1st and 3rd saturdays; 4th fridays",
+       "url": "http://www2.abcstuff.com/BACDS/",
+       "page": "schedule_CA.html#SanFrancisco",
+       "inactive": false
+      },
+      {
+       "name": "San Rafael",
+       "town": "San Rafael, CA",
+       "county": "Marin County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.nbcds.org",
+       "page": "schedule_CA.html#SanRafael",
+       "inactive": false
+      },
+      {
+       "name": "Walnut Creek",
+       "town": "Walnut Creek, CA",
+       "county": "Contra Costa County, CA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd sundays",
+       "url": "http://haywardcontradance.org/",
+       "page": "schedule_CA.html#WalnutCreek",
+       "inactive": false
+      }
+     ],
+     "series_count": 7,
+     "per_month_total": 10.66,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 88
+    },
+    "seattle": {
+     "series": [
+      {
+       "name": "Arlington",
+       "town": "Arlington, WA",
+       "county": "Snohomish County, WA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd saturday",
+       "url": "https://www.facebook.com/pages/Arlington-Community-Dance-Club/634471673329301",
+       "page": "schedule_WA.html#ArlingtonWA",
+       "inactive": false
+      },
+      {
+       "name": "Kirkland",
+       "town": "Kirkland, WA",
+       "county": "King County, WA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "second saturday",
+       "url": "http://folkhorizons.weebly.com/kirkland-dance.html",
+       "page": "schedule_WA.html#Kirkland",
+       "inactive": false
+      },
+      {
+       "name": "Seattle - Emerald City",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "kind": "contra",
+       "per_month": 4.33,
+       "freq_text": "weekly",
+       "url": "http://seattledance.org/contra/emeraldcity",
+       "page": "schedule_WA.html#EmeraldCity",
+       "inactive": false
+      },
+      {
+       "name": "Seattle - Family",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "kind": "family/community",
+       "per_month": 1,
+       "freq_text": "2nd sundays",
+       "url": "http://groups.yahoo.com/group/familydance/",
+       "page": "schedule_WA.html#SeattleFamily",
+       "inactive": false
+      },
+      {
+       "name": "Seattle - Lake City",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "kind": "contra",
+       "per_month": 4.33,
+       "freq_text": "weekly",
+       "url": "http://seattledance.org/contra/lakecity",
+       "page": "schedule_WA.html#LakeCity",
+       "inactive": false
+      },
+      {
+       "name": "Seattle - Beacon Hill",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "last tuesday",
+       "url": "http://www.rockitspace.org/tuesday-folk-club.html",
+       "page": "schedule_WA.html#SeattleBeaconHill",
+       "inactive": false
+      },
+      {
+       "name": "Tacoma - 3rd Saturday",
+       "town": "Tacoma, WA",
+       "county": "Pierce County, WA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "third saturday",
+       "url": "http://www.tacomacontradance.org/",
+       "page": "schedule_WA.html#Tacoma3rdSat",
+       "inactive": false
+      }
+     ],
+     "series_count": 7,
+     "per_month_total": 13.66,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 131
+    },
+    "tampa": {
+     "series": [
+      {
+       "name": "Pinellas Park - Friday",
+       "town": "Pinellas Park, FL",
+       "county": "Pinellas County, FL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "1st friday",
+       "url": "http://www.tampabaycontra.com/",
+       "page": "schedule_FL.html#PinellasParkFri",
+       "inactive": false
+      },
+      {
+       "name": "Pinellas Park - Saturday",
+       "town": "Pinellas Park, FL",
+       "county": "Pinellas County, FL",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd saturday",
+       "url": "http://www.tampabaycontra.com/",
+       "page": "schedule_FL.html#PinellasParkSat",
+       "inactive": false
+      }
+     ],
+     "series_count": 2,
+     "per_month_total": 2,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 11
+    },
+    "washington-dc": {
+     "series": [
+      {
+       "name": "Washington DC - Contra",
+       "town": "Washington, DC",
+       "county": "District of Columbia, DC",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "last saturday",
+       "url": "",
+       "page": "schedule_DC.html#DCContra",
+       "inactive": true
+      },
+      {
+       "name": "Frederick",
+       "town": "Frederick, MD",
+       "county": "Frederick County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "4th saturday",
+       "url": "http://www.contradancers.com/mmfac/",
+       "page": "schedule_MD.html#Frederick",
+       "inactive": false
+      },
+      {
+       "name": "Glen Echo - Family Dance",
+       "town": "Glen Echo, MD",
+       "county": "Montgomery County, MD",
+       "kind": "family/community",
+       "per_month": 1,
+       "freq_text": "second sunday; second sunday",
+       "url": "http://fsgw.org/index.php",
+       "page": "schedule_MD.html#GlenEchoFamily",
+       "inactive": false
+      },
+      {
+       "name": "Glen Echo - Tuesday",
+       "town": "Glen Echo, MD",
+       "county": "Montgomery County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd tuesday",
+       "url": "http://fsgw.org/index.php",
+       "page": "schedule_MD.html#GlenEchoTuesday",
+       "inactive": false
+      },
+      {
+       "name": "Glen Echo - Contra Sonic",
+       "town": "Glen Echo, MD",
+       "county": "Montgomery County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "third tuesday; 3rd tuesdays",
+       "url": "http://fsgw.org/index.php",
+       "page": "schedule_MD.html#GlenEchoContraSonic",
+       "inactive": false
+      },
+      {
+       "name": "Glen Echo - Contra Sonic - Saturday",
+       "town": "Glen Echo, MD",
+       "county": "Montgomery County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "third saturday",
+       "url": "http://fsgw.org/index.php",
+       "page": "schedule_MD.html#GlenEchoContraSonicSat",
+       "inactive": false
+      },
+      {
+       "name": "Glen Echo - Friday",
+       "town": "Glen Echo, MD",
+       "county": "Montgomery County, MD",
+       "kind": "contra",
+       "per_month": 4.33,
+       "freq_text": "weekly",
+       "url": "http://www.fridaynightdance.org",
+       "page": "schedule_MD.html#GlenEchoFriday",
+       "inactive": false
+      },
+      {
+       "name": "Greenbelt",
+       "town": "Greenbelt, MD",
+       "county": "Prince George's County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "monthly",
+       "url": "http://www.fsgw.org",
+       "page": "schedule_MD.html#GreenbeltContra",
+       "inactive": false
+      },
+      {
+       "name": "La Plata",
+       "town": "La Plata, MD",
+       "county": "Charles County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd saturdays",
+       "url": "",
+       "page": "schedule_MD.html#LaPlata",
+       "inactive": false
+      },
+      {
+       "name": "Silver Spring",
+       "town": "Silver Spring, MD",
+       "county": "Montgomery County, MD",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "2nd thursdays",
+       "url": "https://www.facebook.com/SSContraDance",
+       "page": "schedule_MD.html#SilverSpring",
+       "inactive": false
+      },
+      {
+       "name": "Purcellville",
+       "town": "Purcellville, VA",
+       "county": "Loudoun County, VA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "3rd saturday",
+       "url": "http://www.bluemont.org/Dances/dances_intro.html",
+       "page": "schedule_VA.html#Purcellville",
+       "inactive": false
+      },
+      {
+       "name": "Reston",
+       "town": "Reston, VA",
+       "county": "Fairfax County, VA",
+       "kind": "contra",
+       "per_month": 1,
+       "freq_text": "second saturdays",
+       "url": "http://www.contradancers.com/reston.html",
+       "page": "schedule_VA.html#Reston",
+       "inactive": false
+      },
+      {
+       "name": "Shepherdstown",
+       "town": "Shepherdstown, WV",
+       "county": "Jefferson County, WV",
+       "kind": "contra",
+       "per_month": 1.33,
+       "freq_text": "first saturday; fifth saturday",
+       "url": "http://smad.us/",
+       "page": "schedule_WV.html#Shepherdstown",
+       "inactive": false
+      }
+     ],
+     "series_count": 12,
+     "per_month_total": 15.66,
+     "ecd_series_count": 0,
+     "ecd_per_month_total": 0,
+     "venue_entries_in_metro_total": 101
+    }
+   }
+  },
+  "sacred_harp": {
+   "source_url": "https://fasola.org/minutes/OnlineMinutesPDFFiles/SacredHarpMinutesOnline2025.pdf",
+   "status": "current (2026 Directory)",
+   "unit": "regular local singings; per_month = singings per month",
+   "by_metro": {
+    "atlanta": {
+     "singings": [
+      {
+       "name": "Atlanta (Emory Presbyterian)",
+       "town": "Atlanta, GA",
+       "county": "DeKalb County, GA",
+       "per_month": 0.83,
+       "schedule": "First Thursday except July and December",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Atlanta (Church of Our Saviour)",
+       "town": "Atlanta, GA",
+       "county": "Fulton County, GA",
+       "per_month": 1,
+       "schedule": "Third Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Dahlonega",
+       "town": "Dahlonega, GA",
+       "county": "Lumpkin County, GA",
+       "per_month": 2,
+       "schedule": "Second and fourth Tuesday",
+       "book": "Sacred Harp, 2025 Edition"
+      }
+     ],
+     "singing_count": 3,
+     "per_month_total": 3.83
+    },
+    "boston": {
+     "singings": [
+      {
+       "name": "Boston (Newton)",
+       "town": "Newton, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 1,
+       "schedule": "Second Monday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Boston (Charlestown)",
+       "town": "Boston, MA",
+       "county": "Suffolk County, MA",
+       "per_month": 1,
+       "schedule": "Second Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Boston (Beacon Hill)",
+       "town": "Boston, MA",
+       "county": "Suffolk County, MA",
+       "per_month": 1,
+       "schedule": "Third Thursdays",
+       "book": "Sacred Harp and Shenandoah Harmony"
+      },
+      {
+       "name": "Boston (Cambridge)",
+       "town": "Cambridge, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 2,
+       "schedule": "Wednesdays after first and third Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Newburyport",
+       "town": "Newburyport, MA",
+       "county": "Essex County, MA",
+       "per_month": 1,
+       "schedule": "Third Sunday",
+       "book": "Sacred Harp and Cooper revision"
+      }
+     ],
+     "singing_count": 5,
+     "per_month_total": 6
+    },
+    "chicago": {
+     "singings": [
+      {
+       "name": "Chicago area",
+       "town": "Chicago area, IL",
+       "county": "Cook County, IL (assumed)",
+       "per_month": 2,
+       "schedule": "Second and fourth Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Chicago (North Side)",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "per_month": 2,
+       "schedule": "First and Third Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Hyde Park/Chicago",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "per_month": 4.33,
+       "schedule": "Every Thursday",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 3,
+     "per_month_total": 8.33
+    },
+    "dallas-fort-worth": {
+     "singings": [
+      {
+       "name": "Dallas",
+       "town": "Dallas, TX",
+       "county": "Dallas County, TX",
+       "per_month": 1,
+       "schedule": "Third Saturday",
+       "book": "Sacred Harp and Cooper Revision"
+      },
+      {
+       "name": "Fort Worth",
+       "town": "Fort Worth, TX",
+       "county": "Tarrant County, TX",
+       "per_month": 1,
+       "schedule": "Second Saturday",
+       "book": "Sacred Harp"
+      }
+     ],
+     "singing_count": 2,
+     "per_month_total": 2
+    },
+    "denver": {
+     "singings": [
+      {
+       "name": "Denver",
+       "town": "Denver, CO",
+       "county": "Denver County, CO",
+       "per_month": 2,
+       "schedule": "First and Third Mondays",
+       "book": "Sacred Harp, Norumbega, Cooper, Christmas Harp in season"
+      }
+     ],
+     "singing_count": 1,
+     "per_month_total": 2
+    },
+    "detroit": {
+     "singings": [
+      {
+       "name": "Detroit",
+       "town": "Detroit, MI",
+       "county": "Wayne County, MI",
+       "per_month": 1,
+       "schedule": "First Wednesday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Lake Orion",
+       "town": "Lake Orion, MI",
+       "county": "Oakland County, MI",
+       "per_month": 1,
+       "schedule": "Fourth Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 2,
+     "per_month_total": 2
+    },
+    "houston": {
+     "singings": [
+      {
+       "name": "Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "per_month": 1,
+       "schedule": "Fourth Sundays",
+       "book": "The Sacred Harp and Cooper Book"
+      }
+     ],
+     "singing_count": 1,
+     "per_month_total": 1
+    },
+    "los-angeles": {
+     "singings": [
+      {
+       "name": "Claremont",
+       "town": "Claremont, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 1,
+       "schedule": "Fourth Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Los Angeles (Culver City)",
+       "town": "Culver City, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 4.33,
+       "schedule": "Every Thursday",
+       "book": "Sacred Harp and Shenandoah Harmony"
+      },
+      {
+       "name": "Los Angeles (East side)",
+       "town": "Los Angeles, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 1,
+       "schedule": "First Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Los Angeles (West side)",
+       "town": "Los Angeles, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 1,
+       "schedule": "Third Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Los Angeles (Santa Monica)",
+       "town": "Santa Monica, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 1,
+       "schedule": "Saturday before fourth Sunday (learners workshop style)",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 5,
+     "per_month_total": 8.33
+    },
+    "miami": {
+     "singings": [],
+     "singing_count": 0,
+     "per_month_total": 0
+    },
+    "minneapolis": {
+     "singings": [
+      {
+       "name": "Minneapolis (Dinkytown) Tuesday",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "per_month": 4.33,
+       "schedule": "Tuesday nights",
+       "book": "Cooper Book"
+      },
+      {
+       "name": "Minneapolis (Dinkytown) 3rd Sunday",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "per_month": 1,
+       "schedule": "Third Sunday",
+       "book": "Shenandoah Harmony"
+      },
+      {
+       "name": "Minneapolis (Dinkytown) 4th Sunday",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "per_month": 1,
+       "schedule": "Fourth Sundays",
+       "book": "Cooper Book"
+      },
+      {
+       "name": "Minneapolis (Saint Paul)",
+       "town": "Saint Paul, MN",
+       "county": "Ramsey County, MN",
+       "per_month": 1,
+       "schedule": "Second Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 4,
+     "per_month_total": 7.33
+    },
+    "new-york": {
+     "singings": [
+      {
+       "name": "Chestnut Ridge",
+       "town": "Chestnut Ridge, NY",
+       "county": "Rockland County, NY",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Huntington Station",
+       "town": "Huntington Station, NY",
+       "county": "Suffolk County, NY",
+       "per_month": 1,
+       "schedule": "Second Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "New York City (Brooklyn) - Joe Beasley Singing",
+       "town": "Brooklyn, NY",
+       "county": "Kings County, NY",
+       "per_month": 1,
+       "schedule": "Second Sundays",
+       "book": "Denson, Cooper, Shenandoah Harmony"
+      },
+      {
+       "name": "New York City (Greenwich Village)",
+       "town": "Manhattan, NY",
+       "county": "New York County, NY",
+       "per_month": 4.33,
+       "schedule": "Wednesdays weekly",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "New York City (Gramercy)",
+       "town": "Manhattan, NY",
+       "county": "New York County, NY",
+       "per_month": 1,
+       "schedule": "Saturday before Fourth Sunday",
+       "book": "7-shape Christian Harmony and gospel"
+      },
+      {
+       "name": "Upper Montclair",
+       "town": "Montclair, NJ",
+       "county": "Essex County, NJ",
+       "per_month": 1,
+       "schedule": "Fourth Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 6,
+     "per_month_total": 12.66
+    },
+    "orlando": {
+     "singings": [
+      {
+       "name": "Orlando",
+       "town": "Orlando, FL",
+       "county": "Orange County, FL",
+       "per_month": 1,
+       "schedule": "Second Sunday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Oviedo",
+       "town": "Oviedo, FL",
+       "county": "Seminole County, FL",
+       "per_month": 4.33,
+       "schedule": "Every Tuesday (private home)",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 2,
+     "per_month_total": 5.33
+    },
+    "philadelphia": {
+     "singings": [
+      {
+       "name": "Philadelphia (Havertown)",
+       "town": "Havertown, PA",
+       "county": "Delaware County, PA",
+       "per_month": 1,
+       "schedule": "Second Fridays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Philadelphia (University City)",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 1,
+       "schedule": "Second Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Philadelphia (West Philly, A-Space)",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 1,
+       "schedule": "Fourth Thursday",
+       "book": "not stated (Sacred Harp directory)",
+       "location_note": "May overlap the 2nd/4th Thursday Mosaic Church listing; both are listed separately in the directory."
+      },
+      {
+       "name": "Philadelphia (Mosaic Church)",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 2,
+       "schedule": "Second and Fourth Thursdays",
+       "book": "Sacred Harp and Shenandoah Harmony"
+      },
+      {
+       "name": "Philadelphia (Germantown)",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "per_month": 1,
+       "schedule": "First Saturday",
+       "book": "Sacred Harp"
+      },
+      {
+       "name": "West Chester",
+       "town": "West Chester, PA",
+       "county": "Chester County, PA",
+       "per_month": 2,
+       "schedule": "First and Third Mondays (usually)",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 6,
+     "per_month_total": 8
+    },
+    "phoenix": {
+     "singings": [
+      {
+       "name": "Phoenix",
+       "town": "Chandler, AZ",
+       "county": "Maricopa County, AZ",
+       "per_month": 1,
+       "schedule": "Second Saturday",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 1,
+     "per_month_total": 1
+    },
+    "riverside": {
+     "singings": [],
+     "singing_count": 0,
+     "per_month_total": 0
+    },
+    "san-diego": {
+     "singings": [
+      {
+       "name": "San Diego",
+       "town": "San Diego, CA",
+       "county": "San Diego County, CA",
+       "per_month": 3.5,
+       "schedule": "Most Sundays (counted as 3.5/month)",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 1,
+     "per_month_total": 3.5
+    },
+    "san-francisco": {
+     "singings": [
+      {
+       "name": "San Francisco",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "per_month": 2,
+       "schedule": "First and Third Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "San Francisco Bay Area-Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Every Monday (3rd Mondays: other books)",
+       "book": "The Sacred Harp: 2025 Edition; other books 3rd Mondays"
+      }
+     ],
+     "singing_count": 2,
+     "per_month_total": 6.33
+    },
+    "seattle": {
+     "singings": [
+      {
+       "name": "Seattle (2nd/4th Sundays)",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 2,
+       "schedule": "Second and Fourth Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Seattle (3rd Fridays)",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 1,
+       "schedule": "Third Fridays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Tacoma",
+       "town": "Tacoma, WA",
+       "county": "Pierce County, WA",
+       "per_month": 1,
+       "schedule": "First Sundays",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Vashon Island",
+       "town": "Vashon, WA",
+       "county": "King County, WA",
+       "per_month": 0.9,
+       "schedule": "Most months, Saturday before the third Sunday (counted as 0.9/month)",
+       "book": "not stated (Sacred Harp directory)"
+      }
+     ],
+     "singing_count": 4,
+     "per_month_total": 4.9
+    },
+    "tampa": {
+     "singings": [
+      {
+       "name": "Old Chicora (Hillsborough County)",
+       "town": "Lithia, FL",
+       "county": "Hillsborough County, FL",
+       "per_month": 0.33,
+       "schedule": "Fifth Sundays (listed under Fifth Weekend regular singings)",
+       "book": "Cooper Book"
+      }
+     ],
+     "singing_count": 1,
+     "per_month_total": 0.33
+    },
+    "washington-dc": {
+     "singings": [
+      {
+       "name": "Capitol Hill",
+       "town": "Washington, DC",
+       "county": "District of Columbia, DC",
+       "per_month": 1,
+       "schedule": "Third Wednesday",
+       "book": "not stated (Sacred Harp directory)"
+      },
+      {
+       "name": "Northern Shenandoah Valley",
+       "town": "near Berryville/Boyce, VA",
+       "county": "Clarke County, VA (probable)",
+       "per_month": 1,
+       "schedule": "First Saturday",
+       "book": "not stated (Sacred Harp directory)",
+       "location_note": "Directory says \"close to Winchester and Berryville\"; shapenotesingings.com lists it at Boyce (Clarke County, in the DC CBSA). Winchester itself is outside the CBSA."
+      }
+     ],
+     "singing_count": 2,
+     "per_month_total": 2
+    }
+   }
+  },
+  "rscds": {
+   "source_url": "https://my.strathspey.org/groups/country/US/ (RSCDS branch/affiliate mirror) + branch class pages",
+   "status": "groups current; classes partial where branch pages unreachable",
+   "unit": "groups = RSCDS branches/affiliates; per_month = class meetings per month",
+   "by_metro": {
+    "atlanta": {
+     "groups": [
+      {
+       "name": "RSCDS Atlanta Branch",
+       "status": "Branch",
+       "listed_location": "Atlanta, Georgia",
+       "url": "https://my.strathspey.org/groups/group/783/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Cartersville/Etowah",
+       "town": "Cartersville, GA",
+       "county": "Bartow County, GA",
+       "per_month": 2,
+       "schedule": "1st & 3rd Mondays",
+       "source": "https://rscds-atlanta.org/dance-classes/"
+      },
+      {
+       "name": "Marietta",
+       "town": "Marietta, GA",
+       "county": "Cobb County, GA",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "https://rscds-atlanta.org/dance-classes/"
+      },
+      {
+       "name": "Lawrenceville basic class (sessions)",
+       "town": "Lawrenceville, GA",
+       "county": "Gwinnett County, GA",
+       "per_month": 2,
+       "schedule": "Saturdays, twice a month in sessions",
+       "source": "https://rscds-atlanta.org/dance-classes/"
+      },
+      {
+       "name": "Atlanta basic class (sessions)",
+       "town": "Atlanta, GA",
+       "county": "Fulton/DeKalb County, GA",
+       "per_month": 2,
+       "schedule": "Sundays, twice a month in sessions",
+       "source": "https://rscds-atlanta.org/dance-classes/"
+      },
+      {
+       "name": "Cartersville advanced social",
+       "town": "Cartersville, GA",
+       "county": "Bartow County, GA",
+       "per_month": 1,
+       "schedule": "First Sunday",
+       "source": "https://rscds-atlanta.org/dance-classes/"
+      }
+     ],
+     "weekly_class_count": 2.62,
+     "per_month_total": 11.33
+    },
+    "boston": {
+     "groups": [
+      {
+       "name": "RSCDS Boston Branch",
+       "status": "Branch",
+       "listed_location": "Boston, Massachusetts",
+       "url": "https://my.strathspey.org/groups/group/779/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Bedford",
+       "town": "Bedford, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Cambridge Class (@Watertown)",
+       "town": "Watertown, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 4.33,
+       "schedule": "Mondays",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Chelmsford",
+       "town": "Chelmsford, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 1,
+       "schedule": "First Fridays",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Salem (Wee Bluets)",
+       "town": "Beverly, MA",
+       "county": "Essex County, MA",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Somerville",
+       "town": "Somerville, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 2.33,
+       "schedule": "1st/3rd/5th Thursdays",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Stow",
+       "town": "Stow, MA",
+       "county": "Middlesex County, MA",
+       "per_month": 2,
+       "schedule": "2nd and 4th Fridays, Sep-Jun",
+       "source": "http://www.rscdsboston.org/class-massachusetts.html"
+      },
+      {
+       "name": "Greenland (Seacoast Dancers)",
+       "town": "Greenland, NH",
+       "county": "Rockingham County, NH",
+       "per_month": 4.33,
+       "schedule": "Tuesdays, Oct-Jun",
+       "source": "http://www.rscdsboston.org/class-new-hampshire.html"
+      }
+     ],
+     "weekly_class_count": 5.23,
+     "per_month_total": 22.65
+    },
+    "chicago": {
+     "groups": [
+      {
+       "name": "RSCDS Chicago Branch",
+       "status": "Branch",
+       "listed_location": "Chicago, Illinois",
+       "url": "https://my.strathspey.org/groups/group/759/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Chicago Branch weekly class",
+       "town": "greater Chicago, IL",
+       "county": "unspecified (Chicago area)",
+       "per_month": 4.33,
+       "schedule": "\"a weekly SCD class in the greater Chicago area\" (branch homepage; strathspey entry names two classes, Loch Mich and Silk and Thistle)",
+       "source": "http://www.rscdschicago.org"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33,
+     "note": "Branch homepage says one weekly class; strathspey description names two (Loch Mich downtown and Silk and Thistle in the suburbs). Counted one."
+    },
+    "dallas-fort-worth": {
+     "groups": [],
+     "group_count": 0,
+     "classes": [
+      {
+       "name": "Denton Celtic Dancers",
+       "town": "Denton, TX",
+       "county": "Denton County, TX",
+       "per_month": 4.33,
+       "schedule": "Sunday evenings",
+       "source": "https://houstonrscds.org/classes/"
+      },
+      {
+       "name": "Fort Worth Scottish Country Dancers",
+       "town": "Fort Worth, TX",
+       "county": "Tarrant County, TX",
+       "per_month": 2,
+       "schedule": "twice a month (usually 2nd and 4th Saturdays)",
+       "source": "https://houstonrscds.org/classes/"
+      }
+     ],
+     "weekly_class_count": 1.46,
+     "per_month_total": 6.33,
+     "note": "No RSCDS branch/affiliate listed in DFW; classes come from the Houston & District Branch page, which covers all of Texas."
+    },
+    "denver": {
+     "groups": [
+      {
+       "name": "Scottish Country Dancers of Colorado",
+       "status": "Affiliated",
+       "listed_location": "Denver, Colorado",
+       "url": "https://my.strathspey.org/groups/group/1220/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Denver Class (St Andrew Society of Colorado)",
+       "town": "Denver, CO",
+       "county": "Denver County, CO",
+       "per_month": 4.33,
+       "schedule": "Mondays during school terms",
+       "source": "http://www.scdcolorado.org/"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33
+    },
+    "detroit": {
+     "groups": [
+      {
+       "name": "RSCDS Detroit Branch",
+       "status": "Branch",
+       "listed_location": "Detroit, Michigan",
+       "url": "https://my.strathspey.org/groups/group/754/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Detroit Branch class",
+       "town": "Troy, MI",
+       "county": "Oakland County, MI",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "http://www.rscdsdetroit.org"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33,
+     "note": "RSCDS Windsor (Ontario) Branch is listed at \"Detroit\" but is a Canadian branch; excluded."
+    },
+    "houston": {
+     "groups": [
+      {
+       "name": "RSCDS Houston & District Branch",
+       "status": "Branch",
+       "listed_location": "Houston, Texas",
+       "url": "https://my.strathspey.org/groups/group/747/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://houstonrscds.org/classes/"
+      },
+      {
+       "name": "The Woodlands",
+       "town": "The Woodlands, TX",
+       "county": "Montgomery County, TX",
+       "per_month": 4.33,
+       "schedule": "Mondays",
+       "source": "https://houstonrscds.org/classes/"
+      }
+     ],
+     "weekly_class_count": 2,
+     "per_month_total": 8.66
+    },
+    "los-angeles": {
+     "groups": [
+      {
+       "name": "RSCDS San Gabriel Valley (South California) Branch",
+       "status": "Branch",
+       "listed_location": "El Monte, California",
+       "url": "https://my.strathspey.org/groups/group/686/"
+      },
+      {
+       "name": "RSCDS Los Angeles Branch",
+       "status": "Branch",
+       "listed_location": "Los Angeles, California",
+       "url": "https://my.strathspey.org/groups/group/730/"
+      },
+      {
+       "name": "RSCDS Orange County Branch",
+       "status": "Branch",
+       "listed_location": "Orange County, California",
+       "url": "https://my.strathspey.org/groups/group/708/"
+      }
+     ],
+     "group_count": 3,
+     "classes": [
+      {
+       "name": "RSCDS Orange County: Intermediate",
+       "town": "Tustin, CA",
+       "county": "Orange County, CA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "http://www.rscds-oc.org/Classes.html"
+      },
+      {
+       "name": "RSCDS Orange County: Basic/Beginner",
+       "town": "Tustin, CA",
+       "county": "Orange County, CA",
+       "per_month": 4.33,
+       "schedule": "Wednesdays",
+       "source": "http://www.rscds-oc.org/Classes.html"
+      },
+      {
+       "name": "RSCDS Orange County: Experienced",
+       "town": "Tustin, CA",
+       "county": "Orange County, CA",
+       "per_month": 4.33,
+       "schedule": "Fridays",
+       "source": "http://www.rscds-oc.org/Classes.html"
+      },
+      {
+       "name": "RSCDS Los Angeles Branch: 7 weekly classes in LA County (Beverly Hills, Lancaster, Redondo Beach, Reseda, Torrance, Van Nuys)",
+       "town": "Los Angeles County, CA",
+       "county": "Los Angeles County, CA",
+       "per_month": 30.31,
+       "schedule": "seven weekly classes (from the branch description on the RSCDS-mirrored listing; branch site unreachable)",
+       "source": "https://my.strathspey.org/groups/group/730/"
+      }
+     ],
+     "weekly_class_count": 10,
+     "per_month_total": 43.3,
+     "note": "RSCDS San Gabriel Valley Branch site unreachable; its classes not counted."
+    },
+    "miami": {
+     "groups": [],
+     "group_count": 0,
+     "classes": [],
+     "weekly_class_count": 0,
+     "per_month_total": 0,
+     "note": "No RSCDS branch or affiliated group listed; the Orlando (Florida) Branch description names a \"Broward Scottish Country Dancers\" group (schedule unknown)."
+    },
+    "minneapolis": {
+     "groups": [
+      {
+       "name": "RSCDS Twin Cities Branch",
+       "status": "Branch",
+       "listed_location": "Twin Cities, Minnesota",
+       "url": "https://my.strathspey.org/groups/group/666/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Twin Cities Branch class (Tapestry)",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "per_month": 4.33,
+       "schedule": "Mondays, late Sep-early May",
+       "source": "https://rscds-twincities.org/classes/"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33
+    },
+    "new-york": {
+     "groups": [
+      {
+       "name": "RSCDS New Jersey Branch",
+       "status": "Branch",
+       "listed_location": "New Jersey, New Jersey",
+       "url": "https://my.strathspey.org/groups/group/722/"
+      },
+      {
+       "name": "RSCDS New York Branch",
+       "status": "Branch",
+       "listed_location": "New York, New York",
+       "url": "https://my.strathspey.org/groups/group/723/"
+      },
+      {
+       "name": "Westchester Scottish Country Dance Society",
+       "status": "Affiliated",
+       "listed_location": "Town of Mount Pleasant, New York",
+       "url": "https://my.strathspey.org/groups/group/808/"
+      }
+     ],
+     "group_count": 3,
+     "classes": [
+      {
+       "name": "RSCDS New York class",
+       "town": "Manhattan, NY",
+       "county": "New York County, NY",
+       "per_month": 4.33,
+       "schedule": "Thursdays, Sep-Jun",
+       "source": "http://www.rscdsnewyork.org/classes"
+      },
+      {
+       "name": "Westchester SCD Society",
+       "town": "Elmsford, NY",
+       "county": "Westchester County, NY",
+       "per_month": 4.33,
+       "schedule": "Wednesdays",
+       "source": "http://www.rscdsnewyork.org/westchester"
+      },
+      {
+       "name": "RSCDS NJ Branch, Ho-Ho-Kus",
+       "town": "Ho-Ho-Kus, NJ",
+       "county": "Bergen County, NJ",
+       "per_month": 4.33,
+       "schedule": "Tuesdays most of the year",
+       "source": "https://rscdsnjb.org/index.html"
+      }
+     ],
+     "weekly_class_count": 3,
+     "per_month_total": 12.99
+    },
+    "orlando": {
+     "groups": [
+      {
+       "name": "RSCDS Orlando (Florida) Branch",
+       "status": "Branch",
+       "listed_location": "Orlando, Florida",
+       "url": "https://my.strathspey.org/groups/group/710/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [],
+     "weekly_class_count": 0,
+     "per_month_total": 0,
+     "note": "RSCDS Orlando (Florida) Branch lists \"Caledonian Scottish Country Dancers of Orlando\"; branch site unreachable, schedule not counted."
+    },
+    "philadelphia": {
+     "groups": [
+      {
+       "name": "RSCDS Delaware Valley Branch",
+       "status": "Branch",
+       "listed_location": "Philadelphia, Pennsylvania",
+       "url": "https://my.strathspey.org/groups/group/758/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [],
+     "weekly_class_count": 0,
+     "per_month_total": 0,
+     "note": "RSCDS Delaware Valley Branch class schedule not retrievable (JavaScript-only site); classes not counted."
+    },
+    "phoenix": {
+     "groups": [
+      {
+       "name": "RSCDS Phoenix Branch",
+       "status": "Branch",
+       "listed_location": "Phoenix, Arizona",
+       "url": "https://my.strathspey.org/groups/group/702/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Phoenix Branch class",
+       "town": "Scottsdale, AZ",
+       "county": "Maricopa County, AZ",
+       "per_month": 4.33,
+       "schedule": "Wednesdays, Sep-May",
+       "source": "https://my.strathspey.org/groups/group/702/"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33
+    },
+    "riverside": {
+     "groups": [],
+     "group_count": 0,
+     "classes": [],
+     "weekly_class_count": 0,
+     "per_month_total": 0
+    },
+    "san-diego": {
+     "groups": [
+      {
+       "name": "RSCDS San Diego, California Branch",
+       "status": "Branch",
+       "listed_location": "San Diego, California",
+       "url": "https://my.strathspey.org/groups/group/690/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Beginner",
+       "town": "San Diego (Balboa Park), CA",
+       "county": "San Diego County, CA",
+       "per_month": 4.33,
+       "schedule": "Mondays (quarterly sessions)",
+       "source": "https://www.dancescottishsd.org/classes/"
+      },
+      {
+       "name": "Mixed-level social",
+       "town": "Poway, CA",
+       "county": "San Diego County, CA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://www.dancescottishsd.org/classes/"
+      },
+      {
+       "name": "Intermediate",
+       "town": "San Diego (Balboa Park), CA",
+       "county": "San Diego County, CA",
+       "per_month": 4.33,
+       "schedule": "Fridays",
+       "source": "https://www.dancescottishsd.org/classes/"
+      }
+     ],
+     "weekly_class_count": 3,
+     "per_month_total": 12.99
+    },
+    "san-francisco": {
+     "groups": [
+      {
+       "name": "RSCDS San Francisco Branch",
+       "status": "Branch",
+       "listed_location": "San Francisco, California",
+       "url": "https://my.strathspey.org/groups/group/689/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Livermore",
+       "town": "Livermore, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Mondays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Berkeley Intermediate & Open Band",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Mondays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Tri-Valley Beginner Class",
+       "town": "Tri-Valley (Alameda/Contra Costa), CA",
+       "county": "Alameda or Contra Costa County, CA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Crockett",
+       "town": "Crockett, CA",
+       "county": "Contra Costa County, CA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Lafayette (at Danville Grange)",
+       "town": "Danville, CA",
+       "county": "Contra Costa County, CA",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "San Francisco",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Berkeley Young Adults",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Fridays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Berkeley Social",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Fridays",
+       "source": "https://rscds-sf.org/classes/"
+      },
+      {
+       "name": "Berkeley Youth",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "per_month": 4.33,
+       "schedule": "Fridays",
+       "source": "https://rscds-sf.org/classes/"
+      }
+     ],
+     "weekly_class_count": 9,
+     "per_month_total": 38.97
+    },
+    "seattle": {
+     "groups": [
+      {
+       "name": "RSCDS Seattle Branch",
+       "status": "Branch",
+       "listed_location": "Seattle, Washington",
+       "url": "https://my.strathspey.org/groups/group/684/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Caledonians",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "schedule": "Mondays",
+       "source": "https://rscds-seattle.org/classes/"
+      },
+      {
+       "name": "U-District",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://rscds-seattle.org/classes/"
+      },
+      {
+       "name": "West Seattle",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "schedule": "Tuesdays",
+       "source": "https://rscds-seattle.org/classes/"
+      },
+      {
+       "name": "Phinney",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "per_month": 4.33,
+       "schedule": "Thursdays",
+       "source": "https://rscds-seattle.org/classes/"
+      },
+      {
+       "name": "Tacoma",
+       "town": "Tacoma, WA",
+       "county": "Pierce County, WA",
+       "per_month": 4.33,
+       "schedule": "Sundays",
+       "source": "https://rscds-seattle.org/classes/"
+      }
+     ],
+     "weekly_class_count": 5,
+     "per_month_total": 21.65
+    },
+    "tampa": {
+     "groups": [
+      {
+       "name": "Dunedin Scottish Country Dancers",
+       "status": "Affiliated",
+       "listed_location": "Dunedin, Florida",
+       "url": "https://my.strathspey.org/groups/group/978/"
+      }
+     ],
+     "group_count": 1,
+     "classes": [
+      {
+       "name": "Dunedin Scottish Country Dancers",
+       "town": "Dunedin, FL",
+       "county": "Pinellas County, FL",
+       "per_month": 4.33,
+       "schedule": "weekly social dancing during season",
+       "source": "https://my.strathspey.org/groups/group/978/"
+      }
+     ],
+     "weekly_class_count": 1,
+     "per_month_total": 4.33
+    },
+    "washington-dc": {
+     "groups": [
+      {
+       "name": "RSCDS Northern Virginia Branch",
+       "status": "Branch",
+       "listed_location": "Alexandria, Virginia",
+       "url": "https://my.strathspey.org/groups/group/715/"
+      },
+      {
+       "name": "RSCDS Washington D.C. Branch",
+       "status": "Branch",
+       "listed_location": "Washington, District of Columbia",
+       "url": "https://my.strathspey.org/groups/group/665/"
+      }
+     ],
+     "group_count": 2,
+     "classes": [
+      {
+       "name": "Northern Virginia Branch weekly class",
+       "town": "Arlington, VA",
+       "county": "Arlington County, VA",
+       "per_month": 4.33,
+       "schedule": "\"We dance every week in Arlington\"",
+       "source": "https://my.strathspey.org/groups/group/715/"
+      },
+      {
+       "name": "University of Maryland college group",
+       "town": "College Park, MD",
+       "county": "Prince George's County, MD",
+       "per_month": 4.33,
+       "schedule": "every Wednesday",
+       "source": "https://my.strathspey.org/groups/group/665/"
+      },
+      {
+       "name": "NIH beginner class",
+       "town": "Bethesda, MD",
+       "county": "Montgomery County, MD",
+       "per_month": 2,
+       "schedule": "twice a month on Fridays",
+       "source": "https://my.strathspey.org/groups/group/665/"
+      }
+     ],
+     "weekly_class_count": 2.46,
+     "per_month_total": 10.66,
+     "note": "Greater DC class page (rscds-greaterdc.org/classes.html) is stale (2022); counted only classes stated in the current directory descriptions. Likely undercount."
+    }
+   }
+  },
+  "morris": {
+   "source_url": "https://tradfolk.co/the-morris-map/ (KML https://www.google.com/maps/d/kml?mid=1_XqCjFPF5QU4w4Uj3kdnEQePZTE&forcekml=1) + https://morrisdance.org/ regional pages",
+   "status": "partial (Tradfolk UK-centric; NAMDO lists from 2021)",
+   "unit": "active morris/sword/garland teams",
+   "by_metro": {
+    "atlanta": {
+     "teams": [],
+     "team_count": 0
+    },
+    "boston": {
+     "teams": [
+      {
+       "name": "Banbury Cross Morris & Sword",
+       "town": "Belmont, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "http://banburycross.org/",
+       "namdo_status": null
+      },
+      {
+       "name": "Commonwealth Morris Men",
+       "town": "Belmont, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "http://www.commonwealthmorris.com/",
+       "namdo_status": null
+      },
+      {
+       "name": "Great Meadows Morris & Sword",
+       "town": "Sudbury, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "Rapper",
+       "practice_night": "Sunday",
+       "source": "tradfolk",
+       "url": "http://www.gmms.org/",
+       "namdo_status": null
+      },
+      {
+       "name": "Ha'Penny Morris",
+       "town": "Belmont, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Monday",
+       "source": "tradfolk",
+       "url": "http://www.hapenny.org",
+       "namdo_status": null
+      },
+      {
+       "name": "Muddy River Morris",
+       "town": "Cambridge, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Unknown",
+       "source": "tradfolk",
+       "url": "http://muddyrivermorris.org/",
+       "namdo_status": null
+      },
+      {
+       "name": "Newtowne Morris Men",
+       "town": "Medford, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Monday",
+       "source": "tradfolk",
+       "url": "http://www.newtowne.org/",
+       "namdo_status": null
+      },
+      {
+       "name": "Pinewoods Morris Men",
+       "town": "Stow, MA",
+       "county": "Middlesex County, MA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Sunday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/Pinewoods-Morris-Men-184326918283113/",
+       "namdo_status": null
+      },
+      {
+       "name": "Red Herring Morris",
+       "town": "Belmont, MA",
+       "county": "Middlesex County, MA",
+       "style": "Border",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "http://www.redherringmorris.com",
+       "namdo_status": null
+      },
+      {
+       "name": "Candyrapper",
+       "town": "Sudbury area, MA",
+       "county": "Middlesex County, MA",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "http://www.gmms.org/candyrapper/",
+       "location_basis": "site hosted under gmms.org (Great Meadows Morris & Sword, Sudbury per Tradfolk)"
+      },
+      {
+       "name": "Pocket Flyers",
+       "town": "Sudbury area, MA",
+       "county": "Middlesex County, MA",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "http://www.gmms.org/pocketflyers/",
+       "location_basis": "site hosted under gmms.org (Great Meadows Morris & Sword)"
+      },
+      {
+       "name": "Rapport D'Or",
+       "town": "Sudbury area, MA",
+       "county": "Middlesex County, MA",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "http://www.gmms.org/rapportdor/",
+       "location_basis": "site hosted under gmms.org (Great Meadows Morris & Sword)"
+      },
+      {
+       "name": "Charles River Rapper",
+       "town": "Boston area, MA",
+       "county": "Middlesex/Suffolk County, MA (probable)",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "https://www.facebook.com/charlesriverrapper",
+       "location_basis": "Massachusetts heading; named for the Charles River"
+      }
+     ],
+     "team_count": 12,
+     "namdo_listed_in_state_location_unknown": [
+      "And Sometimes Y Manx Morris & Sword",
+      "Clownfish Rapper",
+      "Hart's Brook Garland Women",
+      "Orion Longsword",
+      "Rapscallion Rapper",
+      "Recently Traditional Fictional Morris",
+      "Stick'n the Mist Border Morris",
+      "Still River Sword",
+      "Vineyard Swordfish"
+     ]
+    },
+    "chicago": {
+     "teams": [
+      {
+       "name": "Pullman Morris & Sword",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Sunday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/Pullman-Morris-and-Sword-230565453648101/",
+       "namdo_status": null
+      },
+      {
+       "name": "Fox Valley Morris",
+       "town": "Batavia, IL",
+       "county": "Kane County, IL",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Unknown",
+       "source": "tradfolk",
+       "url": "",
+       "namdo_status": null
+      },
+      {
+       "name": "Ravenswood Morris",
+       "town": "Chicago (Ravenswood), IL",
+       "county": "Cook County, IL",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "http://users.stans.net/gplazyk/morris/ravens.html",
+       "location_basis": "Illinois heading; Ravenswood is a Chicago neighborhood"
+      }
+     ],
+     "team_count": 3
+    },
+    "dallas-fort-worth": {
+     "teams": [],
+     "team_count": 0
+    },
+    "denver": {
+     "teams": [],
+     "team_count": 0
+    },
+    "detroit": {
+     "teams": [],
+     "team_count": 0
+    },
+    "houston": {
+     "teams": [],
+     "team_count": 0
+    },
+    "los-angeles": {
+     "teams": [],
+     "team_count": 0,
+     "namdo_listed_in_state_location_unknown": [
+      "Rising Phoenix Morris (CA)",
+      "Swords of Gridlock (CA)",
+      "Wildwood Morris (CA)"
+     ]
+    },
+    "miami": {
+     "teams": [],
+     "team_count": 0
+    },
+    "minneapolis": {
+     "teams": [
+      {
+       "name": "Bells of the North",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/bellsofthenorth/",
+       "namdo_status": null
+      },
+      {
+       "name": "Bitter Mash Border",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Border",
+       "other_styles": "",
+       "practice_night": "Thursday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/BitterMashBorder/",
+       "namdo_status": null
+      },
+      {
+       "name": "Great Northern Border",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Border",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "http://greatnorthernborder.org",
+       "namdo_status": null
+      },
+      {
+       "name": "Minnesota Traditional Morris",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "http://www.minnesotatraditionalmorris.org/index.html",
+       "namdo_status": null
+      },
+      {
+       "name": "Uptown-on-the-Lakes Morris Dancers",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Cotswold",
+       "other_styles": "Border",
+       "practice_night": "Thursday",
+       "source": "tradfolk",
+       "url": "https://sites.google.com/site/uptownonthelakes/",
+       "namdo_status": null
+      },
+      {
+       "name": "ShortSword Rapper",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Rapper",
+       "other_styles": "",
+       "practice_night": "Sunday",
+       "source": "tradfolk",
+       "url": "",
+       "namdo_status": null
+      },
+      {
+       "name": "Brackleberry Morris",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Unknown",
+       "source": "tradfolk",
+       "url": "",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 7,
+     "namdo_listed_in_state_location_unknown": [
+      "Duck or Grouse Rapper Sword",
+      "Guyz with Tiez, Long Sword",
+      "Ramsey's Braggarts"
+     ]
+    },
+    "new-york": {
+     "teams": [
+      {
+       "name": "Bouwerie Boys Morris Dancers",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Monday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/bouwerieboys/",
+       "namdo_status": null
+      },
+      {
+       "name": "Ring O'Bells Morris",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/ringobellsmorris/",
+       "namdo_status": null
+      },
+      {
+       "name": "Griggstown Lock",
+       "town": "Griggstown, NJ",
+       "county": "Somerset County, NJ",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "",
+       "location_basis": "New Jersey heading; Griggstown is in Somerset County"
+      }
+     ],
+     "team_count": 3,
+     "namdo_listed_in_state_location_unknown": [
+      "B.F. Harridans (NY)",
+      "Half Moon Sword (NY)",
+      "Heartwood Morris Dancers (NY)",
+      "Pokingbrook Morris (NY)"
+     ]
+    },
+    "orlando": {
+     "teams": [],
+     "team_count": 0
+    },
+    "philadelphia": {
+     "teams": [
+      {
+       "name": "Kingsessing Morris Men",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Unknown",
+       "source": "tradfolk",
+       "url": "http://www.kingsessingmorris.com/",
+       "namdo_status": null
+      },
+      {
+       "name": "Renegade Morris",
+       "town": "Philadelphia, PA",
+       "county": "Philadelphia County, PA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Unknown",
+       "source": "tradfolk",
+       "url": "http://www.renegademorris.com/",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 2
+    },
+    "phoenix": {
+     "teams": [
+      {
+       "name": "Black Wren Morris",
+       "town": "Tempe, AZ",
+       "county": "Maricopa County, AZ",
+       "style": "Cotswold",
+       "other_styles": "Border, Horn Dance",
+       "practice_night": "Wenesday",
+       "source": "tradfolk",
+       "url": "http://www.blackwrenmorris.com/",
+       "namdo_status": null
+      },
+      {
+       "name": "Fairhaven Morris",
+       "town": "Gold Canyon, AZ",
+       "county": "Pinal County, AZ",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Friday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/FairhavenMorris",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 2
+    },
+    "riverside": {
+     "teams": [],
+     "team_count": 0
+    },
+    "san-diego": {
+     "teams": [
+      {
+       "name": "Moreton Bay Fig Morris",
+       "town": "San Diego, CA",
+       "county": "San Diego County, CA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "http://www.moretonbayfig.org/",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 1
+    },
+    "san-francisco": {
+     "teams": [
+      {
+       "name": "Berkeley Morris",
+       "town": "Berkeley, CA",
+       "county": "Alameda County, CA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "http://www.berkeley-morris.org/",
+       "namdo_status": null
+      },
+      {
+       "name": "Deer Creek Morris Men",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Wednesday",
+       "source": "tradfolk",
+       "url": "http://deercreekmorris.info/",
+       "namdo_status": null
+      },
+      {
+       "name": "Goat Hill Morris",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Thursday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/goathillmorris/",
+       "namdo_status": "listed as Ceased on NAMDO (2021)"
+      },
+      {
+       "name": "Pipe and Bowl Morris",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/Pipe-and-Bowl-Morris-60826679971/",
+       "namdo_status": null
+      },
+      {
+       "name": "Ring of Cold Steel",
+       "town": "San Francisco, CA",
+       "county": "San Francisco County, CA",
+       "style": "Longsword",
+       "other_styles": "",
+       "practice_night": "Thursday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/RingOfColdSteel/",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 4,
+     "namdo_listed_in_state_location_unknown": [
+      "Apple Tree Morris (CA)",
+      "Mad Molly (CA)",
+      "Pacific Sword Co. (CA)",
+      "Parrot Cove Morris (CA)",
+      "FFL Morris (CA)"
+     ]
+    },
+    "seattle": {
+     "teams": [
+      {
+       "name": "Misty City Morris",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "style": "Cotswold",
+       "other_styles": "",
+       "practice_night": "Currently inactive (May 2024)",
+       "source": "tradfolk",
+       "url": "http://www.seattledance.org/misc/morris.misty.city/",
+       "namdo_status": null
+      },
+      {
+       "name": "MossyBack Morris Men",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "style": "Cotswold",
+       "other_styles": "Border, Horn Dance",
+       "practice_night": "Thursday",
+       "source": "tradfolk",
+       "url": "http://www.mossyback.com/",
+       "namdo_status": null
+      },
+      {
+       "name": "Sound & Fury Morris and Sword",
+       "town": "Seattle, WA",
+       "county": "King County, WA",
+       "style": "Cotswold",
+       "other_styles": "Border, Rapper",
+       "practice_night": "Monday",
+       "source": "tradfolk",
+       "url": "http://soundandfurymorris.com/",
+       "namdo_status": null
+      }
+     ],
+     "team_count": 3
+    },
+    "tampa": {
+     "teams": [],
+     "team_count": 0
+    },
+    "washington-dc": {
+     "teams": [
+      {
+       "name": "Hicks with Sticks Border Morris",
+       "town": "Shepherdstown, WV",
+       "county": "Jefferson County, WV",
+       "style": "Border",
+       "other_styles": "",
+       "practice_night": "Tuesday",
+       "source": "tradfolk",
+       "url": "https://www.facebook.com/Hicks-with-Sticks-Border-Morris-107566929322918/",
+       "namdo_status": null
+      },
+      {
+       "name": "Foggy Bottom Morris Men",
+       "town": "Washington, DC",
+       "county": "District of Columbia, DC",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "http://fbmm.org/",
+       "location_basis": "listed under \"Washington, D. C.\""
+      },
+      {
+       "name": "Rock Creek Morris Women",
+       "town": "Washington, DC",
+       "county": "District of Columbia, DC",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "https://rockcreekmorriswomen.weebly.com/",
+       "location_basis": "listed under \"Washington, D. C.\""
+      },
+      {
+       "name": "Shepherdstown Northwest Morris",
+       "town": "Shepherdstown, WV",
+       "county": "Jefferson County, WV",
+       "style": "",
+       "other_styles": "",
+       "practice_night": "",
+       "source": "namdo",
+       "url": "",
+       "location_basis": "West Virginia heading; town in team name"
+      }
+     ],
+     "team_count": 4,
+     "namdo_listed_in_state_location_unknown": [
+      "Drunken Weasel Border Morris (VA)",
+      "More or Less Morris (VA)"
+     ]
+    }
+   }
+  },
+  "comhaltas": {
+   "source_url": "https://comhaltas.ie/ways-to-take-part/branch-listings/",
+   "status": "current listing; North American coverage may be incomplete",
+   "unit": "CCÉ branches",
+   "by_metro": {
+    "atlanta": {
+     "branches": [
+      {
+       "name": "Irish Traditions Atlanta",
+       "address": "Atlanta, GA, USA",
+       "county": "Fulton County, GA",
+       "url": "https://comhaltas.ie/branches/irish-traditions-atlanta/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "boston": {
+     "branches": [
+      {
+       "name": "Reynolds Hanafin Cooley",
+       "address": "Quincy, MA, USA",
+       "county": "Norfolk County, MA",
+       "url": "https://comhaltas.ie/branches/reynolds-hanafin-cooley/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "chicago": {
+     "branches": [
+      {
+       "name": "Francis O'Neill Club",
+       "address": "4626 N. Knox Ave., Chicago, Illinois, USA, IL 60630",
+       "county": "Cook County, IL",
+       "url": "https://comhaltas.ie/branches/francis-oneill-club/"
+      },
+      {
+       "name": "Irish Musicians Association",
+       "address": "Chicago, IL, USA",
+       "county": "Cook County, IL",
+       "url": "https://comhaltas.ie/branches/irish-musicians-association/"
+      },
+      {
+       "name": "Midwest Region CCE Regional Secretary",
+       "address": "North Aurora, IL, USA",
+       "county": "Kane County, IL",
+       "url": "https://comhaltas.ie/branches/midwest-region-cce-regional-secretary/",
+       "excluded": "regional officer listing, not a branch"
+      },
+      {
+       "name": "Murphy Roche Irish Music Club and School of Irish Music",
+       "address": "Burr Ridge, IL 60527, USA",
+       "county": "DuPage County, IL",
+       "url": "https://comhaltas.ie/branches/murphy-roche-irish-music-club-and-school-of-irish/"
+      }
+     ],
+     "branch_count": 3
+    },
+    "dallas-fort-worth": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "denver": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "detroit": {
+     "branches": [
+      {
+       "name": "Detroit Irish Music Association",
+       "address": "Detroit, MI, USA",
+       "county": "Wayne County, MI",
+       "url": "https://comhaltas.ie/branches/detroit-irish-music-association/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "houston": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "los-angeles": {
+     "branches": [
+      {
+       "name": "Ceol na nAingeal (LA)",
+       "address": "Glendale, CA, USA",
+       "county": "Los Angeles County, CA",
+       "url": "https://comhaltas.ie/branches/ceol-na-naingeal-la/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "miami": {
+     "branches": [
+      {
+       "name": "Tir na mBlath CCÉ",
+       "address": "Fort Lauderdale, FL, USA",
+       "county": "Broward County, FL",
+       "url": "https://comhaltas.ie/branches/tir-na-mblath/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "minneapolis": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "new-york": {
+     "branches": [
+      {
+       "name": "Fergal O'Halloran",
+       "address": "New York, United States",
+       "county": "New York County, NY",
+       "url": "https://comhaltas.ie/branches/fergal-ohalloran/"
+      },
+      {
+       "name": "Killoran Clancy Whelan",
+       "address": "Yonkers, NY, USA",
+       "county": "Westchester County, NY",
+       "url": "https://comhaltas.ie/branches/killoran-clancy-whelan/"
+      },
+      {
+       "name": "Mulligan Quinn",
+       "address": "Lynbrook, NY 11563, USA",
+       "county": "Nassau County, NY",
+       "url": "https://comhaltas.ie/branches/mulligan-quinn/"
+      },
+      {
+       "name": "Rafferty Madden",
+       "address": "381 Litchfield Street, Ridgewood, New Jersey, USA, 07450",
+       "county": "Bergen County, NJ",
+       "url": "https://comhaltas.ie/branches/rafferty-madden/"
+      },
+      {
+       "name": "CCE Martin Mulvihill",
+       "address": "25 Garrecht Lane, Pearl River, New York, United States, 10965",
+       "county": "Rockland County, NY",
+       "url": "https://comhaltas.ie/branches/cce-martin-mulvihill/"
+      },
+      {
+       "name": "Claddagh na nGael",
+       "address": "PO Box 271, Rumson, New Jersey, United States, 07760",
+       "county": "Monmouth County, NJ",
+       "url": "https://comhaltas.ie/branches/claddagh-na-ngael/"
+      },
+      {
+       "name": "Coleman O'Grady",
+       "address": "Bronx / Yonkers, Bronx / Yonkers, New York, USA",
+       "county": "Westchester County, NY",
+       "url": "https://comhaltas.ie/branches/coleman-ogrady/"
+      },
+      {
+       "name": "Craobh Úll Mór (Nua Eabhrác)",
+       "address": "Flushing, Queens, NY, USA",
+       "county": "Queens County, NY",
+       "url": "https://comhaltas.ie/branches/craobh-ull-mor-nua-eabhrac/"
+      }
+     ],
+     "branch_count": 8
+    },
+    "orlando": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "philadelphia": {
+     "branches": [
+      {
+       "name": "Philadelphia/Delaware Valley CCÉ",
+       "address": "West Chester, PA, USA",
+       "county": "Chester County, PA",
+       "url": "https://comhaltas.ie/branches/philadelphiadelaware-valley/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "phoenix": {
+     "branches": [
+      {
+       "name": "Four Peaks Irish Arts",
+       "address": "Phoenix, AZ, USA",
+       "county": "Maricopa County, AZ",
+       "url": "https://comhaltas.ie/branches/four-peaks-irish-arts/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "riverside": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "san-diego": {
+     "branches": [
+      {
+       "name": "Craobh Barry Cogan",
+       "address": "San Diego, CA, USA",
+       "county": "San Diego County, CA",
+       "url": "https://comhaltas.ie/branches/craobh-barry-cogan/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "san-francisco": {
+     "branches": [
+      {
+       "name": "Cooley Keegan",
+       "address": "San Francisco, CA, USA",
+       "county": "San Francisco County, CA",
+       "url": "https://comhaltas.ie/branches/cooley-keegan/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "seattle": {
+     "branches": [
+      {
+       "name": "Puget Sound",
+       "address": "Seattle, WA, USA",
+       "county": "King County, WA",
+       "url": "https://comhaltas.ie/branches/puget-sound/"
+      }
+     ],
+     "branch_count": 1
+    },
+    "tampa": {
+     "branches": [],
+     "branch_count": 0
+    },
+    "washington-dc": {
+     "branches": [
+      {
+       "name": "O'Neill-Malcom CCÉ",
+       "address": "Arlington County, Arlington, VA, USA",
+       "county": "Arlington County, VA",
+       "url": "https://comhaltas.ie/branches/oneill-malcom/"
+      }
+     ],
+     "branch_count": 1
+    }
+   }
+  },
+  "cdss_calendar": {
+   "source_url": "https://cdss.org/wp-json/tribe/events/v1/events?start_date=2026-11-01&end_date=2026-11-30",
+   "status": "partial (self-submitted calendar)",
+   "unit": "in-person events dated in November 2026",
+   "by_metro": {
+    "atlanta": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "boston": {
+     "events": [
+      {
+       "title": "Arlington Community Barn Dance",
+       "start": "2026-11-01 15:00:00",
+       "categories": [
+        "Family and Community Dance"
+       ],
+       "venue": "St. John&#8217;s Episcopal Church, Arlington, MA",
+       "town": "Arlington, MA",
+       "county": "Middlesex County, MA",
+       "url": "https://cdss.org/event/arlington-community-barn-dance-2/2026-11-01/"
+      },
+      {
+       "title": "Seacoast Contra Dance",
+       "start": "2026-11-06 19:30:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Newfields Town Hall",
+       "town": "Newfields, NH",
+       "county": "Rockingham County, NH",
+       "url": "https://cdss.org/event/seacoast-contra-dance-2/2026-11-06/"
+      },
+      {
+       "title": "Dover, NH Contradance",
+       "start": "2026-11-13 19:30:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "St John&#8217;s Church",
+       "town": "Dover, NH",
+       "county": "Strafford County, NH",
+       "url": "https://cdss.org/event/dover-nh-contradance/2026-11-13/"
+      }
+     ],
+     "event_count": 3,
+     "contra_events": 2,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 3
+    },
+    "chicago": {
+     "events": [
+      {
+       "title": "All-ages community barn dance",
+       "start": "2026-11-01 08:00:00",
+       "categories": [
+        "Children's Programming",
+        "Family and Community Dance"
+       ],
+       "venue": "Grace Lutheran Church of Glen Ellyn",
+       "town": "Glen Ellyn, IL",
+       "county": "DuPage County, IL",
+       "url": "https://cdss.org/event/all-ages-community-barn-dance/2026-11-01/1/"
+      },
+      {
+       "title": "All-ages community barn dance",
+       "start": "2026-11-01 14:00:00",
+       "categories": [
+        "Children's Programming",
+        "Family and Community Dance"
+       ],
+       "venue": "Grace Lutheran Church of Glen Ellyn",
+       "town": "Glen Ellyn, IL",
+       "county": "DuPage County, IL",
+       "url": "https://cdss.org/event/all-ages-community-barn-dance/2026-11-01/2/"
+      },
+      {
+       "title": "Chicago Contra Dance",
+       "start": "2026-11-02 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish American Heritage Center",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "url": "https://cdss.org/event/chicago-contra-dance/2026-11-02/"
+      },
+      {
+       "title": "English country dance (following international folk dance) in Glen Ellyn",
+       "start": "2026-11-08 15:00:00",
+       "categories": [
+        "English Country Dance",
+        "Other Dance Traditions",
+        "Waltz"
+       ],
+       "venue": "Grace Lutheran Church of Glen Ellyn",
+       "town": "Glen Ellyn, IL",
+       "county": "DuPage County, IL",
+       "url": "https://cdss.org/event/english-country-dance-following-international-folk-dance-in-glen-ellyn-2/2026-11-08/"
+      },
+      {
+       "title": "Chicago Contra Dance",
+       "start": "2026-11-09 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish American Heritage Center",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "url": "https://cdss.org/event/chicago-contra-dance/2026-11-09/"
+      },
+      {
+       "title": "Chicago Contra Dance",
+       "start": "2026-11-16 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish American Heritage Center",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "url": "https://cdss.org/event/chicago-contra-dance/2026-11-16/"
+      },
+      {
+       "title": "English country dance (following international folk dance) in Glen Ellyn",
+       "start": "2026-11-22 15:00:00",
+       "categories": [
+        "English Country Dance",
+        "Other Dance Traditions",
+        "Waltz"
+       ],
+       "venue": "Grace Lutheran Church of Glen Ellyn",
+       "town": "Glen Ellyn, IL",
+       "county": "DuPage County, IL",
+       "url": "https://cdss.org/event/english-country-dance-following-international-folk-dance-in-glen-ellyn-2/2026-11-22/"
+      },
+      {
+       "title": "Chicago Contra Dance",
+       "start": "2026-11-23 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish American Heritage Center",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "url": "https://cdss.org/event/chicago-contra-dance/2026-11-23/"
+      },
+      {
+       "title": "Chicago Contra Dance",
+       "start": "2026-11-30 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish American Heritage Center",
+       "town": "Chicago, IL",
+       "county": "Cook County, IL",
+       "url": "https://cdss.org/event/chicago-contra-dance/2026-11-30/"
+      }
+     ],
+     "event_count": 9,
+     "contra_events": 5,
+     "english_country_events": 2,
+     "other_dance_events": 2,
+     "square_events": 0,
+     "per_month_total": 9
+    },
+    "dallas-fort-worth": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "denver": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "detroit": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "houston": {
+     "events": [
+      {
+       "title": "Houston English Country Dance",
+       "start": "2026-11-01 14:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "First Lutheran Church of Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "url": "https://cdss.org/event/houston-english-country-dance/2026-11-01/"
+      },
+      {
+       "title": "Houston English Country Dance",
+       "start": "2026-11-15 14:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "First Lutheran Church of Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "url": "https://cdss.org/event/houston-english-country-dance/2026-11-15/"
+      },
+      {
+       "title": "Houston English Country Dance",
+       "start": "2026-11-29 14:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "First Lutheran Church of Houston",
+       "town": "Houston, TX",
+       "county": "Harris County, TX",
+       "url": "https://cdss.org/event/houston-english-country-dance/2026-11-29/"
+      }
+     ],
+     "event_count": 3,
+     "contra_events": 0,
+     "english_country_events": 3,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 3
+    },
+    "los-angeles": {
+     "events": [
+      {
+       "title": "Culver City ECD",
+       "start": "2026-11-08 14:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Lindberg Park Stone House",
+       "town": "Culver City, CA",
+       "county": "Los Angeles County, CA",
+       "url": "https://cdss.org/event/culver-city-ecd/2026-11-08/"
+      },
+      {
+       "title": "English Country Dance Classes in Pasadena",
+       "start": "2026-11-10 19:15:00",
+       "categories": [
+        "English Country Dance",
+        "Workshops and Lessons"
+       ],
+       "venue": "Skandia Lodge &#038; Hall",
+       "town": "Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "url": "https://cdss.org/event/english-country-dance-classes-in-pasadena/2026-11-10/"
+      },
+      {
+       "title": "Third Sunday English Regency Dancing &#038; Tea in Van Nuys, CA",
+       "start": "2026-11-15 14:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "First Lutheran Church of Van Nuys",
+       "town": "Van Nuys, CA",
+       "county": "Los Angeles County, CA",
+       "url": "https://cdss.org/event/third-sunday-english-regency-dancing-tea-in-van-nuys-ca/2026-11-15/"
+      },
+      {
+       "title": "English Country Dance Classes in Pasadena",
+       "start": "2026-11-24 19:15:00",
+       "categories": [
+        "English Country Dance",
+        "Workshops and Lessons"
+       ],
+       "venue": "Skandia Lodge &#038; Hall",
+       "town": "Pasadena, CA",
+       "county": "Los Angeles County, CA",
+       "url": "https://cdss.org/event/english-country-dance-classes-in-pasadena/2026-11-24/"
+      }
+     ],
+     "event_count": 4,
+     "contra_events": 0,
+     "english_country_events": 4,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 4
+    },
+    "miami": {
+     "events": [
+      {
+       "title": "South Florida Contra Dances",
+       "start": "2026-11-21 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Unitarian Universalist Fellowship of Boca Raton",
+       "town": "Boca Raton, FL",
+       "county": "Palm Beach County, FL",
+       "url": "https://cdss.org/event/south-florida-contra-dances/2026-11-21/"
+      }
+     ],
+     "event_count": 1,
+     "contra_events": 1,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 1
+    },
+    "minneapolis": {
+     "events": [
+      {
+       "title": "Ballroom Variety Dance",
+       "start": "2026-11-01 18:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/ballroom-variety-dance/2026-11-01/"
+      },
+      {
+       "title": "English Country Dance at Tapestry Folkdance Center",
+       "start": "2026-11-01 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/english-country-dance-at-tapestry-folkdance-center-3/2026-11-01/"
+      },
+      {
+       "title": "Joyfully Dancing (Ages 55+)",
+       "start": "2026-11-02 09:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/joyfully-dancing-ages-55/2026-11-02/"
+      },
+      {
+       "title": "International Folkdance at Tapestry Folkdance Center",
+       "start": "2026-11-06 19:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/international-folkdance-at-tapestry-folkdance-center/2026-11-06/"
+      },
+      {
+       "title": "Contra Dance at Tapestry Folkdance Center",
+       "start": "2026-11-07 20:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/contra-dance-at-tapestry-folkdance-center/2026-11-07/"
+      },
+      {
+       "title": "Nordic Social Dance",
+       "start": "2026-11-08 18:00:00",
+       "categories": [
+        "Other Dance Traditions",
+        "Workshops and Lessons"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/nordic-social-dance-2/2026-11-08/"
+      },
+      {
+       "title": "English Country Dance at Tapestry Folkdance Center",
+       "start": "2026-11-08 18:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/english-country-dance-at-tapestry-folkdance-center/2026-11-08/"
+      },
+      {
+       "title": "Joyfully Dancing (Ages 55+)",
+       "start": "2026-11-09 09:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/joyfully-dancing-ages-55/2026-11-09/"
+      },
+      {
+       "title": "Second Monday Shanty Sing in St. Paul",
+       "start": "2026-11-09 19:00:00",
+       "categories": [
+        "Traditional Song"
+       ],
+       "venue": "Dubliner Pub",
+       "town": "St. Paul, MN",
+       "county": "Ramsey County, MN",
+       "url": "https://cdss.org/event/second-monday-shanty-sing-in-st-paul/2026-11-09/"
+      },
+      {
+       "title": "International Folkdance at Tapestry Folkdance Center",
+       "start": "2026-11-13 19:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/international-folkdance-at-tapestry-folkdance-center/2026-11-13/"
+      },
+      {
+       "title": "Contra Dance at Tapestry Folkdance Center",
+       "start": "2026-11-14 20:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/contra-dance-at-tapestry-folkdance-center/2026-11-14/"
+      },
+      {
+       "title": "Mostly Waltz at Tapestry Folkdance Center",
+       "start": "2026-11-15 14:30:00",
+       "categories": [
+        "Waltz"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/mostly-waltz/2026-11-15/"
+      },
+      {
+       "title": "Ballroom Variety Dance",
+       "start": "2026-11-15 18:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/ballroom-variety-dance/2026-11-15/"
+      },
+      {
+       "title": "English Country Dance at Tapestry Folkdance Center",
+       "start": "2026-11-15 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/english-country-dance-at-tapestry-folkdance-center-3/2026-11-15/"
+      },
+      {
+       "title": "Joyfully Dancing (Ages 55+)",
+       "start": "2026-11-16 09:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/joyfully-dancing-ages-55/2026-11-16/"
+      },
+      {
+       "title": "International Folkdance at Tapestry Folkdance Center",
+       "start": "2026-11-20 19:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/international-folkdance-at-tapestry-folkdance-center/2026-11-20/"
+      },
+      {
+       "title": "Contra Dance at Tapestry Folkdance Center",
+       "start": "2026-11-21 20:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/contra-dance-at-tapestry-folkdance-center/2026-11-21/"
+      },
+      {
+       "title": "English Country Dance at Tapestry Folkdance Center",
+       "start": "2026-11-22 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/english-country-dance-at-tapestry-folkdance-center-3/2026-11-22/"
+      },
+      {
+       "title": "Joyfully Dancing (Ages 55+)",
+       "start": "2026-11-23 09:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/joyfully-dancing-ages-55/2026-11-23/"
+      },
+      {
+       "title": "International Folkdance at Tapestry Folkdance Center",
+       "start": "2026-11-27 19:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/international-folkdance-at-tapestry-folkdance-center/2026-11-27/"
+      },
+      {
+       "title": "Contra Dance at Tapestry Folkdance Center",
+       "start": "2026-11-28 20:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/contra-dance-at-tapestry-folkdance-center/2026-11-28/"
+      },
+      {
+       "title": "Ballroom Variety Dance",
+       "start": "2026-11-29 18:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/ballroom-variety-dance/2026-11-29/"
+      },
+      {
+       "title": "English Country Dance at Tapestry Folkdance Center",
+       "start": "2026-11-29 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/english-country-dance-at-tapestry-folkdance-center-3/2026-11-29/"
+      },
+      {
+       "title": "Joyfully Dancing (Ages 55+)",
+       "start": "2026-11-30 09:30:00",
+       "categories": [
+        "Other Dance Traditions"
+       ],
+       "venue": "Tapestry Folkdance Center",
+       "town": "Minneapolis, MN",
+       "county": "Hennepin County, MN",
+       "url": "https://cdss.org/event/joyfully-dancing-ages-55/2026-11-30/"
+      }
+     ],
+     "event_count": 24,
+     "contra_events": 4,
+     "english_country_events": 5,
+     "other_dance_events": 13,
+     "square_events": 0,
+     "per_month_total": 24
+    },
+    "new-york": {
+     "events": [
+      {
+       "title": "English Country Dance for all",
+       "start": "2026-11-03 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Church of the Village",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "url": "https://cdss.org/event/english-country-dance-for-all/2026-11-03/"
+      },
+      {
+       "title": "The Five Borough Fling",
+       "start": "2026-11-06 00:00:00",
+       "categories": [
+        "Contra Dance",
+        "Festivals",
+        "Weekend",
+        "Workshops and Lessons"
+       ],
+       "venue": "Church of St. Paul and St. Andrew",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "url": "https://cdss.org/event/the-five-borough-fling/"
+      },
+      {
+       "title": "Swingin' Tern Contra Dance",
+       "start": "2026-11-07 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "St. Paul&#8217;s Episcopal Church, Chatham, NJ",
+       "town": "Chatham, NJ",
+       "county": "Morris County, NJ",
+       "url": "https://cdss.org/event/swingin-tern-contra-dance-7/2026-11-07/"
+      },
+      {
+       "title": "North Jersey English Country Dancers, 2nd and 4th Sundays",
+       "start": "2026-11-08 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Unitarian Society of Ridgewood",
+       "town": "Ridgewood, NJ",
+       "county": "Bergen County, NJ",
+       "url": "https://cdss.org/event/north-jersey-english-country-dancers-2nd-and-4th-sundays/2026-11-08/"
+      },
+      {
+       "title": "English Country Dance for all",
+       "start": "2026-11-10 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Church of the Village",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "url": "https://cdss.org/event/english-country-dance-for-all/2026-11-10/"
+      },
+      {
+       "title": "LITMA Contradance",
+       "start": "2026-11-15 14:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Brush Barn",
+       "town": "Smithtown, NY",
+       "county": "Suffolk County, NY",
+       "url": "https://cdss.org/event/litma-contradance/2026-11-15/"
+      },
+      {
+       "title": "Celebrating Fried Herman's 100th Birthday",
+       "start": "2026-11-15 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Church in the Highlands",
+       "town": "White Plains, NY",
+       "county": "Westchester County, NY",
+       "url": "https://cdss.org/event/celebrating-fried-hermans-100th-birthday/"
+      },
+      {
+       "title": "English Country Dance for all",
+       "start": "2026-11-17 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Church of the Village",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "url": "https://cdss.org/event/english-country-dance-for-all/2026-11-17/"
+      },
+      {
+       "title": "Swingin' Tern Contra Dance",
+       "start": "2026-11-21 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "St. Paul&#8217;s Episcopal Church, Chatham, NJ",
+       "town": "Chatham, NJ",
+       "county": "Morris County, NJ",
+       "url": "https://cdss.org/event/swingin-tern-contra-dance-7/2026-11-21/"
+      },
+      {
+       "title": "North Jersey English Country Dancers, 2nd and 4th Sundays",
+       "start": "2026-11-22 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Unitarian Society of Ridgewood",
+       "town": "Ridgewood, NJ",
+       "county": "Bergen County, NJ",
+       "url": "https://cdss.org/event/north-jersey-english-country-dancers-2nd-and-4th-sundays/2026-11-22/"
+      },
+      {
+       "title": "English Country Dance for all",
+       "start": "2026-11-24 19:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Church of the Village",
+       "town": "New York, NY",
+       "county": "New York County, NY",
+       "url": "https://cdss.org/event/english-country-dance-for-all/2026-11-24/"
+      }
+     ],
+     "event_count": 11,
+     "contra_events": 4,
+     "english_country_events": 7,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 11
+    },
+    "orlando": {
+     "events": [
+      {
+       "title": "Orlando Contra Dance",
+       "start": "2026-11-06 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Winter Park Ballroom Dance Co.",
+       "town": "Winter Park, FL",
+       "county": "Orange County, FL",
+       "url": "https://cdss.org/event/orlando-contra-dance-2-2/2026-11-06/"
+      },
+      {
+       "title": "Orlando Contra Dance",
+       "start": "2026-11-20 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Winter Park Ballroom Dance Co.",
+       "town": "Winter Park, FL",
+       "county": "Orange County, FL",
+       "url": "https://cdss.org/event/orlando-contra-dance-2-2/2026-11-20/"
+      }
+     ],
+     "event_count": 2,
+     "contra_events": 2,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 2
+    },
+    "philadelphia": {
+     "events": [
+      {
+       "title": "Gentle English (Swarthmore PA)",
+       "start": "2026-11-05 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Park Avenue Community Center",
+       "town": "Swarthmore, PA",
+       "county": "Delaware County, PA",
+       "url": "https://cdss.org/event/gentle-english-swarthmore-pa/2026-11-05/"
+      },
+      {
+       "title": "Park Avenue Contra (Swarthmore PA)",
+       "start": "2026-11-10 19:30:00",
+       "categories": [
+        "Contra Dance",
+        "Playing Music"
+       ],
+       "venue": "Park Avenue Community Center",
+       "town": "Swarthmore, PA",
+       "county": "Delaware County, PA",
+       "url": "https://cdss.org/event/park-avenue-contra-swarthmore-pa/2026-11-10/"
+      },
+      {
+       "title": "Gentle English (Swarthmore PA)",
+       "start": "2026-11-19 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Park Avenue Community Center",
+       "town": "Swarthmore, PA",
+       "county": "Delaware County, PA",
+       "url": "https://cdss.org/event/gentle-english-swarthmore-pa-2/2026-11-19/"
+      },
+      {
+       "title": "Park Avenue Contra (Swarthmore PA)",
+       "start": "2026-11-24 19:30:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Park Avenue Community Center",
+       "town": "Swarthmore, PA",
+       "county": "Delaware County, PA",
+       "url": "https://cdss.org/event/park-avenue-contra-swarthmore-pa-2/2026-11-24/"
+      }
+     ],
+     "event_count": 4,
+     "contra_events": 2,
+     "english_country_events": 2,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 4
+    },
+    "phoenix": {
+     "events": [
+      {
+       "title": "Phoenix English Country Dancers",
+       "start": "2026-11-14 09:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Irish Cultural Center",
+       "town": "Phoenix, AZ",
+       "county": "Maricopa County, AZ",
+       "url": "https://cdss.org/event/phoenix-english-country-dancers-2/2026-11-14/"
+      },
+      {
+       "title": "Second Saturday Contra in Phoenix",
+       "start": "2026-11-14 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Phoenix Conservatory of Music",
+       "town": "Phoenix, undefined",
+       "county": "Maricopa County, AZ",
+       "url": "https://cdss.org/event/second-saturday-contra-2-3/"
+      },
+      {
+       "title": "Fourth Friday Contra Dance in Phoenix",
+       "start": "2026-11-27 19:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Irish Cultural Center",
+       "town": "Phoenix, AZ",
+       "county": "Maricopa County, AZ",
+       "url": "https://cdss.org/event/fourth-friday-contra-dance-in-phoenix/2026-11-27/"
+      },
+      {
+       "title": "Phoenix English Country Dancers",
+       "start": "2026-11-28 09:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Irish Cultural Center",
+       "town": "Phoenix, AZ",
+       "county": "Maricopa County, AZ",
+       "url": "https://cdss.org/event/phoenix-english-country-dancers/2026-11-28/"
+      }
+     ],
+     "event_count": 4,
+     "contra_events": 2,
+     "english_country_events": 2,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 4
+    },
+    "riverside": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "san-diego": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "san-francisco": {
+     "events": [
+      {
+       "title": "Berkeley Contra or English Dance",
+       "start": "2026-11-04 19:30:00",
+       "categories": [
+        "Contra Dance",
+        "English Country Dance"
+       ],
+       "venue": "Christ Church Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/berkeley-contra-or-english-dance/2026-11-04/"
+      },
+      {
+       "title": "Hayward CA Contra",
+       "start": "2026-11-08 16:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Hill and Valley Club",
+       "town": "Hayward, CA",
+       "county": "Alameda County, CA",
+       "url": "https://cdss.org/event/hayward-ca-contra/2026-11-08/"
+      },
+      {
+       "title": "Berkeley Contra or English Dance",
+       "start": "2026-11-11 19:30:00",
+       "categories": [
+        "Contra Dance",
+        "English Country Dance"
+       ],
+       "venue": "Christ Church Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/berkeley-contra-or-english-dance/2026-11-11/"
+      },
+      {
+       "title": "Marin English Dance (Mill Valley CA)",
+       "start": "2026-11-14 14:00:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Almonte Club House",
+       "town": "Mill Valley, CA",
+       "county": "Marin County, CA",
+       "url": "https://cdss.org/event/marin-english-dance-mill-valley-ca/2026-11-14/"
+      },
+      {
+       "title": "San Rafael Contra Dance & Lesson",
+       "start": "2026-11-14 22:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Unitarian Universalist Congregation of Marin",
+       "town": "San Rafael, CA",
+       "county": "Marin County, CA",
+       "url": "https://cdss.org/event/san-rafael-contra-dance-lesson/2026-11-14/"
+      },
+      {
+       "title": "Berkeley Contra or English Dance",
+       "start": "2026-11-18 19:30:00",
+       "categories": [
+        "Contra Dance",
+        "English Country Dance"
+       ],
+       "venue": "Christ Church Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/berkeley-contra-or-english-dance/2026-11-18/"
+      },
+      {
+       "title": "East Bay Square Dance (SF Bay Area)",
+       "start": "2026-11-20 19:45:00",
+       "categories": [
+        "Square Dance"
+       ],
+       "venue": "Hillside Club",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/__trashed-4/2026-11-20/"
+      },
+      {
+       "title": "Hayward CA Contra",
+       "start": "2026-11-22 16:00:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Hill and Valley Club",
+       "town": "Hayward, CA",
+       "county": "Alameda County, CA",
+       "url": "https://cdss.org/event/hayward-ca-contra/2026-11-22/"
+      },
+      {
+       "title": "Berkeley Contra or English Dance",
+       "start": "2026-11-25 19:30:00",
+       "categories": [
+        "Contra Dance",
+        "English Country Dance"
+       ],
+       "venue": "Christ Church Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/berkeley-contra-or-english-dance/2026-11-25/"
+      },
+      {
+       "title": "Berkeley Experienced English Dance 4th Sat",
+       "start": "2026-11-28 19:30:00",
+       "categories": [
+        "English Country Dance"
+       ],
+       "venue": "Christ Church Berkeley",
+       "town": "Berkeley, CA",
+       "county": "Contra Costa County, CA",
+       "url": "https://cdss.org/event/berkeley-experienced-english-dance-4th-sat/2026-11-28/"
+      }
+     ],
+     "event_count": 10,
+     "contra_events": 7,
+     "english_country_events": 6,
+     "other_dance_events": 0,
+     "square_events": 1,
+     "per_month_total": 10
+    },
+    "seattle": {
+     "events": [],
+     "event_count": 0,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 0
+    },
+    "tampa": {
+     "events": [
+      {
+       "title": "TFOOTD (Tampa) Contra Dance",
+       "start": "2026-11-14 19:30:00",
+       "categories": [
+        "Contra Dance"
+       ],
+       "venue": "Polish American Society",
+       "town": "St. Petersburg, FL",
+       "county": "Pinellas County, FL",
+       "url": "https://cdss.org/event/tfootd-contra-dance/2026-11-14/"
+      }
+     ],
+     "event_count": 1,
+     "contra_events": 1,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 0,
+     "per_month_total": 1
+    },
+    "washington-dc": {
+     "events": [
+      {
+       "title": "DC Square Dance Party!",
+       "start": "2026-11-14 20:00:00",
+       "categories": [
+        "Square Dance"
+       ],
+       "venue": "St. Stephen&#8217;s Church, Washington, DC",
+       "town": "Washington, DC",
+       "county": "District of Columbia, DC",
+       "url": "https://cdss.org/event/dc-square-dance-party-2/"
+      }
+     ],
+     "event_count": 1,
+     "contra_events": 0,
+     "english_country_events": 0,
+     "other_dance_events": 0,
+     "square_events": 1,
+     "per_month_total": 1
+    }
+   }
+  }
+ }
+}
